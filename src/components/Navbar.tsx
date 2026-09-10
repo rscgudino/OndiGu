@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrandLogo } from './BrandLogo';
-import { User, Menu, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { User, Menu, X, ShieldCheck } from 'lucide-react';
 
 interface NavbarProps {
   onOpenPortal: () => void;
@@ -8,6 +9,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onNavigateContact }) => {
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -59,21 +61,37 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onNavigateContact 
 
         {/* Actions (Login / Portal + CTA) */}
         <div className="hidden md:flex items-center gap-3.5">
-          <button
-            id="nav-client-portal-btn"
-            onClick={onOpenPortal}
-            type="button"
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-[#d0d0d0] hover:text-white bg-[#181a22] hover:bg-[#20232e] border border-[#2a2e3b] rounded transition-colors"
-          >
-            <User className="w-3.5 h-3.5 text-[#FF8C00]" />
-            <span>Acceso clientes</span>
-          </button>
+          {user ? (
+            <button
+              id="nav-user-account-btn"
+              onClick={onOpenPortal}
+              type="button"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-white bg-[#171922] hover:bg-[#202430] border border-[#FF8C00]/50 rounded-lg transition-colors shadow-sm"
+              title="Ver mi perfil y cuenta"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="font-semibold text-white">Mi cuenta</span>
+              <span className="text-[11px] text-[#a5abbd] max-w-[100px] truncate">
+                {user.name ? user.name.split(' ')[0] : 'Perfil'}
+              </span>
+            </button>
+          ) : (
+            <button
+              id="nav-client-portal-btn"
+              onClick={onOpenPortal}
+              type="button"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-[#d0d0d0] hover:text-white bg-[#181a22] hover:bg-[#20232e] border border-[#2a2e3b] rounded-lg transition-colors"
+            >
+              <User className="w-3.5 h-3.5 text-[#FF8C00]" />
+              <span>Ingresar</span>
+            </button>
+          )}
 
           <button
             id="nav-quote-cta-btn"
             onClick={onNavigateContact}
             type="button"
-            className="px-4 py-2 text-xs font-semibold text-white bg-[#FF4500] hover:bg-[#e03d00] rounded shadow-[0_0_15px_rgba(255,69,0,0.3)] transition-colors"
+            className="px-4 py-2 text-xs font-semibold text-white bg-[#FF4500] hover:bg-[#e03d00] rounded-lg shadow-[0_0_15px_rgba(255,69,0,0.3)] transition-colors"
           >
             Pedí tu presupuesto
           </button>
@@ -85,17 +103,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onNavigateContact 
             id="mobile-portal-btn"
             onClick={onOpenPortal}
             type="button"
-            aria-label="Acceso clientes"
-            className="p-2 text-[#a0a0a0] hover:text-white bg-[#181a22] border border-[#2a2e3b] rounded"
+            aria-label={user ? "Mi cuenta" : "Ingresar"}
+            className="p-2 text-[#a0a0a0] hover:text-white bg-[#181a22] border border-[#2a2e3b] rounded-lg relative"
           >
-            <User className="w-4 h-4 text-[#FF8C00]" />
+            {user ? (
+              <>
+                <User className="w-4 h-4 text-[#FF8C00]" />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400" />
+              </>
+            ) : (
+              <User className="w-4 h-4 text-[#FF8C00]" />
+            )}
           </button>
           <button
             id="mobile-menu-toggle"
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Abrir menú"
-            className="p-2 text-white bg-[#181a22] border border-[#2a2e3b] rounded"
+            className="p-2 text-white bg-[#181a22] border border-[#2a2e3b] rounded-lg"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -124,10 +149,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onNavigateContact 
                 onOpenPortal();
               }}
               type="button"
-              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-white bg-[#1a1d26] border border-[#2e3240] rounded"
+              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-white bg-[#1a1d26] border border-[#2e3240] rounded-lg"
             >
               <User className="w-3.5 h-3.5 text-[#FF8C00]" />
-              Acceso clientes / Iniciar sesión
+              {user ? `Mi cuenta (${user.name || user.email})` : 'Ingresar / Crear cuenta'}
             </button>
             <button
               onClick={() => {
@@ -135,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPortal, onNavigateContact 
                 onNavigateContact();
               }}
               type="button"
-              className="w-full py-2.5 text-xs font-semibold text-white bg-[#FF4500] hover:bg-[#e03d00] rounded"
+              className="w-full py-2.5 text-xs font-semibold text-white bg-[#FF4500] hover:bg-[#e03d00] rounded-lg"
             >
               Pedí tu presupuesto
             </button>

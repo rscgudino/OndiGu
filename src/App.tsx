@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ValueProposition } from './components/ValueProposition';
@@ -11,16 +12,29 @@ import { ContactForm } from './components/ContactForm';
 import { Footer } from './components/Footer';
 import { FloatingAssist } from './components/FloatingAssist';
 import { FloatingExpressAd } from './components/FloatingExpressAd';
-import { ClientPortalModal } from './components/ClientPortalModal';
+import { AuthModal } from './components/AuthModal';
+import { UserProfileModal } from './components/UserProfileModal';
 
-export default function App() {
-  const [portalOpen, setPortalOpen] = useState(false);
+function MainApp() {
+  const { user } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState<string | undefined>(undefined);
 
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleOpenAccountOrAuth = (view: 'login' | 'register' = 'login') => {
+    if (user) {
+      setProfileModalOpen(true);
+    } else {
+      setAuthView(view);
+      setAuthModalOpen(true);
     }
   };
 
@@ -38,7 +52,7 @@ export default function App() {
     <div className="min-h-screen bg-[#0c0e12] text-[#F3F4F6] flex flex-col selection:bg-[#FF4500] selection:text-white relative">
       {/* Top Navigation */}
       <Navbar
-        onOpenPortal={() => setPortalOpen(true)}
+        onOpenPortal={() => handleOpenAccountOrAuth('login')}
         onNavigateContact={() => scrollToSection('contacto')}
       />
 
@@ -74,7 +88,7 @@ export default function App() {
 
       {/* Footer with Brand Signature, Social Links and Google Lanús */}
       <Footer
-        onOpenPortal={() => setPortalOpen(true)}
+        onOpenPortal={() => handleOpenAccountOrAuth('login')}
         onNavigateContact={() => scrollToSection('contacto')}
       />
 
@@ -84,11 +98,26 @@ export default function App() {
       {/* Smart Predefined Bot Dock */}
       <FloatingAssist />
 
-      {/* Future Client Portal Modal */}
-      <ClientPortalModal
-        isOpen={portalOpen}
-        onClose={() => setPortalOpen(false)}
+      {/* Supabase Auth Modal: Login, Register, Forgot Password */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialView={authView}
+      />
+
+      {/* Supabase Authenticated User Profile Modal */}
+      <UserProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { InquiryFormData } from '../types';
 import { BRAND_INFO } from '../data/content';
+import { useAuth } from '../context/AuthContext';
 import { Send, CheckCircle2, MessageCircle, AlertCircle, RefreshCw, Zap } from 'lucide-react';
 
 interface ContactFormProps {
@@ -8,6 +9,7 @@ interface ContactFormProps {
 }
 
 export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<InquiryFormData>({
     name: '',
     businessType: 'Comercio o Local a la calle',
@@ -15,6 +17,17 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
     contact: '',
     details: '',
   });
+
+  // Autofill if logged in user
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        contact: prev.contact || user.phone || user.email || '',
+      }));
+    }
+  }, [user]);
 
   // Sync when initialService changes dynamically (e.g. clicking the floating 24hs ad)
   useEffect(() => {

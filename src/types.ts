@@ -73,3 +73,12 @@ export interface TestimonialItem {
   verifiedSource: string;
   timeAgo: string;
 }
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  avatarUrl?: string;
+  createdAt?: string;
+}

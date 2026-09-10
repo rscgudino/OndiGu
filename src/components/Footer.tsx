@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrandLogo } from './BrandLogo';
 import { BRAND_INFO, SOCIAL_NETWORKS } from '../data/content';
+import { useAuth } from '../context/AuthContext';
 import { 
   MapPin, 
   Star, 
@@ -15,6 +16,7 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact }) => {
+  const { user } = useAuth();
   return (
     <footer className="bg-[#0a0c10] border-t border-[#1e222e] pt-16 pb-12 px-4 sm:px-6 lg:px-8 text-[#9c9c9c]">
       <div className="max-w-7xl mx-auto">
@@ -95,7 +97,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                   onClick={onOpenPortal}
                   className="hover:text-[#FF8C00] transition-colors text-left cursor-pointer"
                 >
-                  Portal de clientes
+                  {user ? 'Mi cuenta' : 'Ingresar / Portal de clientes'}
                 </button>
               </li>
             </ul>
