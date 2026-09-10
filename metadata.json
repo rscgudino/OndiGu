@@ -1,0 +1,6 @@
+{
+  "name": "OndiGu",
+  "description": "Desarrollo web, IA y automatización para pymes, emprendedores y comercios. Conectamos tu negocio con tecnología inteligente.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
