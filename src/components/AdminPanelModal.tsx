@@ -3,20 +3,26 @@ import { useAuth } from '../context/AuthContext';
 import { 
   TurnoLlamada, 
   PresupuestoLead, 
-  PaymentGatewayConfig 
+  PaymentGatewayConfig,
+  RegisteredClient 
 } from '../types';
 import { 
   listarTurnosLlamadas, 
   actualizarEstadoTurno, 
+  eliminarTurnoLlamada,
   listarPresupuestosLeads,
+  eliminarPresupuestoLead,
+  listarClientesRegistrados,
+  actualizarRolCliente,
+  actualizarEstadoCliente,
+  eliminarCliente,
   obtenerConfiguracionPagos,
   guardarConfiguracionPagos,
   getSupabaseSqlSchema,
   isUserAdmin,
-  setAdminUnlocked
+  ADMIN_EMAILS
 } from '../lib/agendaService';
 import { 
-  ShieldAlert, 
   Calendar, 
   Clock, 
   Phone, 
@@ -32,10 +38,17 @@ import {
   Search, 
   Filter, 
   X, 
-  MessageCircle,
-  Settings,
-  Lock,
-  DollarSign
+  MessageCircle, 
+  Lock, 
+  DollarSign,
+  Users,
+  Shield,
+  Trash2,
+  Crown,
+  UserCheck,
+  UserX,
+  AlertTriangle,
+  ArrowRight
 } from 'lucide-react';
 
 interface AdminPanelModalProps {
@@ -45,31 +58,51 @@ interface AdminPanelModalProps {
 
 export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'turnos' | 'presupuestos' | 'pagos' | 'sql'>('turnos');
+  const [activeTab, setActiveTab] = useState<'clientes' | 'turnos' | 'presupuestos' | 'pagos' | 'sql'>('clientes');
   
+  // Clientes state
+  const [clientes, setClientes] = useState<RegisteredClient[]>([]);
+  const [loadingClientes, setLoadingClientes] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [clientActionMessage, setClientActionMessage] = useState<string | null>(null);
+
   // Turnos state
   const [turnos, setTurnos] = useState<TurnoLlamada[]>([]);
-  const [loadingTurnos, setLoadingTurnos] = useState(true);
+  const [loadingTurnos, setLoadingTurnos] = useState(false);
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTurno, setSearchTurno] = useState('');
   
   // Presupuestos state
   const [presupuestos, setPresupuestos] = useState<PresupuestoLead[]>([]);
   const [loadingPresupuestos, setLoadingPresupuestos] = useState(false);
+  const [searchPresupuesto, setSearchPresupuesto] = useState('');
 
   // Pagos state
   const [gatewayConfig, setGatewayConfig] = useState<PaymentGatewayConfig | null>(null);
   const [savingConfig, setSavingConfig] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Admin access validation
-  const [adminPin, setAdminPin] = useState('');
-  const [pinError, setPinError] = useState(false);
+  // SQL State
   const [copiedSql, setCopiedSql] = useState(false);
 
+  // Verification
   const isAdmin = isUserAdmin(user?.email);
 
-  const loadData = async () => {
+  // Load clients
+  const loadClientes = async () => {
+    setLoadingClientes(true);
+    try {
+      const data = await listarClientesRegistrados();
+      setClientes(data);
+    } catch (err) {
+      console.error('Error cargando clientes:', err);
+    } finally {
+      setLoadingClientes(false);
+    }
+  };
+
+  // Load turnos
+  const loadTurnos = async () => {
     setLoadingTurnos(true);
     try {
       const data = await listarTurnosLlamadas(filtroEstado);
@@ -81,28 +114,105 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
     }
   };
 
-  useEffect(() => {
-    if (isOpen && isAdmin) {
-      loadData();
-      obtenerConfiguracionPagos().then(setGatewayConfig);
-    }
-  }, [isOpen, isAdmin, filtroEstado]);
-
-  const handleTabChange = async (tab: 'turnos' | 'presupuestos' | 'pagos' | 'sql') => {
-    setActiveTab(tab);
-    if (tab === 'presupuestos' && presupuestos.length === 0) {
-      setLoadingPresupuestos(true);
+  // Load presupuestos
+  const loadPresupuestos = async () => {
+    setLoadingPresupuestos(true);
+    try {
       const leads = await listarPresupuestosLeads();
       setPresupuestos(leads);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setLoadingPresupuestos(false);
     }
   };
 
+  useEffect(() => {
+    if (isOpen && isAdmin) {
+      loadClientes();
+      loadTurnos();
+      obtenerConfiguracionPagos().then(setGatewayConfig);
+    }
+  }, [isOpen, isAdmin, filtroEstado]);
+
+  const handleTabChange = async (tab: 'clientes' | 'turnos' | 'presupuestos' | 'pagos' | 'sql') => {
+    setActiveTab(tab);
+    if (tab === 'clientes') {
+      loadClientes();
+    } else if (tab === 'turnos') {
+      loadTurnos();
+    } else if (tab === 'presupuestos') {
+      loadPresupuestos();
+    }
+  };
+
+  // Turno actions
   const handleStatusChange = async (id: string, nuevoEstado: 'pendiente' | 'contactado' | 'hecho') => {
     setTurnos((prev) => prev.map((t) => (t.id === id ? { ...t, estado: nuevoEstado } : t)));
     await actualizarEstadoTurno(id, nuevoEstado);
   };
 
+  const handleDeleteTurno = async (id: string) => {
+    if (!window.confirm('¿Confirmás eliminar este registro de llamada agendada?')) return;
+    const res = await eliminarTurnoLlamada(id);
+    if (res.success) {
+      setTurnos((prev) => prev.filter((t) => t.id !== id));
+    }
+  };
+
+  // Presupuesto actions
+  const handleDeletePresupuesto = async (id: string) => {
+    if (!window.confirm('¿Confirmás eliminar este presupuesto/lead?')) return;
+    const res = await eliminarPresupuestoLead(id);
+    if (res.success) {
+      setPresupuestos((prev) => prev.filter((p) => p.id !== id));
+    }
+  };
+
+  // Client actions
+  const handleRoleChange = async (id: string, nuevoRol: 'cliente' | 'vip' | 'admin') => {
+    const res = await actualizarRolCliente(id, nuevoRol);
+    if (res.success) {
+      setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, role: nuevoRol } : c)));
+      setClientActionMessage(`Rol actualizado con éxito a ${nuevoRol.toUpperCase()}`);
+      setTimeout(() => setClientActionMessage(null), 3000);
+    } else {
+      alert(res.error || 'Error al actualizar rol');
+    }
+  };
+
+  const handleStatusClientChange = async (id: string, nuevoEstado: 'activo' | 'pendiente' | 'bloqueado') => {
+    const res = await actualizarEstadoCliente(id, nuevoEstado);
+    if (res.success) {
+      setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, status: nuevoEstado } : c)));
+      setClientActionMessage(`Estado actualizado a ${nuevoEstado.toUpperCase()}`);
+      setTimeout(() => setClientActionMessage(null), 3000);
+    } else {
+      alert(res.error || 'Error al actualizar estado');
+    }
+  };
+
+  const handleDeleteClient = async (id: string, clientEmail: string) => {
+    if (ADMIN_EMAILS.includes(clientEmail.toLowerCase())) {
+      alert('No podés eliminar la cuenta del administrador principal del sitio.');
+      return;
+    }
+
+    if (!window.confirm(`¿Estás seguro de eliminar a "${clientEmail}" de la base de datos de clientes?`)) {
+      return;
+    }
+
+    const res = await eliminarCliente(id);
+    if (res.success) {
+      setClientes((prev) => prev.filter((c) => c.id !== id));
+      setClientActionMessage(`Cliente eliminado correctamente del sistema.`);
+      setTimeout(() => setClientActionMessage(null), 3000);
+    } else {
+      alert(res.error || 'Error al eliminar cliente.');
+    }
+  };
+
+  // Payments save
   const handleSavePayments = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!gatewayConfig) return;
@@ -118,17 +228,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
     }
   };
 
-  const handleUnlockWithPin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminPin.toLowerCase().trim() === 'ondigu2026' || adminPin.trim() === 'admin') {
-      setAdminUnlocked(true);
-      setPinError(false);
-      loadData();
-    } else {
-      setPinError(true);
-    }
-  };
-
   const copySqlToClipboard = () => {
     navigator.clipboard.writeText(getSupabaseSqlSchema());
     setCopiedSql(true);
@@ -137,11 +236,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
 
   if (!isOpen) return null;
 
-  // If not admin, show password entry screen
+  // STRICT ACCESS CONTROL: If the current user is NOT an administrator, show strict denial
   if (!isAdmin) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-        <div className="bg-[#12141c] border border-[#262b3b] max-w-md w-full p-6 sm:p-8 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative">
+        <div className="bg-[#12141c] border border-red-500/40 max-w-md w-full p-6 sm:p-8 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative text-center">
           <button
             type="button"
             onClick={onClose}
@@ -150,88 +249,83 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
             <X className="w-4 h-4" />
           </button>
 
-          <div className="text-center mb-6">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#FF4500]/15 border border-[#FF4500]/40 flex items-center justify-center text-[#FF8C00]">
-              <Lock className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Panel de Administración</h3>
-            <p className="text-xs text-[#8f96a8] mt-1">
-              Esta sección es privada para el administrador de OndiGu.
-            </p>
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
+            <Lock className="w-7 h-7" />
           </div>
 
-          <form onSubmit={handleUnlockWithPin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-[#c0c5d4] mb-1.5">
-                Clave de acceso de administrador
-              </label>
-              <input
-                type="password"
-                value={adminPin}
-                onChange={(e) => {
-                  setAdminPin(e.target.value);
-                  setPinError(false);
-                }}
-                placeholder="Ingresá la clave de acceso"
-                className="w-full bg-[#181b24] border border-[#2b3142] focus:border-[#FF4500] text-white text-sm px-3.5 py-2.5 rounded-lg outline-none"
-              />
-              {pinError && (
-                <p className="text-xs text-red-400 mt-1.5 flex items-center gap-1">
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  <span>Clave incorrecta. (Tip de prueba: ondigu2026)</span>
-                </p>
-              )}
-            </div>
+          <h3 className="text-xl font-bold text-white mb-2">Acceso Exclusivo de Administrador</h3>
+          
+          <p className="text-sm text-[#9da4b6] mb-5 leading-relaxed">
+            El panel administrativo está restringido. Solo el administrador principal del sitio web (<span className="text-[#FF8C00] font-semibold">{ADMIN_EMAILS[0]}</span>) tiene los privilegios de gestión, borrado y asignación de permisos.
+          </p>
 
-            <button
-              type="submit"
-              className="w-full py-2.5 px-4 bg-[#FF4500] hover:bg-[#e03d00] text-white font-semibold text-xs rounded-lg transition-colors"
-            >
-              Ingresar al panel de gestión
-            </button>
-          </form>
+          <div className="p-3 bg-[#171a24] border border-[#262b3b] rounded-xl text-xs text-[#7d8496] mb-6">
+            Tu cuenta actual ({user?.email || 'Visitante'}) es de rol <span className="text-white font-medium">Cliente</span> y no posee privilegios para ver ni modificar registros del sistema.
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-2.5 px-4 bg-[#FF4500] hover:bg-[#e03d00] text-white font-semibold text-xs rounded-xl transition-all cursor-pointer"
+          >
+            Volver a la Web
+          </button>
         </div>
       </div>
     );
   }
 
-  // Filter turnos by search term
+  // Filtered lists
+  const filteredClientes = clientes.filter((c) => {
+    const term = clientSearch.toLowerCase();
+    return (
+      c.name.toLowerCase().includes(term) ||
+      c.email.toLowerCase().includes(term) ||
+      c.phone.toLowerCase().includes(term)
+    );
+  });
+
   const filteredTurnos = turnos.filter((t) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
+    const term = searchTurno.toLowerCase();
     return (
       t.nombre.toLowerCase().includes(term) ||
       t.telefono.toLowerCase().includes(term) ||
       t.email.toLowerCase().includes(term) ||
-      t.motivo.toLowerCase().includes(term) ||
-      t.fecha.includes(term)
+      t.motivo.toLowerCase().includes(term)
     );
   });
 
-  const totalPendientes = turnos.filter((t) => t.estado === 'pendiente').length;
-  const totalContactados = turnos.filter((t) => t.estado === 'contactado').length;
-  const totalHechos = turnos.filter((t) => t.estado === 'hecho').length;
+  const filteredPresupuestos = presupuestos.filter((p) => {
+    const term = searchPresupuesto.toLowerCase();
+    return (
+      p.nombre.toLowerCase().includes(term) ||
+      p.tipo_negocio.toLowerCase().includes(term) ||
+      p.contacto.toLowerCase().includes(term) ||
+      p.detalles.toLowerCase().includes(term)
+    );
+  });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md">
-      <div className="bg-[#0f1218] border border-[#252b3b] w-full max-w-6xl max-h-[92vh] flex flex-col rounded-xl shadow-[0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#10131a] border border-[#232738] w-full max-w-5xl rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[92vh] my-auto">
+        
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-[#141721] border-b border-[#222736] flex flex-wrap items-center justify-between gap-4">
+        <div className="p-4 sm:p-6 border-b border-[#1f2434] flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#141722]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#FF4500]/20 border border-[#FF4500]/40 flex items-center justify-center text-[#FF8C00]">
-              <Settings className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <Shield className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-brand font-bold text-white">
-                  Panel Administrador OndiGu
-                </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FF4500]/20 text-[#FF8C00] border border-[#FF4500]/30 uppercase">
-                  Acceso Privado
+                <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                  Panel de Administración OndiGu
+                </h2>
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full">
+                  Super Admin
                 </span>
               </div>
-              <p className="text-xs text-[#8f96a8]">
-                Gestión de agenda comercial, leads y pasarelas de pago
+              <p className="text-xs text-[#8e95a7] truncate">
+                Conectado como: <span className="text-white font-medium">{user?.email}</span> (Control total de permisos y borrado)
               </p>
             </div>
           </div>
@@ -239,261 +333,412 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={loadData}
-              title="Actualizar datos"
-              className="p-2 text-[#9ca3af] hover:text-white bg-[#1a1e2a] hover:bg-[#242a3a] border border-[#292f40] rounded-lg transition-colors cursor-pointer"
+              onClick={() => {
+                if (activeTab === 'clientes') loadClientes();
+                if (activeTab === 'turnos') loadTurnos();
+                if (activeTab === 'presupuestos') loadPresupuestos();
+              }}
+              className="p-2 text-[#a5abbd] hover:text-white bg-[#1a1e2b] border border-[#292f44] rounded-lg text-xs flex items-center gap-1.5 transition-colors"
+              title="Refrescar datos"
             >
-              <RefreshCw className={`w-4 h-4 ${loadingTurnos ? 'animate-spin' : ''}`} />
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Actualizar</span>
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-[#9ca3af] hover:text-white bg-[#1a1e2a] hover:bg-[#242a3a] border border-[#292f40] rounded-lg transition-colors cursor-pointer"
+              className="p-2 text-[#888888] hover:text-white bg-[#1a1e2b] border border-[#292f44] rounded-lg transition-colors"
+              title="Cerrar panel"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
+        {/* Global Action Banner */}
+        {clientActionMessage && (
+          <div className="bg-emerald-950/70 border-b border-emerald-800/60 px-4 py-2 text-xs text-emerald-300 flex items-center gap-2 font-mono">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{clientActionMessage}</span>
+          </div>
+        )}
+
         {/* Navigation Tabs */}
-        <div className="px-4 sm:px-6 bg-[#12151e] border-b border-[#202534] flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="px-4 sm:px-6 pt-3 border-b border-[#1f2434] bg-[#121520] flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
+          
+          {/* Tab 1: Clientes & Permisos */}
+          <button
+            type="button"
+            onClick={() => handleTabChange('clientes')}
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all flex items-center gap-2 shrink-0 border-b-2 ${
+              activeTab === 'clientes'
+                ? 'bg-[#181c28] text-[#FF8C00] border-[#FF4500]'
+                : 'text-[#8e95a7] hover:text-white border-transparent'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Clientes & Permisos</span>
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] rounded-full bg-[#252b3d] text-[#c0c5d4]">
+              {clientes.length}
+            </span>
+          </button>
+
+          {/* Tab 2: Turnos */}
           <button
             type="button"
             onClick={() => handleTabChange('turnos')}
-            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all flex items-center gap-2 shrink-0 border-b-2 ${
               activeTab === 'turnos'
-                ? 'border-[#FF4500] text-white'
-                : 'border-transparent text-[#8e95a8] hover:text-white'
+                ? 'bg-[#181c28] text-[#FF8C00] border-[#FF4500]'
+                : 'text-[#8e95a7] hover:text-white border-transparent'
             }`}
           >
-            <Calendar className="w-3.5 h-3.5 text-[#FF8C00]" />
-            <span>Agenda de Llamadas</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#1d2230] text-[#FF8C00] font-bold">
+            <Calendar className="w-4 h-4" />
+            <span>Llamadas Agendadas</span>
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] rounded-full bg-[#252b3d] text-[#c0c5d4]">
               {turnos.length}
             </span>
           </button>
 
+          {/* Tab 3: Presupuestos */}
           <button
             type="button"
             onClick={() => handleTabChange('presupuestos')}
-            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all flex items-center gap-2 shrink-0 border-b-2 ${
               activeTab === 'presupuestos'
-                ? 'border-[#FF4500] text-white'
-                : 'border-transparent text-[#8e95a8] hover:text-white'
+                ? 'bg-[#181c28] text-[#FF8C00] border-[#FF4500]'
+                : 'text-[#8e95a7] hover:text-white border-transparent'
             }`}
           >
-            <Mail className="w-3.5 h-3.5 text-sky-400" />
-            <span>Presupuestos y Leads</span>
-            {presupuestos.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#1d2230] text-sky-400 font-bold">
-                {presupuestos.length}
-              </span>
-            )}
+            <MessageCircle className="w-4 h-4" />
+            <span>Presupuestos & Leads</span>
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] rounded-full bg-[#252b3d] text-[#c0c5d4]">
+              {presupuestos.length}
+            </span>
           </button>
 
+          {/* Tab 4: Pasarelas */}
           <button
             type="button"
             onClick={() => handleTabChange('pagos')}
-            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all flex items-center gap-2 shrink-0 border-b-2 ${
               activeTab === 'pagos'
-                ? 'border-[#FF4500] text-white'
-                : 'border-transparent text-[#8e95a8] hover:text-white'
+                ? 'bg-[#181c28] text-[#FF8C00] border-[#FF4500]'
+                : 'text-[#8e95a7] hover:text-white border-transparent'
             }`}
           >
-            <CreditCard className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Mercado Pago & Stripe</span>
+            <CreditCard className="w-4 h-4" />
+            <span>Pasarelas de Pago</span>
           </button>
 
+          {/* Tab 5: Supabase SQL */}
           <button
             type="button"
             onClick={() => handleTabChange('sql')}
-            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all flex items-center gap-2 shrink-0 border-b-2 ${
               activeTab === 'sql'
-                ? 'border-[#FF4500] text-white'
-                : 'border-transparent text-[#8e95a8] hover:text-white'
+                ? 'bg-[#181c28] text-[#FF8C00] border-[#FF4500]'
+                : 'text-[#8e95a7] hover:text-white border-transparent'
             }`}
           >
-            <Database className="w-3.5 h-3.5 text-amber-400" />
-            <span>Tablas Supabase (SQL)</span>
+            <Database className="w-4 h-4" />
+            <span>Script SQL Supabase</span>
           </button>
         </div>
 
-        {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0c0e14]">
-          {/* TAB 1: AGENDA DE LLAMADAS */}
-          {activeTab === 'turnos' && (
+        {/* Tab Content Body */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-[#0d0f15]">
+          
+          {/* ========================================================= */}
+          {/* TAB 1: CLIENTES Y PERMISOS                                */}
+          {/* ========================================================= */}
+          {activeTab === 'clientes' && (
             <div className="space-y-4">
-              {/* Metric badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3 bg-[#151822] border border-[#242938] rounded-lg">
-                  <span className="text-[11px] text-[#8e95a8] block">Total Agendadas</span>
-                  <span className="text-xl font-bold text-white">{turnos.length}</span>
-                </div>
-                <div className="p-3 bg-[#151822] border border-[#242938] rounded-lg">
-                  <span className="text-[11px] text-[#FF8C00] block">⏳ Pendientes</span>
-                  <span className="text-xl font-bold text-[#FF8C00]">{totalPendientes}</span>
-                </div>
-                <div className="p-3 bg-[#151822] border border-[#242938] rounded-lg">
-                  <span className="text-[11px] text-sky-400 block">📞 Contactados</span>
-                  <span className="text-xl font-bold text-sky-400">{totalContactados}</span>
-                </div>
-                <div className="p-3 bg-[#151822] border border-[#242938] rounded-lg">
-                  <span className="text-[11px] text-emerald-400 block">✅ Hechos</span>
-                  <span className="text-xl font-bold text-emerald-400">{totalHechos}</span>
-                </div>
-              </div>
-
-              {/* Filters and search bar */}
-              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-[#141722] p-3 rounded-lg border border-[#222736]">
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <span className="text-xs text-[#8f96a8] font-semibold flex items-center gap-1">
-                    <Filter className="w-3.5 h-3.5" />
-                    <span>Estado:</span>
-                  </span>
-                  {(['todos', 'pendiente', 'contactado', 'hecho'] as const).map((est) => (
-                    <button
-                      key={est}
-                      type="button"
-                      onClick={() => setFiltroEstado(est)}
-                      className={`px-2.5 py-1 text-xs rounded-md capitalize font-medium transition-colors cursor-pointer ${
-                        filtroEstado === est
-                          ? 'bg-[#FF4500] text-white'
-                          : 'bg-[#1b1f2c] text-[#9ca3af] hover:text-white'
-                      }`}
-                    >
-                      {est}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="relative w-full sm:w-64">
-                  <Search className="w-3.5 h-3.5 text-[#6b7280] absolute left-3 top-1/2 -translate-y-1/2" />
+              
+              {/* Filter and stats row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#141722] p-3.5 rounded-xl border border-[#202535]">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-[#73798c] absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar cliente, tel, motivo..."
-                    className="w-full bg-[#181c27] border border-[#2b3142] text-xs text-white pl-8 pr-3 py-1.5 rounded-md focus:border-[#FF4500] outline-none"
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    placeholder="Buscar clientes por nombre, correo o teléfono..."
+                    className="w-full bg-[#1b1f2d] border border-[#2a3044] focus:border-[#FF4500] text-white text-xs pl-9 pr-3 py-2 rounded-lg outline-none"
                   />
+                </div>
+                
+                <div className="flex items-center gap-2 text-xs text-[#8f96a8] shrink-0 font-mono">
+                  <span>Total registrados: <strong className="text-white">{clientes.length}</strong></span>
                 </div>
               </div>
 
-              {/* Turnos List */}
-              {loadingTurnos ? (
-                <div className="text-center py-12 text-[#8e95a8] text-xs flex items-center justify-center gap-2">
-                  <RefreshCw className="w-4 h-4 animate-spin text-[#FF8C00]" />
-                  <span>Cargando agenda de llamadas...</span>
+              {loadingClientes ? (
+                <div className="py-16 text-center text-sm text-[#7e8596] flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#FF4500]" />
+                  <span>Cargando padrón de clientes...</span>
                 </div>
-              ) : filteredTurnos.length === 0 ? (
-                <div className="text-center py-12 bg-[#131620] border border-[#222736] rounded-lg p-6">
-                  <Calendar className="w-8 h-8 text-[#555e75] mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-white">No hay turnos con este filtro</p>
-                  <p className="text-xs text-[#8e95a8] mt-1">
-                    Cuando un usuario agende desde la web, aparecerá aquí inmediatamente.
-                  </p>
+              ) : filteredClientes.length === 0 ? (
+                <div className="py-14 text-center border border-dashed border-[#252b3d] rounded-xl text-xs text-[#7e8596]">
+                  No se encontraron clientes con el criterio de búsqueda.
                 </div>
               ) : (
-                <div className="space-y-2.5">
+                <div className="grid grid-cols-1 gap-3">
+                  {filteredClientes.map((cliente) => {
+                    const isMasterAdmin = ADMIN_EMAILS.includes(cliente.email.toLowerCase());
+
+                    return (
+                      <div
+                        key={cliente.id}
+                        className="bg-[#141722] border border-[#232838] hover:border-[#353c52] p-4 rounded-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
+                        {/* Client details */}
+                        <div className="space-y-1.5 flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-bold text-white text-sm">
+                              {cliente.name}
+                            </span>
+                            
+                            {/* Role Badge */}
+                            {cliente.role === 'admin' ? (
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full flex items-center gap-1">
+                                <Crown className="w-3 h-3 text-amber-400" />
+                                Administrador
+                              </span>
+                            ) : cliente.role === 'vip' ? (
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded-full flex items-center gap-1">
+                                <Crown className="w-3 h-3 text-purple-400" />
+                                Cliente VIP
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 text-[10px] font-medium bg-[#1d2130] text-[#a5abbd] border border-[#2e344a] rounded-full">
+                                Cliente Estándar
+                              </span>
+                            )}
+
+                            {/* Status Badge */}
+                            {cliente.status === 'activo' ? (
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-950/40 text-emerald-400 border border-emerald-800/40 rounded-full flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                Activo
+                              </span>
+                            ) : cliente.status === 'pendiente' ? (
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-950/40 text-amber-400 border border-amber-800/40 rounded-full flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                Pendiente
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-red-950/40 text-red-400 border border-red-800/40 rounded-full flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                                Bloqueado
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#8e95a7]">
+                            <div className="flex items-center gap-1.5">
+                              <Mail className="w-3.5 h-3.5 text-[#FF8C00]" />
+                              <span>{cliente.email}</span>
+                            </div>
+                            {cliente.phone && (
+                              <div className="flex items-center gap-1.5">
+                                <Phone className="w-3.5 h-3.5 text-[#25D366]" />
+                                <a 
+                                  href={`https://wa.me/${cliente.phone.replace(/[^0-9]/g, '')}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="hover:text-emerald-400 underline underline-offset-2"
+                                >
+                                  {cliente.phone}
+                                </a>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1 text-[11px] text-[#6d7486]">
+                              <Clock className="w-3 h-3" />
+                              <span>Reg: {new Date(cliente.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+
+                          {cliente.notasAdmin && (
+                            <p className="text-[11px] text-[#71788a] italic bg-[#0f121a] px-2.5 py-1 rounded border border-[#1e2332]">
+                              Nota admin: {cliente.notasAdmin}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Action controls for Administrator */}
+                        <div className="flex flex-wrap items-center gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-[#202535] shrink-0">
+                          
+                          {/* Role selector */}
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[10px] font-mono text-[#71788a]">Asignar Permiso/Rol:</span>
+                            <select
+                              value={cliente.role}
+                              disabled={isMasterAdmin}
+                              onChange={(e) => handleRoleChange(cliente.id, e.target.value as any)}
+                              className="bg-[#1b1f2d] border border-[#2c3246] text-white text-xs px-2.5 py-1.5 rounded-lg outline-none cursor-pointer disabled:opacity-50"
+                            >
+                              <option value="cliente">Cliente Estándar</option>
+                              <option value="vip">Cliente VIP</option>
+                              <option value="admin">Administrador</option>
+                            </select>
+                          </div>
+
+                          {/* Status selector */}
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[10px] font-mono text-[#71788a]">Estado Acceso:</span>
+                            <select
+                              value={cliente.status}
+                              disabled={isMasterAdmin}
+                              onChange={(e) => handleStatusClientChange(cliente.id, e.target.value as any)}
+                              className="bg-[#1b1f2d] border border-[#2c3246] text-white text-xs px-2.5 py-1.5 rounded-lg outline-none cursor-pointer disabled:opacity-50"
+                            >
+                              <option value="activo">Activo</option>
+                              <option value="pendiente">Pendiente</option>
+                              <option value="bloqueado">Bloqueado</option>
+                            </select>
+                          </div>
+
+                          {/* Delete button (Privilegio de borrar) */}
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[10px] font-mono text-[#71788a]">Acción:</span>
+                            <button
+                              type="button"
+                              disabled={isMasterAdmin}
+                              onClick={() => handleDeleteClient(cliente.id, cliente.email)}
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
+                                isMasterAdmin
+                                  ? 'bg-[#1b1f2d] text-[#555] cursor-not-allowed border border-[#252b3d]'
+                                  : 'bg-red-950/40 text-red-300 hover:bg-red-900/60 border border-red-800/40 hover:border-red-600 cursor-pointer'
+                              }`}
+                              title={isMasterAdmin ? "No se puede eliminar al administrador principal" : "Eliminar este cliente"}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Borrar</span>
+                            </button>
+                          </div>
+
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TAB 2: TURNOS Y LLAMADAS AGENDADAS                       */}
+          {/* ========================================================= */}
+          {activeTab === 'turnos' && (
+            <div className="space-y-4">
+              
+              {/* Filter row */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#141722] p-3.5 rounded-xl border border-[#202535]">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-[#73798c] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchTurno}
+                    onChange={(e) => setSearchTurno(e.target.value)}
+                    placeholder="Buscar por nombre, teléfono, motivo..."
+                    className="w-full bg-[#1b1f2d] border border-[#2a3044] focus:border-[#FF4500] text-white text-xs pl-9 pr-3 py-2 rounded-lg outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[#8f96a8]">Estado:</span>
+                  <select
+                    value={filtroEstado}
+                    onChange={(e) => setFiltroEstado(e.target.value)}
+                    className="bg-[#1b1f2d] border border-[#2c3246] text-white text-xs px-3 py-2 rounded-lg outline-none"
+                  >
+                    <option value="todos">Todos ({turnos.length})</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="contactado">Contactados</option>
+                    <option value="hecho">Completados</option>
+                  </select>
+                </div>
+              </div>
+
+              {loadingTurnos ? (
+                <div className="py-16 text-center text-sm text-[#7e8596] flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#FF4500]" />
+                  <span>Cargando turnos agendados...</span>
+                </div>
+              ) : filteredTurnos.length === 0 ? (
+                <div className="py-14 text-center border border-dashed border-[#252b3d] rounded-xl text-xs text-[#7e8596]">
+                  No hay llamadas agendadas en esta categoría.
+                </div>
+              ) : (
+                <div className="space-y-3">
                   {filteredTurnos.map((turno) => (
                     <div
                       key={turno.id}
-                      className="p-4 bg-[#141722] border border-[#232838] hover:border-[#2f364a] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
+                      className="bg-[#141722] border border-[#232838] p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#353c52] transition-colors"
                     >
-                      {/* Left: Date & Time */}
-                      <div className="flex items-start sm:items-center gap-3 min-w-[190px]">
-                        <div className="px-3 py-2 bg-[#1b1f2c] border border-[#2a3042] rounded-lg text-center shrink-0">
-                          <span className="text-[10px] font-mono uppercase text-[#FF8C00] block font-bold">
-                            {new Date(turno.fecha + 'T00:00:00').toLocaleDateString('es-AR', { weekday: 'short' }).toUpperCase()}
+                      <div className="space-y-1.5 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-bold text-white text-sm">{turno.nombre}</span>
+                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                            turno.estado === 'hecho' 
+                              ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40'
+                              : turno.estado === 'contactado'
+                              ? 'bg-blue-950/40 text-blue-400 border-blue-800/40'
+                              : 'bg-amber-950/40 text-amber-400 border-amber-800/40'
+                          }`}>
+                            {turno.estado.toUpperCase()}
                           </span>
-                          <span className="text-base font-bold text-white leading-none block">
-                            {new Date(turno.fecha + 'T00:00:00').getDate()}
-                          </span>
-                          <span className="text-[9px] text-[#8e95a8] block">
-                            {new Date(turno.fecha + 'T00:00:00').toLocaleDateString('es-AR', { month: 'short' })}
-                          </span>
+                          <span className="text-xs font-mono text-[#717788]">{turno.id}</span>
                         </div>
 
-                        <div>
-                          <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#8e95a7]">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-[#FF8C00]" />
+                            <span className="text-white font-medium">{turno.fecha}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5 text-[#FF8C00]" />
                             <span>{turno.franja}</span>
                           </div>
-                          <span className="text-[10px] text-[#8e95a8] font-mono">
-                            ID: {turno.id}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                            <a 
+                              href={`https://wa.me/${turno.telefono.replace(/[^0-9]/g, '')}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="hover:underline text-emerald-400 font-mono"
+                            >
+                              {turno.telefono}
+                            </a>
+                          </div>
                         </div>
+
+                        <p className="text-xs text-[#b8bfd1] pt-1">
+                          <strong>Motivo:</strong> {turno.motivo}
+                        </p>
                       </div>
 
-                      {/* Center: Client Info */}
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold text-white truncate">{turno.nombre}</h4>
-                          <span className="px-2 py-0.5 text-[10px] font-medium bg-[#1d2230] text-[#FF8C00] border border-[#FF8C00]/30 rounded">
-                            {turno.motivo}
-                          </span>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#a0a7bb]">
-                          <a
-                            href={`tel:${turno.telefono}`}
-                            className="flex items-center gap-1 hover:text-white transition-colors text-white font-medium"
-                          >
-                            <Phone className="w-3 h-3 text-[#FF8C00]" />
-                            <span>{turno.telefono}</span>
-                          </a>
-
-                          <a
-                            href={`mailto:${turno.email}`}
-                            className="flex items-center gap-1 hover:text-white transition-colors truncate"
-                          >
-                            <Mail className="w-3 h-3 text-sky-400" />
-                            <span>{turno.email}</span>
-                          </a>
-                        </div>
-
-                        {turno.notas && (
-                          <p className="text-xs text-[#828a9e] italic mt-1 bg-[#0f121a] p-1.5 rounded border border-[#1e2330]">
-                            "{turno.notas}"
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Right: Quick actions and Status select */}
-                      <div className="flex items-center gap-2.5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#202534]">
-                        {/* Direct WhatsApp button */}
-                        <a
-                          href={`https://wa.me/${turno.telefono.replace(/[^0-9]/g, '')}?text=Hola%20${encodeURIComponent(
-                            turno.nombre
-                          )}!%20Te%20escribimos%20de%20OndiGu%20por%20tu%20llamada%20agendada%20para%20el%20${turno.fecha}%20(${encodeURIComponent(
-                            turno.franja
-                          )}).`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Abrir WhatsApp directo con este cliente"
-                          className="p-2 text-white bg-[#25D366] hover:bg-[#1eb857] rounded-lg transition-colors flex items-center gap-1 text-xs font-semibold"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">WhatsApp</span>
-                        </a>
-
-                        {/* Status selector in-place */}
+                      {/* Controls */}
+                      <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#1e2332]">
                         <select
                           value={turno.estado}
-                          onChange={(e) =>
-                            handleStatusChange(turno.id, e.target.value as 'pendiente' | 'contactado' | 'hecho')
-                          }
-                          className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border outline-none cursor-pointer ${
-                            turno.estado === 'pendiente'
-                              ? 'bg-amber-950/40 text-[#FF8C00] border-amber-800/60'
-                              : turno.estado === 'contactado'
-                              ? 'bg-sky-950/40 text-sky-300 border-sky-800/60'
-                              : 'bg-emerald-950/40 text-emerald-300 border-emerald-800/60'
-                          }`}
+                          onChange={(e) => handleStatusChange(turno.id, e.target.value as any)}
+                          className="bg-[#1b1f2d] border border-[#2c3246] text-white text-xs px-3 py-1.5 rounded-lg outline-none"
                         >
-                          <option value="pendiente" className="bg-[#151821] text-amber-400">⏳ Pendiente</option>
-                          <option value="contactado" className="bg-[#151821] text-sky-400">📞 Contactado</option>
-                          <option value="hecho" className="bg-[#151821] text-emerald-400">✅ Hecho</option>
+                          <option value="pendiente">Marcar Pendiente</option>
+                          <option value="contactado">Marcar Contactado</option>
+                          <option value="hecho">Marcar Hecho</option>
                         </select>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTurno(turno.id)}
+                          className="p-2 text-red-400 hover:text-red-200 bg-red-950/30 hover:bg-red-900/50 border border-red-800/40 rounded-lg transition-colors cursor-pointer"
+                          title="Eliminar este turno"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -502,75 +747,87 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
             </div>
           )}
 
-          {/* TAB 2: PRESUPUESTOS Y LEADS */}
+          {/* ========================================================= */}
+          {/* TAB 3: PRESUPUESTOS Y LEADS                              */}
+          {/* ========================================================= */}
           {activeTab === 'presupuestos' && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-white">Solicitudes de Presupuesto Recibidas</h4>
-                  <p className="text-xs text-[#8e95a8]">
-                    Clientes que completaron el formulario "Pedí tu presupuesto".
-                  </p>
+              <div className="bg-[#141722] p-3.5 rounded-xl border border-[#202535]">
+                <div className="relative">
+                  <Search className="w-4 h-4 text-[#73798c] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchPresupuesto}
+                    onChange={(e) => setSearchPresupuesto(e.target.value)}
+                    placeholder="Buscar por cliente, rubro de negocio, WhatsApp..."
+                    className="w-full bg-[#1b1f2d] border border-[#2a3044] focus:border-[#FF4500] text-white text-xs pl-9 pr-3 py-2 rounded-lg outline-none"
+                  />
                 </div>
               </div>
 
               {loadingPresupuestos ? (
-                <div className="text-center py-12 text-xs text-[#8e95a8]">
-                  Cargando presupuestos...
+                <div className="py-16 text-center text-sm text-[#7e8596] flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#FF4500]" />
+                  <span>Cargando consultas de presupuesto...</span>
                 </div>
-              ) : presupuestos.length === 0 ? (
-                <div className="text-center py-12 bg-[#131620] border border-[#222736] rounded-lg p-6">
-                  <Mail className="w-8 h-8 text-[#555e75] mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-white">No hay solicitudes aún</p>
-                  <p className="text-xs text-[#8e95a8] mt-1">
-                    Cada vez que alguien complete el presupuesto se registrará aquí y en Supabase.
-                  </p>
+              ) : filteredPresupuestos.length === 0 ? (
+                <div className="py-14 text-center border border-dashed border-[#252b3d] rounded-xl text-xs text-[#7e8596]">
+                  No hay presupuestos registrados aún.
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {presupuestos.map((lead) => (
+                  {filteredPresupuestos.map((lead) => (
                     <div
                       key={lead.id}
-                      className="p-4 bg-[#141722] border border-[#232838] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      className="bg-[#141722] border border-[#232838] p-4 rounded-xl flex flex-col sm:flex-row sm:items-start justify-between gap-4"
                     >
-                      <div className="space-y-1">
+                      <div className="space-y-1.5 flex-1">
                         <div className="flex items-center gap-2">
-                          <h5 className="text-sm font-bold text-white">{lead.nombre}</h5>
-                          <span className="text-xs text-[#FF8C00] font-mono">[{lead.tipo_negocio}]</span>
+                          <span className="font-bold text-white text-sm">{lead.nombre}</span>
+                          <span className="px-2 py-0.5 text-[10px] font-mono bg-[#1c202d] text-[#FF8C00] border border-[#FF8C00]/30 rounded">
+                            {lead.tipo_negocio}
+                          </span>
+                          <span className="text-xs font-mono text-[#666]">{lead.id}</span>
                         </div>
-                        <div className="text-xs text-[#8e95a8] flex items-center gap-3">
+
+                        <div className="text-xs text-[#8e95a7] flex items-center gap-2">
                           <span>Contacto: <strong className="text-white">{lead.contacto}</strong></span>
-                          <span>Fecha: {new Date(lead.creado_en).toLocaleString('es-AR')}</span>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 mt-1">
+
+                        <div className="flex flex-wrap gap-1 py-1">
                           {lead.necesidades.map((n) => (
-                            <span
-                              key={n}
-                              className="px-2 py-0.5 text-[10px] bg-[#1d2230] text-[#c0c5d4] rounded"
-                            >
+                            <span key={n} className="px-2 py-0.5 bg-[#171b26] text-[10px] text-[#cbd1e0] rounded border border-[#272d3e]">
                               {n}
                             </span>
                           ))}
                         </div>
+
                         {lead.detalles && (
-                          <p className="text-xs text-[#9095a8] mt-1.5 bg-[#0f121a] p-2 rounded">
-                            "{lead.detalles}"
+                          <p className="text-xs text-[#b0b7c7] bg-[#0e1017] p-2.5 rounded border border-[#1c202d] leading-relaxed">
+                            {lead.detalles}
                           </p>
                         )}
                       </div>
 
-                      <div>
+                      <div className="shrink-0 flex items-center gap-2">
                         <a
-                          href={`https://wa.me/?text=Hola%20${encodeURIComponent(
-                            lead.nombre
-                          )}!%20Te%20escribimos%20de%20OndiGu%20sobre%20tu%20solicitud%20de%20presupuesto%20(${lead.id}).`}
+                          href={`https://wa.me/${lead.contacto.replace(/[^0-9]/g, '')}?text=Hola%20${encodeURIComponent(lead.nombre)},%20te%20contacto%20de%20OndiGu%20por%20tu%20consulta%20de%20presupuesto.`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-3 py-1.5 text-xs font-semibold text-white bg-[#25D366] hover:bg-[#1eb857] rounded-lg transition-colors inline-flex items-center gap-1.5"
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
                         >
                           <MessageCircle className="w-3.5 h-3.5" />
-                          <span>Contactar</span>
+                          <span>WhatsApp</span>
                         </a>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeletePresupuesto(lead.id)}
+                          className="p-2 text-red-400 hover:text-red-200 bg-red-950/30 hover:bg-red-900/50 border border-red-800/40 rounded-lg transition-colors cursor-pointer"
+                          title="Eliminar este presupuesto"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -579,232 +836,138 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({ isOpen, onClos
             </div>
           )}
 
-          {/* TAB 3: MERCADO PAGO Y STRIPE */}
-          {activeTab === 'pagos' && gatewayConfig && (
-            <form onSubmit={handleSavePayments} className="space-y-6 max-w-3xl">
-              <div className="p-4 bg-[#141722] border border-[#232838] rounded-lg">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-                  <CreditCard className="w-4 h-4 text-[#FF8C00]" />
-                  <span>Configuración de Pasarelas de Pago para Consultoría y Servicios</span>
-                </h4>
-                <p className="text-xs text-[#8e95a8]">
-                  Cargá tus credenciales de Mercado Pago y Stripe. Solo el administrador tiene acceso a editar estos valores.
-                </p>
-              </div>
+          {/* ========================================================= */}
+          {/* TAB 4: PASARELAS DE PAGO (MERCADO PAGO & STRIPE)          */}
+          {/* ========================================================= */}
+          {activeTab === 'pagos' && (
+            <div className="space-y-6 max-w-2xl mx-auto">
+              {gatewayConfig ? (
+                <form onSubmit={handleSavePayments} className="space-y-6">
+                  
+                  {/* Mercado Pago */}
+                  <div className="bg-[#141722] border border-[#232838] p-5 rounded-xl space-y-4">
+                    <div className="flex items-center gap-2.5 text-white font-bold text-sm">
+                      <div className="w-7 h-7 rounded bg-[#009ee3]/20 border border-[#009ee3]/40 flex items-center justify-center text-[#009ee3]">
+                        <CreditCard className="w-4 h-4" />
+                      </div>
+                      <span>Configuración Mercado Pago (Argentina / Latam)</span>
+                    </div>
 
-              {saveSuccess && (
-                <div className="p-3 bg-emerald-950/50 border border-emerald-800/60 rounded-lg flex items-center gap-2 text-xs text-emerald-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Configuración de pagos guardada correctamente en Supabase y cache local.</span>
-                </div>
+                    <div className="space-y-3 text-xs">
+                      <div>
+                        <label className="block text-[#a5abbd] mb-1">Public Key:</label>
+                        <input
+                          type="text"
+                          value={gatewayConfig.mercadopago_public_key}
+                          onChange={(e) => setGatewayConfig({ ...gatewayConfig, mercadopago_public_key: e.target.value })}
+                          placeholder="APP_USR-..."
+                          className="w-full bg-[#1b1f2d] border border-[#2a3044] text-white p-2 rounded-lg font-mono text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[#a5abbd] mb-1">Access Token:</label>
+                        <input
+                          type="password"
+                          value={gatewayConfig.mercadopago_access_token}
+                          onChange={(e) => setGatewayConfig({ ...gatewayConfig, mercadopago_access_token: e.target.value })}
+                          placeholder="APP_USR-..."
+                          className="w-full bg-[#1b1f2d] border border-[#2a3044] text-white p-2 rounded-lg font-mono text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[#a5abbd] mb-1">Link de Pago para Consultoría Express (ARS):</label>
+                        <input
+                          type="text"
+                          value={gatewayConfig.mercadopago_link_consultoria}
+                          onChange={(e) => setGatewayConfig({ ...gatewayConfig, mercadopago_link_consultoria: e.target.value })}
+                          placeholder="https://mpago.la/..."
+                          className="w-full bg-[#1b1f2d] border border-[#2a3044] text-white p-2 rounded-lg font-mono text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Precios */}
+                  <div className="bg-[#141722] border border-[#232838] p-5 rounded-xl space-y-4">
+                    <div className="flex items-center gap-2.5 text-white font-bold text-sm">
+                      <DollarSign className="w-4 h-4 text-[#FF8C00]" />
+                      <span>Aranceles de Consultoría Técnica Especial</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <label className="block text-[#a5abbd] mb-1">Precio en ARS ($):</label>
+                        <input
+                          type="number"
+                          value={gatewayConfig.precio_consultoria_ars}
+                          onChange={(e) => setGatewayConfig({ ...gatewayConfig, precio_consultoria_ars: Number(e.target.value) })}
+                          className="w-full bg-[#1b1f2d] border border-[#2a3044] text-white p-2 rounded-lg font-mono text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[#a5abbd] mb-1">Precio en USD (U$S):</label>
+                        <input
+                          type="number"
+                          value={gatewayConfig.precio_consultoria_usd}
+                          onChange={(e) => setGatewayConfig({ ...gatewayConfig, precio_consultoria_usd: Number(e.target.value) })}
+                          className="w-full bg-[#1b1f2d] border border-[#2a3044] text-white p-2 rounded-lg font-mono text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={savingConfig}
+                    className="w-full py-2.5 px-4 bg-[#FF4500] hover:bg-[#e03d00] text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                  >
+                    {savingConfig ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Guardando pasarelas...</span>
+                      </>
+                    ) : saveSuccess ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-300" />
+                        <span>¡Guardado con éxito!</span>
+                      </>
+                    ) : (
+                      <span>Guardar configuración de pagos</span>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                <div className="py-12 text-center text-xs text-[#888]">Cargando pasarelas...</div>
               )}
-
-              {/* Mercado Pago Section */}
-              <div className="p-5 bg-[#141722] border border-[#232838] rounded-lg space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-[#009ee3] flex items-center justify-center text-white font-bold text-[10px]">
-                      MP
-                    </div>
-                    <h5 className="text-sm font-bold text-white">Mercado Pago (Argentina)</h5>
-                  </div>
-                  <label className="flex items-center gap-2 text-xs text-[#a0a7bb] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={gatewayConfig.mercadopago_sandbox}
-                      onChange={(e) =>
-                        setGatewayConfig({ ...gatewayConfig, mercadopago_sandbox: e.target.checked })
-                      }
-                      className="rounded border-[#2f3548] text-[#FF4500]"
-                    />
-                    <span>Modo Sandbox (Pruebas)</span>
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs text-[#a0a7bb] mb-1">Public Key (Clave Pública)</label>
-                    <input
-                      type="text"
-                      value={gatewayConfig.mercadopago_public_key}
-                      onChange={(e) =>
-                        setGatewayConfig({ ...gatewayConfig, mercadopago_public_key: e.target.value })
-                      }
-                      placeholder="TEST-... o APP_USR-..."
-                      className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-[#a0a7bb] mb-1">Access Token (Token de Acceso)</label>
-                    <input
-                      type="password"
-                      value={gatewayConfig.mercadopago_access_token}
-                      onChange={(e) =>
-                        setGatewayConfig({ ...gatewayConfig, mercadopago_access_token: e.target.value })
-                      }
-                      placeholder="TEST-... o APP_USR-..."
-                      className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs text-[#a0a7bb] mb-1">
-                    Link de Cobro / Checkout para Consultoría Especial
-                  </label>
-                  <input
-                    type="url"
-                    value={gatewayConfig.mercadopago_link_consultoria}
-                    onChange={(e) =>
-                      setGatewayConfig({ ...gatewayConfig, mercadopago_link_consultoria: e.target.value })
-                    }
-                    placeholder="https://mpago.la/pos/tu-link-directo"
-                    className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                  />
-                  <span className="text-[10px] text-[#717990]">
-                    Podés generar un link de pago directo en tu panel de Mercado Pago y pegarlo aquí para cobrar la seña o consultoría al cliente.
-                  </span>
-                </div>
-              </div>
-
-              {/* Stripe Section */}
-              <div className="p-5 bg-[#141722] border border-[#232838] rounded-lg space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-[#635BFF] flex items-center justify-center text-white font-bold text-[10px]">
-                      S
-                    </div>
-                    <h5 className="text-sm font-bold text-white">Stripe (Cobros Internacionales USD)</h5>
-                  </div>
-                  <label className="flex items-center gap-2 text-xs text-[#a0a7bb] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={gatewayConfig.stripe_test_mode}
-                      onChange={(e) =>
-                        setGatewayConfig({ ...gatewayConfig, stripe_test_mode: e.target.checked })
-                      }
-                      className="rounded border-[#2f3548] text-[#FF4500]"
-                    />
-                    <span>Modo Test</span>
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs text-[#a0a7bb] mb-1">Publishable Key</label>
-                    <input
-                      type="text"
-                      value={gatewayConfig.stripe_publishable_key}
-                      onChange={(e) =>
-                        setGatewayConfig({ ...gatewayConfig, stripe_publishable_key: e.target.value })
-                      }
-                      placeholder="pk_test_... o pk_live_..."
-                      className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-[#a0a7bb] mb-1">Secret Key</label>
-                    <input
-                      type="password"
-                      value={gatewayConfig.stripe_secret_key}
-                      onChange={(e) =>
-                        setGatewayConfig({ ...gatewayConfig, stripe_secret_key: e.target.value })
-                      }
-                      placeholder="sk_test_... o sk_live_..."
-                      className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Precios de Consultoría */}
-              <div className="p-5 bg-[#141722] border border-[#232838] rounded-lg space-y-3">
-                <h5 className="text-sm font-bold text-white flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 text-[#FF8C00]" />
-                  <span>Valor de la Consultoría Estratégica 1 a 1</span>
-                </h5>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs text-[#a0a7bb] mb-1">Precio en Pesos Argentinos (ARS)</label>
-                    <input
-                      type="number"
-                      value={gatewayConfig.precio_consultoria_ars}
-                      onChange={(e) =>
-                        setGatewayConfig({
-                          ...gatewayConfig,
-                          precio_consultoria_ars: Number(e.target.value),
-                        })
-                      }
-                      className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-[#a0a7bb] mb-1">Precio en Dólares (USD)</label>
-                    <input
-                      type="number"
-                      value={gatewayConfig.precio_consultoria_usd}
-                      onChange={(e) =>
-                        setGatewayConfig({
-                          ...gatewayConfig,
-                          precio_consultoria_usd: Number(e.target.value),
-                        })
-                      }
-                      className="w-full bg-[#191c28] border border-[#2b3142] text-xs text-white px-3 py-2 rounded outline-none focus:border-[#FF4500]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={savingConfig}
-                  className="px-6 py-3 bg-[#FF4500] hover:bg-[#e03d00] text-white text-xs font-semibold rounded-lg shadow-md transition-colors cursor-pointer"
-                >
-                  {savingConfig ? 'Guardando configuración...' : 'Guardar Pasarelas de Pago'}
-                </button>
-              </div>
-            </form>
+            </div>
           )}
 
-          {/* TAB 4: SQL SCHEMA PARA SUPABASE */}
+          {/* ========================================================= */}
+          {/* TAB 5: SCRIPT SQL PARA SUPABASE                           */}
+          {/* ========================================================= */}
           {activeTab === 'sql' && (
-            <div className="space-y-4 max-w-4xl">
-              <div className="p-4 bg-[#141722] border border-[#232838] rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Database className="w-4 h-4 text-amber-400" />
-                    <span>Script SQL para crear las tablas en Supabase</span>
-                  </h4>
-                  <p className="text-xs text-[#8e95a8] mt-1">
-                    Copiá y pegá este código en el <strong>SQL Editor</strong> de tu proyecto en Supabase para habilitar las tablas <code>turnos</code>, <code>presupuestos_contactos</code> y <code>configuracion_pagos</code> con sus políticas RLS.
-                  </p>
+                  <h4 className="text-sm font-bold text-white">Tablas y Políticas de Seguridad Supabase</h4>
+                  <p className="text-xs text-[#888]">Copia este código y pégalo en el SQL Editor de tu proyecto Supabase.</p>
                 </div>
-
                 <button
                   type="button"
                   onClick={copySqlToClipboard}
-                  className="px-4 py-2 bg-[#FF4500] hover:bg-[#e03d00] text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  className="px-3.5 py-1.5 bg-[#FF4500] hover:bg-[#e03d00] text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  {copiedSql ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span>¡Copiado!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      <span>Copiar SQL</span>
-                    </>
-                  )}
+                  {copiedSql ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedSql ? '¡Copiado!' : 'Copiar SQL'}</span>
                 </button>
               </div>
 
-              <pre className="p-4 bg-[#0a0c10] border border-[#1e2330] rounded-lg text-xs font-mono text-[#a5abbd] overflow-x-auto leading-relaxed max-h-[420px]">
+              <pre className="bg-[#0b0c10] border border-[#1e2330] p-4 rounded-xl text-[11px] font-mono text-[#a5abbd] overflow-x-auto max-h-96 leading-relaxed">
                 {getSupabaseSqlSchema()}
               </pre>
             </div>
           )}
+
         </div>
       </div>
     </div>

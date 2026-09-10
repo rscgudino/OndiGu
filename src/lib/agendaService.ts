@@ -1,17 +1,42 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { TurnoLlamada, PresupuestoLead, PaymentGatewayConfig } from '../types';
+import { TurnoLlamada, PresupuestoLead, PaymentGatewayConfig, RegisteredClient } from '../types';
 
 const LOCAL_TURNOS_KEY = 'ondigu_turnos_db';
 const LOCAL_PRESUPUESTOS_KEY = 'ondigu_presupuestos_db';
 const LOCAL_GATEWAY_CONFIG_KEY = 'ondigu_payment_gateway_config';
+const LOCAL_CLIENTS_KEY = 'ondigu_registered_clients_db';
 
+// El administrador principal del sitio web OndiGu
 export const ADMIN_EMAILS = ['rscgudino@gmail.com'];
 
+/**
+ * Verifica de forma estricta si un usuario es el Administrador del Sitio.
+ * Un cliente recién registrado NUNCA es administrador a menos que el administrador le otorgue el rol 'admin'.
+ */
 export function isUserAdmin(email?: string): boolean {
   if (!email) return false;
-  const isMaster = ADMIN_EMAILS.some((adm) => adm.toLowerCase() === email.trim().toLowerCase());
-  const storedOverride = localStorage.getItem('ondigu_admin_unlocked') === 'true';
-  return isMaster || storedOverride;
+  const cleanEmail = email.trim().toLowerCase();
+  
+  // 1. Email maestro del administrador
+  if (ADMIN_EMAILS.some((adm) => adm.toLowerCase() === cleanEmail)) {
+    return true;
+  }
+
+  // 2. Verificar si en la base de clientes tiene rol 'admin' asignado explícitamente por el administrador
+  try {
+    const raw = localStorage.getItem(LOCAL_CLIENTS_KEY);
+    if (raw) {
+      const clients: RegisteredClient[] = JSON.parse(raw);
+      const found = clients.find((c) => c.email.trim().toLowerCase() === cleanEmail);
+      if (found && found.role === 'admin' && found.status === 'activo') {
+        return true;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return false;
 }
 
 export function setAdminUnlocked(unlocked: boolean) {
@@ -19,6 +44,244 @@ export function setAdminUnlocked(unlocked: boolean) {
     localStorage.setItem('ondigu_admin_unlocked', 'true');
   } else {
     localStorage.removeItem('ondigu_admin_unlocked');
+  }
+}
+
+// Clientes iniciales para demostración en el panel del Administrador
+function getInitialClients(): RegisteredClient[] {
+  return [
+    {
+      id: 'cli-001',
+      email: 'rscgudino@gmail.com',
+      name: 'RSC Gudiño (Administrador Web)',
+      phone: '+54 9 11 9988-7766',
+      role: 'admin',
+      status: 'activo',
+      createdAt: '2026-01-10T10:00:00Z',
+      notasAdmin: 'Super Administrador principal con acceso total a toda la plataforma.',
+    },
+    {
+      id: 'cli-002',
+      email: 'mariana.calzados@gmail.com',
+      name: 'Mariana Benítez',
+      phone: '+54 9 11 5544-2211',
+      role: 'vip',
+      status: 'activo',
+      createdAt: '2026-02-14T14:20:00Z',
+      notasAdmin: 'Comercio en Lanús Centro. Cliente recurrente de tienda online.',
+    },
+    {
+      id: 'cli-003',
+      email: 'gonzalo.estudio@outlook.com',
+      name: 'Gonzalo Arismendi',
+      phone: '+54 9 11 4433-8899',
+      role: 'cliente',
+      status: 'activo',
+      createdAt: '2026-03-01T11:45:00Z',
+      notasAdmin: 'Estudio Contable. Interesado en bots de WhatsApp e IA.',
+    },
+    {
+      id: 'cli-004',
+      email: 'diego.taller@gmail.com',
+      name: 'Diego Morales (Mecánica Lanús)',
+      phone: '+54 9 11 3322-1100',
+      role: 'cliente',
+      status: 'pendiente',
+      createdAt: '2026-03-05T09:15:00Z',
+      notasAdmin: 'Solicitó landing page express, pendiente confirmación.',
+    }
+  ];
+}
+
+/**
+ * Obtiene la lista de clientes registrados para el Administrador
+ */
+export async function listarClientesRegistrados(): Promise<RegisteredClient[]> {
+  // Sincronizar con Supabase si está configurado
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('clientes_perfiles')
+        .select('*')
+        .order('createdAt', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(data));
+        return data as RegisteredClient[];
+      }
+    } catch (e) {
+      console.warn('Error leyendo clientes de Supabase, usando almacenamiento local:', e);
+    }
+  }
+
+  try {
+    const raw = localStorage.getItem(LOCAL_CLIENTS_KEY);
+    if (!raw) {
+      const initial = getInitialClients();
+      localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(initial));
+      return initial;
+    }
+    return JSON.parse(raw);
+  } catch {
+    return getInitialClients();
+  }
+}
+
+/**
+ * Sincroniza un nuevo usuario o actualización de perfil al roster de clientes
+ */
+export function sincronizarClienteRegistrado(client: Partial<RegisteredClient> & { id: string; email: string; name: string }): void {
+  try {
+    const raw = localStorage.getItem(LOCAL_CLIENTS_KEY);
+    const clients: RegisteredClient[] = raw ? JSON.parse(raw) : getInitialClients();
+    
+    const existingIndex = clients.findIndex(
+      (c) => c.id === client.id || c.email.trim().toLowerCase() === client.email.trim().toLowerCase()
+    );
+
+    const isMaster = ADMIN_EMAILS.some((adm) => adm.toLowerCase() === client.email.trim().toLowerCase());
+
+    if (existingIndex !== -1) {
+      clients[existingIndex] = {
+        ...clients[existingIndex],
+        name: client.name || clients[existingIndex].name,
+        phone: client.phone || clients[existingIndex].phone,
+        role: isMaster ? 'admin' : (clients[existingIndex].role || 'cliente'),
+        status: clients[existingIndex].status || 'activo',
+      };
+    } else {
+      clients.unshift({
+        id: client.id,
+        email: client.email,
+        name: client.name,
+        phone: client.phone || '',
+        role: isMaster ? 'admin' : 'cliente',
+        status: 'activo',
+        createdAt: new Date().toISOString(),
+        notasAdmin: isMaster ? 'Super Administrador' : 'Nuevo cliente registrado desde la web',
+      });
+    }
+
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(clients));
+
+    // Si Supabase está disponible, guardar en tabla 'clientes_perfiles'
+    if (isSupabaseConfigured && supabase) {
+      const targetClient = existingIndex !== -1 ? clients[existingIndex] : clients[0];
+      supabase.from('clientes_perfiles').upsert([targetClient]).then();
+    }
+  } catch (err) {
+    console.warn('Error sincronizando cliente registrado:', err);
+  }
+}
+
+/**
+ * PRIVILEGIO DE ADMINISTRADOR: Cambiar rol de un cliente (cliente / vip / admin)
+ */
+export async function actualizarRolCliente(
+  id: string, 
+  nuevoRol: 'cliente' | 'vip' | 'admin'
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const raw = localStorage.getItem(LOCAL_CLIENTS_KEY);
+    const clients: RegisteredClient[] = raw ? JSON.parse(raw) : getInitialClients();
+    const updated = clients.map((c) => (c.id === id ? { ...c, role: nuevoRol } : c));
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('clientes_perfiles').update({ role: nuevoRol }).eq('id', id);
+    }
+
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Error al actualizar rol del cliente.' };
+  }
+}
+
+/**
+ * PRIVILEGIO DE ADMINISTRADOR: Cambiar estado de un cliente (activo / pendiente / bloqueado)
+ */
+export async function actualizarEstadoCliente(
+  id: string, 
+  nuevoEstado: 'activo' | 'pendiente' | 'bloqueado'
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const raw = localStorage.getItem(LOCAL_CLIENTS_KEY);
+    const clients: RegisteredClient[] = raw ? JSON.parse(raw) : getInitialClients();
+    const updated = clients.map((c) => (c.id === id ? { ...c, status: nuevoEstado } : c));
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('clientes_perfiles').update({ status: nuevoEstado }).eq('id', id);
+    }
+
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Error al actualizar estado del cliente.' };
+  }
+}
+
+/**
+ * PRIVILEGIO DE ADMINISTRADOR: Borrar cliente del sistema
+ */
+export async function eliminarCliente(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const raw = localStorage.getItem(LOCAL_CLIENTS_KEY);
+    const clients: RegisteredClient[] = raw ? JSON.parse(raw) : [];
+    
+    // No permitir borrar el admin principal
+    const toDelete = clients.find((c) => c.id === id);
+    if (toDelete && ADMIN_EMAILS.includes(toDelete.email.toLowerCase())) {
+      return { success: false, error: 'No se puede eliminar la cuenta del Administrador principal.' };
+    }
+
+    const filtered = clients.filter((c) => c.id !== id);
+    localStorage.setItem(LOCAL_CLIENTS_KEY, JSON.stringify(filtered));
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('clientes_perfiles').delete().eq('id', id);
+    }
+
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Error al eliminar cliente.' };
+  }
+}
+
+/**
+ * PRIVILEGIO DE ADMINISTRADOR: Borrar un turno de llamada
+ */
+export async function eliminarTurnoLlamada(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const current = getLocalTurnos();
+    const filtered = current.filter((t) => t.id !== id);
+    saveLocalTurnos(filtered);
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('turnos').delete().eq('id', id);
+    }
+
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Error al eliminar turno.' };
+  }
+}
+
+/**
+ * PRIVILEGIO DE ADMINISTRADOR: Borrar un presupuesto / lead
+ */
+export async function eliminarPresupuestoLead(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const current = getLocalPresupuestos();
+    const filtered = current.filter((p) => p.id !== id);
+    saveLocalPresupuestos(filtered);
+
+    if (isSupabaseConfigured && supabase) {
+      await supabase.from('presupuestos_contactos').delete().eq('id', id);
+    }
+
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || 'Error al eliminar presupuesto.' };
   }
 }
 
@@ -373,6 +636,18 @@ export function getSupabaseSqlSchema(): string {
 -- SCRIPT SQL PARA ONDIGU (Copiar y pegar en Supabase > SQL Editor)
 -- ==========================================================
 
+-- 0. Tabla de Clientes y Permisos de Usuarios
+CREATE TABLE IF NOT EXISTS public.clientes_perfiles (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  phone TEXT DEFAULT '',
+  role TEXT DEFAULT 'cliente' CHECK (role IN ('cliente', 'vip', 'admin')),
+  status TEXT DEFAULT 'activo' CHECK (status IN ('activo', 'pendiente', 'bloqueado')),
+  createdAt TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  notasAdmin TEXT DEFAULT ''
+);
+
 -- 1. Tabla de Turnos y Llamadas Agendadas
 CREATE TABLE IF NOT EXISTS public.turnos (
   id TEXT PRIMARY KEY,
@@ -417,9 +692,13 @@ CREATE TABLE IF NOT EXISTS public.configuracion_pagos (
 );
 
 -- Habilitar Políticas de Seguridad de Filas (Row Level Security)
+ALTER TABLE public.clientes_perfiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.turnos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.presupuestos_contactos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.configuracion_pagos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Permitir acceso a clientes_perfiles"
+ON public.clientes_perfiles FOR ALL TO public, anon, authenticated USING (true);
 
 -- Políticas para permitir inserción pública (los clientes pueden agendar sin trabas)
 CREATE POLICY "Permitir inserción de turnos a todos"
@@ -431,11 +710,17 @@ ON public.turnos FOR SELECT TO public, anon, authenticated USING (true);
 CREATE POLICY "Permitir actualizar turnos"
 ON public.turnos FOR UPDATE TO public, anon, authenticated USING (true);
 
+CREATE POLICY "Permitir borrar turnos al admin"
+ON public.turnos FOR DELETE TO public, anon, authenticated USING (true);
+
 CREATE POLICY "Permitir inserción de presupuestos a todos"
 ON public.presupuestos_contactos FOR INSERT TO public, anon, authenticated WITH CHECK (true);
 
 CREATE POLICY "Permitir lectura de presupuestos"
 ON public.presupuestos_contactos FOR SELECT TO public, anon, authenticated USING (true);
+
+CREATE POLICY "Permitir borrar presupuestos al admin"
+ON public.presupuestos_contactos FOR DELETE TO public, anon, authenticated USING (true);
 
 CREATE POLICY "Permitir acceso a configuracion_pagos"
 ON public.configuracion_pagos FOR ALL TO public, anon, authenticated USING (true);

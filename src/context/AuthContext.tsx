@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured, formatAuthError } from '../lib/supabase';
 import { UserProfile } from '../types';
+import { isUserAdmin, sincronizarClienteRegistrado } from '../lib/agendaService';
 
 interface SignUpParams {
   email: string;
@@ -62,13 +63,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: 'Este correo electrónico ya está registrado. Probá iniciar sesión.' };
     }
 
+    const adminStatus = isUserAdmin(email);
     const newUser: UserProfile = {
       id: 'usr_' + Date.now(),
       email: email.trim(),
       name: name.trim(),
       phone: phone ? phone.trim() : '',
       createdAt: new Date().toISOString(),
+      role: adminStatus ? 'admin' : 'cliente',
+      status: 'activo',
+      isAdmin: adminStatus,
     };
+
+    sincronizarClienteRegistrado({
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      phone: newUser.phone,
+      role: newUser.role,
+      status: 'activo'
+    });
 
     users.push({ ...newUser, password });
     localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(users));
@@ -86,27 +100,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user && mounted) {
-            setUser({
+            const userEmail = session.user.email || '';
+            const adminStatus = isUserAdmin(userEmail);
+            const profile: UserProfile = {
               id: session.user.id,
-              email: session.user.email || '',
+              email: userEmail,
               name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Cliente',
               phone: session.user.user_metadata?.phone || '',
               avatarUrl: session.user.user_metadata?.avatar_url,
               createdAt: session.user.created_at,
-            });
+              isAdmin: adminStatus,
+              role: adminStatus ? 'admin' : 'cliente',
+            };
+            setUser(profile);
+            sincronizarClienteRegistrado(profile);
           }
 
           const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (!mounted) return;
             if (session?.user) {
-              setUser({
+              const userEmail = session.user.email || '';
+              const adminStatus = isUserAdmin(userEmail);
+              const profile: UserProfile = {
                 id: session.user.id,
-                email: session.user.email || '',
+                email: userEmail,
                 name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Cliente',
                 phone: session.user.user_metadata?.phone || '',
                 avatarUrl: session.user.user_metadata?.avatar_url,
                 createdAt: session.user.created_at,
-              });
+                isAdmin: adminStatus,
+                role: adminStatus ? 'admin' : 'cliente',
+              };
+              setUser(profile);
+              sincronizarClienteRegistrado(profile);
             } else {
               setUser(null);
             }
@@ -127,7 +153,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (savedSession) {
             const parsed = JSON.parse(savedSession);
             if (parsed?.id && mounted) {
+              parsed.isAdmin = isUserAdmin(parsed.email);
               setUser(parsed);
+              sincronizarClienteRegistrado(parsed);
             }
           }
         } catch (e) {
@@ -220,14 +248,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         if (data.user) {
-          setUser({
+          const userEmail = data.user.email || email;
+          const adminStatus = isUserAdmin(userEmail);
+          const profile: UserProfile = {
             id: data.user.id,
-            email: data.user.email || email,
+            email: userEmail,
             name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || email.split('@')[0],
             phone: data.user.user_metadata?.phone || '',
             avatarUrl: data.user.user_metadata?.avatar_url,
             createdAt: data.user.created_at,
-          });
+            isAdmin: adminStatus,
+            role: adminStatus ? 'admin' : 'cliente',
+          };
+          setUser(profile);
+          sincronizarClienteRegistrado(profile);
         }
         return {};
       } catch (err: any) {
@@ -248,16 +282,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error: 'Email o contraseña incorrectos.' };
       }
 
+      const adminStatus = isUserAdmin(found.email);
       const profile: UserProfile = {
         id: found.id,
         email: found.email,
         name: found.name,
         phone: found.phone || '',
         createdAt: found.createdAt,
+        isAdmin: adminStatus,
+        role: adminStatus ? 'admin' : 'cliente',
       };
 
       localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(profile));
       setUser(profile);
+      sincronizarClienteRegistrado(profile);
       return {};
     } catch (e) {
       return { error: 'Error al iniciar sesión local.' };
@@ -284,16 +322,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Modo local: simular login Google
+    const dummyEmail = 'cliente.google@gmail.com';
+    const adminStatus = isUserAdmin(dummyEmail);
     const dummyGoogleUser: UserProfile = {
       id: 'usr_google_' + Date.now(),
-      email: 'cliente.google@gmail.com',
+      email: dummyEmail,
       name: 'Cliente Google',
       phone: '+54 9 11 4000-1122',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop',
       createdAt: new Date().toISOString(),
+      isAdmin: adminStatus,
+      role: adminStatus ? 'admin' : 'cliente',
     };
     localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(dummyGoogleUser));
     setUser(dummyGoogleUser);
+    sincronizarClienteRegistrado(dummyGoogleUser);
     return {};
   };
 

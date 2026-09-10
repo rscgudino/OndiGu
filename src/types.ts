@@ -81,7 +81,20 @@ export interface UserProfile {
   phone: string;
   avatarUrl?: string;
   createdAt?: string;
+  role?: 'cliente' | 'vip' | 'admin';
+  status?: 'activo' | 'pendiente' | 'bloqueado';
   isAdmin?: boolean;
+}
+
+export interface RegisteredClient {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: 'cliente' | 'vip' | 'admin';
+  status: 'activo' | 'pendiente' | 'bloqueado';
+  createdAt: string;
+  notasAdmin?: string;
 }
 
 export interface TurnoLlamada {

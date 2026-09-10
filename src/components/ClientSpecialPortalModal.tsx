@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { BrandLogo } from './BrandLogo';
 import { TurnoLlamada, PaymentGatewayConfig } from '../types';
-import { listarTurnosLlamadas, obtenerConfiguracionPagos } from '../lib/agendaService';
+import { listarTurnosLlamadas, obtenerConfiguracionPagos, isUserAdmin } from '../lib/agendaService';
 import { 
   X, 
   User, 
@@ -114,7 +114,7 @@ export const ClientSpecialPortalModal: React.FC<ClientSpecialPortalModalProps> =
                   {user.name || 'Cliente OndiGu'}
                 </h3>
                 <span className="px-2 py-0.5 text-[10px] font-bold bg-[#FF4500]/20 text-[#FF8C00] border border-[#FF4500]/40 rounded-full">
-                  Cliente Registrado
+                  {isUserAdmin(user.email) ? 'Administrador Web' : user.role === 'vip' ? 'Cliente VIP' : 'Cliente Registrado'}
                 </span>
               </div>
               <p className="text-xs text-[#8f96a8] truncate max-w-xs">{user.email}</p>
@@ -122,14 +122,15 @@ export const ClientSpecialPortalModal: React.FC<ClientSpecialPortalModalProps> =
           </div>
 
           <div className="flex items-center gap-2">
-            {user.isAdmin && onOpenAdminPanel && (
+            {isUserAdmin(user.email) && onOpenAdminPanel && (
               <button
                 type="button"
                 onClick={() => {
                   onClose();
                   onOpenAdminPanel();
                 }}
-                className="px-2.5 py-1 bg-[#FF4500] text-white text-xs font-bold rounded-lg hover:bg-[#e03d00] transition-colors"
+                className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-black text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                title="Ir al panel de gestión del administrador"
               >
                 Panel Admin
               </button>
