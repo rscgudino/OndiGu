@@ -7,31 +7,31 @@ export const Portfolio: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
 
   return (
-    <section id="portfolio" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#0c0e12] border-t border-[#1e222e]">
+    <section id="portfolio" className="py-14 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0c0e12] border-t border-[#1e222e]">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#202430]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-14 pb-5 border-b border-[#202430] gap-3">
           <div className="max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
               Casos reales y resultados medibles
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#999999] leading-relaxed">
+            <p className="mt-2.5 sm:mt-3 text-sm sm:text-base lg:text-lg text-[#999999] leading-relaxed">
               Soluciones construidas para resolver necesidades comerciales concretas, no para ganar premios de diseño decorativo.
             </p>
           </div>
-          <div className="mt-4 md:mt-0 text-xs sm:text-sm text-[#777777] font-mono">
+          <div className="text-xs sm:text-sm text-[#777777] font-mono shrink-0">
             4 Casos seleccionados
           </div>
         </div>
 
         {/* 4 Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
           {PORTFOLIO_PROJECTS.map((project) => (
             <div
               key={project.id}
-              className="bg-[#151821] border border-[#232734] hover:border-[#343a4e] transition-all flex flex-col justify-between group rounded-sm"
+              className="bg-[#151821] border border-[#232734] hover:border-[#343a4e] transition-all flex flex-col justify-between group rounded-xl overflow-hidden"
             >
               {/* Visual Placeholder Graphic with Technical UI Aesthetics */}
-              <div className="relative w-full h-56 sm:h-64 bg-[#1a1d27] overflow-hidden border-b border-[#232734] flex flex-col justify-between p-6">
+              <div className="relative w-full h-48 sm:h-60 bg-[#1a1d27] overflow-hidden border-b border-[#232734] flex flex-col justify-between p-4 sm:p-6">
                 {/* Visual mockup styling */}
                 <div className="flex items-center justify-between z-10">
                   <div className="flex items-center gap-1.5">
@@ -39,7 +39,7 @@ export const Portfolio: React.FC = () => {
                     <span className="w-2.5 h-2.5 rounded-full bg-[#2e3344]" />
                     <span className="w-2.5 h-2.5 rounded-full bg-[#2e3344]" />
                   </div>
-                  <span className="text-[11px] font-mono uppercase text-[#8b91a0] tracking-wider">
+                  <span className="text-[10px] sm:text-[11px] font-mono uppercase text-[#8b91a0] tracking-wider">
                     {project.category}
                   </span>
                 </div>
@@ -58,40 +58,40 @@ export const Portfolio: React.FC = () => {
                 </div>
 
                 <div className="z-10 mt-auto">
-                  <span className="inline-block px-2.5 py-1 text-xs font-mono font-medium text-white bg-[#0c0e12]/90 border border-[#2c3142] rounded">
+                  <span className="inline-block px-2.5 py-1 text-xs font-mono font-medium text-white bg-[#0c0e12]/90 border border-[#2c3142] rounded-md">
                     {project.imagePlaceholder.subtitle}
                   </span>
                 </div>
               </div>
 
               {/* Project Details */}
-              <div className="p-7 flex flex-col justify-between flex-grow">
+              <div className="p-5 sm:p-7 flex flex-col justify-between flex-grow">
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-2 tracking-tight group-hover:text-[#FF8C00] transition-colors">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 tracking-tight group-hover:text-[#FF8C00] transition-colors">
                     {project.title}
                   </h3>
 
                   {/* Requested exact line of result */}
-                  <div className="mb-4 py-2.5 px-3.5 bg-[#1c202a] border-l-2 border-[#FF4500]">
-                    <span className="block text-[11px] text-[#FF8C00] font-semibold uppercase tracking-wider mb-0.5">
+                  <div className="mb-4 py-2 px-3 sm:py-2.5 sm:px-3.5 bg-[#1c202a] border-l-2 border-[#FF4500] rounded-r">
+                    <span className="block text-[10px] sm:text-[11px] text-[#FF8C00] font-semibold uppercase tracking-wider mb-0.5">
                       Resultado
                     </span>
-                    <p className="text-sm font-medium text-white leading-normal">
+                    <p className="text-xs sm:text-sm font-medium text-white leading-normal">
                       {project.result}
                     </p>
                   </div>
 
-                  <p className="text-sm text-[#949494] leading-relaxed mb-6">
+                  <p className="text-xs sm:text-sm text-[#949494] leading-relaxed mb-5">
                     {project.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-[#202430] flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
+                <div className="pt-4 border-t border-[#202430] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[11px] font-mono text-[#a0a0a0] bg-[#1c202a] px-2 py-0.5 border border-[#282d3d] rounded"
+                        className="text-[10px] sm:text-[11px] font-mono text-[#a0a0a0] bg-[#1c202a] px-2 py-0.5 border border-[#282d3d] rounded"
                       >
                         {tag}
                       </span>
@@ -101,10 +101,10 @@ export const Portfolio: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setSelectedProject(project)}
-                    className="inline-flex items-center gap-1.5 text-xs text-[#e0e0e0] hover:text-white font-medium py-1 px-2.5 bg-[#1c202a] hover:bg-[#252936] border border-[#2c3142] rounded transition-colors"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-xs text-[#e0e0e0] hover:text-white font-medium py-2 px-3 sm:py-1 sm:px-2.5 bg-[#1c202a] hover:bg-[#252936] border border-[#2c3142] rounded-lg sm:rounded transition-colors cursor-pointer"
                   >
                     <span>Detalle</span>
-                    <ExternalLink className="w-3 h-3 text-[#FF4500]" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#FF4500]" />
                   </button>
                 </div>
               </div>
