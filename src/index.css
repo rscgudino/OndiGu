@@ -33,6 +33,38 @@ body {
   box-shadow: 0 0 20px -5px rgba(255, 140, 0, 0.15);
 }
 
+/* Revolver orbital continuous rotation */
+@keyframes revolverSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes revolverCounterSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-revolver-spin {
+  animation: revolverSpin 16s linear infinite;
+}
+
+.animate-revolver-counter {
+  animation: revolverCounterSpin 16s linear infinite;
+}
+
+.revolver-hover-pause:hover .animate-revolver-spin,
+.revolver-hover-pause:hover .animate-revolver-counter {
+  animation-play-state: paused;
+}
+
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,

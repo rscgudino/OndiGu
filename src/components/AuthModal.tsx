@@ -14,7 +14,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   initialView = 'login',
 }) => {
-  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const { signIn, signUp, signInWithGoogle, resetPassword, signUpLocalDemo } = useAuth();
 
   const [view, setView] = useState<'login' | 'register' | 'forgot'>(initialView);
   const [email, setEmail] = useState('');
@@ -23,6 +23,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [phone, setPhone] = useState('');
 
   const [error, setError] = useState<string | null>(null);
+  const [canDemo, setCanDemo] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,6 +32,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (isOpen) {
       setView(initialView);
       setError(null);
+      setCanDemo(false);
       setSuccessMessage(null);
     }
   }, [isOpen, initialView]);
@@ -39,6 +41,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const resetForm = () => {
     setError(null);
+    setCanDemo(false);
     setSuccessMessage(null);
   };
 
@@ -53,6 +56,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     if (res.error) {
       setError(res.error);
+      if (res.canFallbackToDemo) setCanDemo(true);
     } else {
       onClose();
     }
@@ -69,10 +73,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     if (res.error) {
       setError(res.error);
+      if (res.canFallbackToDemo) setCanDemo(true);
     } else if (res.requiresEmailConfirmation) {
       setSuccessMessage('Te enviamos un correo de confirmación. Por favor revisá tu bandeja de entrada o spam para activar tu cuenta.');
     } else {
       onClose();
+    }
+  };
+
+  const handleForceDemoSignup = async () => {
+    setIsSubmitting(true);
+    const res = await signUpLocalDemo({ email, password, name: name || 'Marcelo Rossi', phone });
+    setIsSubmitting(false);
+    if (!res.error) {
+      onClose();
+    } else {
+      setError(res.error);
     }
   };
 
@@ -140,9 +156,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-3 bg-red-950/40 border border-red-800/60 rounded-lg flex items-start gap-2.5 text-red-300 text-xs leading-relaxed">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-            <span>{error}</span>
+          <div className="mb-4 p-3.5 bg-red-950/40 border border-red-800/60 rounded-lg text-xs leading-relaxed space-y-2.5">
+            <div className="flex items-start gap-2.5 text-red-300">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+            {canDemo && (
+              <div className="pt-2 border-t border-red-900/40 flex flex-col gap-1.5">
+                <p className="text-[11px] text-[#b4b8c5]">
+                  ¿Querés continuar y probar tu cuenta ahora mismo sin esperar la conexión a Supabase?
+                </p>
+                <button
+                  type="button"
+                  onClick={handleForceDemoSignup}
+                  className="w-full py-2 px-3 bg-[#FF4500] hover:bg-[#FF5722] text-white font-semibold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                >
+                  <span>Probar y crear cuenta en modo local inmediato</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 

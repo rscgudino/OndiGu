@@ -18,29 +18,71 @@ interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
   isConfigured: boolean;
-  signUp: (params: SignUpParams) => Promise<{ error?: string; requiresEmailConfirmation?: boolean }>;
-  signIn: (params: SignInParams) => Promise<{ error?: string }>;
+  isLocalMode: boolean;
+  setLocalMode: (val: boolean) => void;
+  signUp: (params: SignUpParams) => Promise<{ error?: string; requiresEmailConfirmation?: boolean; canFallbackToDemo?: boolean }>;
+  signIn: (params: SignInParams) => Promise<{ error?: string; canFallbackToDemo?: boolean }>;
   signInWithGoogle: () => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (data: { name: string; phone: string }) => Promise<{ error?: string }>;
+  signUpLocalDemo: (params: SignUpParams) => Promise<{ error?: string }>;
 }
 
 const LOCAL_STORAGE_SESSION_KEY = 'ondigu_local_auth_session';
 const LOCAL_STORAGE_USERS_KEY = 'ondigu_local_auth_users';
+const LOCAL_STORAGE_FORCE_DEMO_KEY = 'ondigu_force_demo_mode';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLocalMode, setIsLocalMode] = useState<boolean>(() => {
+    return localStorage.getItem(LOCAL_STORAGE_FORCE_DEMO_KEY) === 'true';
+  });
+
+  const setLocalMode = (val: boolean) => {
+    setIsLocalMode(val);
+    if (val) {
+      localStorage.setItem(LOCAL_STORAGE_FORCE_DEMO_KEY, 'true');
+    } else {
+      localStorage.removeItem(LOCAL_STORAGE_FORCE_DEMO_KEY);
+    }
+  };
+
+  // Helper local signup
+  const registerLocalUser = (params: SignUpParams) => {
+    const { email, password, name, phone } = params;
+    const usersStr = localStorage.getItem(LOCAL_STORAGE_USERS_KEY) || '[]';
+    const users = JSON.parse(usersStr);
+
+    const existing = users.find((u: any) => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (existing) {
+      return { error: 'Este correo electrónico ya está registrado. Probá iniciar sesión.' };
+    }
+
+    const newUser: UserProfile = {
+      id: 'usr_' + Date.now(),
+      email: email.trim(),
+      name: name.trim(),
+      phone: phone ? phone.trim() : '',
+      createdAt: new Date().toISOString(),
+    };
+
+    users.push({ ...newUser, password });
+    localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(newUser));
+    setUser(newUser);
+    return {};
+  };
 
   // Initialize auth state
   useEffect(() => {
     let mounted = true;
 
     async function initAuth() {
-      if (isSupabaseConfigured && supabase) {
+      if (!isLocalMode && isSupabaseConfigured && supabase) {
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user && mounted) {
@@ -101,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [isLocalMode]);
 
   // 1. Registro
   const signUp = async ({ email, password, name, phone }: SignUpParams) => {
@@ -112,7 +154,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: 'La contraseña debe tener un mínimo de 6 caracteres.' };
     }
 
-    if (isSupabaseConfigured && supabase) {
+    if (!isLocalMode && isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -126,7 +168,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         if (error) {
-          return { error: formatAuthError(error) };
+          const formatted = formatAuthError(error);
+          return { error: formatted, canFallbackToDemo: true };
         }
 
         if (data.session?.user) {
@@ -140,40 +183,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return {};
         }
 
-        // Requiere confirmación por correo si Supabase tiene confirm emails activado
         return { requiresEmailConfirmation: true };
       } catch (err: any) {
-        return { error: formatAuthError(err) };
+        return { error: formatAuthError(err), canFallbackToDemo: true };
       }
     }
 
     // Modo local / preview
     try {
-      const usersStr = localStorage.getItem(LOCAL_STORAGE_USERS_KEY) || '[]';
-      const users = JSON.parse(usersStr);
-
-      const existing = users.find((u: any) => u.email.toLowerCase() === email.trim().toLowerCase());
-      if (existing) {
-        return { error: 'Este correo electrónico ya está registrado. Probá iniciar sesión.' };
-      }
-
-      const newUser: UserProfile = {
-        id: 'usr_' + Date.now(),
-        email: email.trim(),
-        name: name.trim(),
-        phone: phone ? phone.trim() : '',
-        createdAt: new Date().toISOString(),
-      };
-
-      users.push({ ...newUser, password });
-      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(users));
-      localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(newUser));
-      setUser(newUser);
-
-      return {};
+      return registerLocalUser({ email, password, name, phone });
     } catch (e) {
       return { error: 'Error guardando datos en almacenamiento local.' };
     }
+  };
+
+  const signUpLocalDemo = async (params: SignUpParams) => {
+    setLocalMode(true);
+    return registerLocalUser(params);
   };
 
   // 2. Login con email y contraseña

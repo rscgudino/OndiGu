@@ -1,7 +1,32 @@
 import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+function sanitizeSupabaseUrl(rawUrl?: string): string {
+  if (!rawUrl) return '';
+  let url = rawUrl.trim();
+
+  // Si el usuario copió la URL del panel de control de Supabase (ej: https://supabase.com/dashboard/project/abcdefgh...)
+  const dashboardMatch = url.match(/\/project\/([a-zA-Z0-9_-]+)/);
+  if (dashboardMatch && dashboardMatch[1]) {
+    return `https://${dashboardMatch[1]}.supabase.co`;
+  }
+
+  // Quitar barras finales y subrutas como /auth/v1 o /rest/v1
+  url = url.replace(/\/+$/, '');
+  url = url.replace(/\/(auth|rest)\/v\d+.*$/, '');
+
+  return url;
+}
+
+function sanitizeKey(rawKey?: string): string {
+  if (!rawKey) return '';
+  return rawKey.trim();
+}
+
+const rawUrl = import.meta.env.VITE_SUPABASE_URL;
+const rawAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const supabaseUrl = sanitizeSupabaseUrl(rawUrl);
+const supabaseAnonKey = sanitizeKey(rawAnonKey);
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
@@ -30,6 +55,9 @@ export function formatAuthError(error: any): string {
 
   const message = (typeof error === 'string' ? error : error.message || '').toLowerCase();
 
+  if (message.includes('invalid path') || message.includes('invalid url')) {
+    return 'La URL del proyecto Supabase es incorrecta o tiene una ruta no válida. Asegurate de usar el formato "https://<id-proyecto>.supabase.co" (se obtiene en Settings > API > Project URL), sin subcarpetas ni la URL del panel.';
+  }
   if (message.includes('invalid login credentials') || message.includes('invalid credentials')) {
     return 'Email o contraseña incorrectos.';
   }
@@ -51,8 +79,8 @@ export function formatAuthError(error: any): string {
   if (message.includes('invalid email') || message.includes('unable to validate email')) {
     return 'Por favor ingresá un formato de correo electrónico válido.';
   }
-  if (message.includes('network') || message.includes('fetch')) {
-    return 'Error de conexión. Verificá tu acceso a internet.';
+  if (message.includes('network') || message.includes('fetch') || message.includes('failed to fetch')) {
+    return 'Error de conexión con el servidor de autenticación. Verificá que la URL y clave anon de Supabase sean correctas.';
   }
 
   return error.message || 'No se pudo completar la operación. Por favor intentá nuevamente.';
