@@ -14,12 +14,16 @@ import { FloatingAssist } from './components/FloatingAssist';
 import { FloatingExpressAd } from './components/FloatingExpressAd';
 import { AuthModal } from './components/AuthModal';
 import { UserProfileModal } from './components/UserProfileModal';
+import { ClientSpecialPortalModal } from './components/ClientSpecialPortalModal';
+import { AdminPanelModal } from './components/AdminPanelModal';
 
 function MainApp() {
   const { user } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [clientPortalOpen, setClientPortalOpen] = useState(false);
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState<string | undefined>(undefined);
 
   const scrollToSection = (sectionId: string) => {
@@ -31,7 +35,7 @@ function MainApp() {
 
   const handleOpenAccountOrAuth = (view: 'login' | 'register' = 'login') => {
     if (user) {
-      setProfileModalOpen(true);
+      setClientPortalOpen(true);
     } else {
       setAuthView(view);
       setAuthModalOpen(true);
@@ -53,6 +57,8 @@ function MainApp() {
       {/* Top Navigation */}
       <Navbar
         onOpenPortal={() => handleOpenAccountOrAuth('login')}
+        onOpenClientMenu={() => setClientPortalOpen(true)}
+        onOpenAdminPanel={() => setAdminPanelOpen(true)}
         onNavigateContact={() => scrollToSection('contacto')}
       />
 
@@ -109,6 +115,23 @@ function MainApp() {
       <UserProfileModal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
+      />
+
+      {/* Menú Especial del Cliente Registrado: Consultoría & Servicios */}
+      <ClientSpecialPortalModal
+        isOpen={clientPortalOpen}
+        onClose={() => setClientPortalOpen(false)}
+        onOpenCallScheduler={(motivo) => {
+          if (motivo) setPreselectedService(motivo);
+          scrollToSection('contacto');
+        }}
+        onOpenAdminPanel={() => setAdminPanelOpen(true)}
+      />
+
+      {/* Panel de Control y Agenda del Administrador */}
+      <AdminPanelModal
+        isOpen={adminPanelOpen}
+        onClose={() => setAdminPanelOpen(false)}
       />
     </div>
   );

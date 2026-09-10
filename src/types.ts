@@ -81,4 +81,44 @@ export interface UserProfile {
   phone: string;
   avatarUrl?: string;
   createdAt?: string;
+  isAdmin?: boolean;
+}
+
+export interface TurnoLlamada {
+  id: string;
+  usuario_id?: string | null;
+  nombre: string;
+  telefono: string;
+  email: string;
+  fecha: string; // YYYY-MM-DD
+  franja: string; // 'Mañana (09:00 - 13:00)' | 'Tarde (13:00 - 18:00)' | 'Noche (18:00 - 21:00)'
+  motivo: string;
+  notas?: string;
+  estado: 'pendiente' | 'contactado' | 'hecho';
+  creado_en: string;
+}
+
+export interface PresupuestoLead {
+  id: string;
+  usuario_id?: string | null;
+  nombre: string;
+  tipo_negocio: string;
+  necesidades: string[];
+  contacto: string;
+  detalles: string;
+  estado: 'nuevo' | 'contactado' | 'en_propuesta' | 'cerrado';
+  creado_en: string;
+}
+
+export interface PaymentGatewayConfig {
+  mercadopago_public_key: string;
+  mercadopago_access_token: string;
+  mercadopago_sandbox: boolean;
+  mercadopago_link_consultoria: string;
+  stripe_publishable_key: string;
+  stripe_secret_key: string;
+  stripe_test_mode: boolean;
+  precio_consultoria_ars: number;
+  precio_consultoria_usd: number;
+  actualizado_en?: string;
 }

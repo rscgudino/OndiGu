@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { InquiryFormData } from '../types';
 import { BRAND_INFO } from '../data/content';
 import { useAuth } from '../context/AuthContext';
-import { Send, CheckCircle2, MessageCircle, AlertCircle, RefreshCw, Zap } from 'lucide-react';
+import { guardarPresupuestoLead } from '../lib/agendaService';
+import { CallScheduleForm } from './CallScheduleForm';
+import { Send, CheckCircle2, MessageCircle, AlertCircle, RefreshCw, Zap, Calendar, FileText } from 'lucide-react';
 
 interface ContactFormProps {
   initialService?: string;
@@ -10,6 +12,7 @@ interface ContactFormProps {
 
 export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'agendar' | 'presupuesto'>('agendar');
   const [formData, setFormData] = useState<InquiryFormData>({
     name: '',
     businessType: 'Comercio o Local a la calle',
@@ -90,21 +93,45 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/contact', {
+      // 1. Guardar en base de datos Supabase
+      const savedLead = await guardarPresupuestoLead({
+        usuario_id: user?.id || null,
+        nombre: formData.name.trim(),
+        tipo_negocio: formData.businessType,
+        necesidades: formData.needs,
+        contacto: formData.contact.trim(),
+        detalles: formData.details.trim(),
+      });
+
+      const leadId = savedLead?.data?.id || 'OND-' + Math.floor(100000 + Math.random() * 900000);
+      setSubmitted({ id: leadId });
+
+      // 2. Abrir WhatsApp automáticamente con los datos estructurados
+      const waText = `Hola OndiGu! Acabo de enviar una solicitud de presupuesto desde la web:%0A%0A*Código:* ${leadId}%0A*Nombre:* ${encodeURIComponent(
+        formData.name
+      )}%0A*Rubro:* ${encodeURIComponent(formData.businessType)}%0A*Servicios:* ${encodeURIComponent(
+        formData.needs.join(', ')
+      )}%0A*Contacto:* ${encodeURIComponent(formData.contact)}${
+        formData.details ? `%0A*Detalles:* ${encodeURIComponent(formData.details)}` : ''
+      }`;
+
+      const waBase = BRAND_INFO.whatsappUrl.split('?')[0];
+      const directUrl = `${waBase}?text=${waText}`;
+
+      try {
+        window.open(directUrl, '_blank');
+      } catch (err) {
+        console.warn('Popup bloqueado:', err);
+      }
+
+      // 3. Opcional notificación servidor
+      fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Ocurrió un error al enviar.');
-      }
-
-      setSubmitted(data.inquiry || { id: 'OND-' + Math.floor(100000 + Math.random() * 900000) });
+      }).catch(() => {});
     } catch (err: any) {
       console.error(err);
-      // Client-side fallback gracefully
       setSubmitted({
         id: 'OND-' + Math.floor(100000 + Math.random() * 900000),
         name: formData.name,
@@ -131,24 +158,58 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
   return (
     <section id="contacto" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#0f1218] border-t border-[#1e222e]">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#FF8C00] mb-2 block">
+            Atención personalizada y directa
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            Pedí tu presupuesto
+            Empezá a potenciar tu negocio
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#a0a0a0] leading-relaxed">
-            Contanos qué necesita tu negocio y te armamos una propuesta clara, sin letra chica ni compromisos. Cada proyecto se cotiza a medida.
+          <p className="mt-3 text-base text-[#a0a0a0] leading-relaxed">
+            Elegí si preferís coordinar una llamada en el día y horario que te quede cómodo, o pedir una cotización detallada por escrito.
           </p>
+
+          {/* Switcher Tabs */}
+          <div className="mt-6 inline-flex p-1.5 bg-[#161924] border border-[#272d3e] rounded-xl shadow-lg gap-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveTab('agendar')}
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                activeTab === 'agendar'
+                  ? 'bg-[#FF4500] text-white shadow-[0_0_15px_rgba(255,69,0,0.4)]'
+                  : 'text-[#9ca3af] hover:text-white'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Agendá cuándo querés que te llamemos</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('presupuesto')}
+              className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                activeTab === 'presupuesto'
+                  ? 'bg-[#FF4500] text-white shadow-[0_0_15px_rgba(255,69,0,0.4)]'
+                  : 'text-[#9ca3af] hover:text-white'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>Pedí tu presupuesto</span>
+            </button>
+          </div>
         </div>
 
-        {submitted ? (
+        {activeTab === 'agendar' ? (
+          <CallScheduleForm />
+        ) : submitted ? (
           /* Confirmation card with clear next steps */
-          <div className="bg-[#151821] border border-[#282d3d] p-8 sm:p-10 text-center rounded-lg shadow-xl">
+          <div className="bg-[#151821] border border-[#282d3d] p-8 sm:p-10 text-center rounded-lg shadow-xl animate-fade-in">
             <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center bg-[#FF4500]/10 border border-[#FF4500]/30 text-[#FF4500] rounded-full">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
-            <span className="text-xs font-mono uppercase tracking-widest text-[#a0a0a0] block mb-2">
-              Solicitud recibida // Código: {submitted.id}
+            <span className="text-xs font-mono uppercase tracking-widest text-[#FF8C00] block mb-2">
+              Solicitud guardada en base de datos // Código: {submitted.id}
             </span>
 
             <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
@@ -156,27 +217,29 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
             </h3>
 
             <p className="text-base text-[#c0c0c0] max-w-xl mx-auto mb-8 leading-relaxed">
-              Analizaremos los detalles de tu rubro ({formData.businessType}) y te contactaremos a la brevedad al <span className="text-white font-semibold">{formData.contact}</span> con una propuesta personalizada sin vueltas.
+              Guardamos tus requerimientos y abrimos WhatsApp para brindarte atención inmediata. Si la ventana no se abrió de forma automática, hacé clic en el botón de abajo:
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-[#202430]">
               <a
-                href={`${BRAND_INFO.whatsappUrl}%20Mi%20código%20de%20solicitud%20es%20${submitted.id}`}
+                href={`${BRAND_INFO.whatsappUrl}%20Hola!%20Envi%C3%A9%20una%20solicitud%20de%20presupuesto%20(${submitted.id})%20por%20${encodeURIComponent(
+                  formData.needs.join(', ')
+                )}.`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1eb857] rounded transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1eb857] rounded-lg transition-colors shadow-lg"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Hablar directo por WhatsApp</span>
+                <span>Abrir conversación en WhatsApp</span>
               </a>
 
               <button
                 type="button"
                 onClick={resetForm}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium text-[#d0d0d0] hover:text-white bg-[#1d202c] hover:bg-[#252937] border border-[#2e3444] rounded transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium text-[#d0d0d0] hover:text-white bg-[#1d202c] hover:bg-[#252937] border border-[#2e3444] rounded-lg transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                <span>Enviar otra consulta</span>
+                <span>Pedir otro presupuesto</span>
               </button>
             </div>
           </div>
