@@ -14,6 +14,35 @@ export const BRAND_INFO = {
   googleMapsUrl: 'https://maps.google.com/?q=Lanus,+Buenos+Aires,+Argentina',
 };
 
+export const PEDRO_GUDINO_INFO = {
+  name: 'Pedro Gudiño',
+  role: 'Diseñador Web & Consultor Tecnológico',
+  tagline: 'Diseño web con personalidad, cercanía y resultados medibles.',
+  posterUrl: '/assets/pedro-gudino.jpg',
+  videoUrl: '/assets/pedro-gudino.mp4',
+  bio: 'Detrás de OndiGu no vas a encontrar un call center ni un ejecutivo que te derive a otra persona. Estoy yo, Pedro Gudiño. Me apasiona diseñar sitios web rápidos, tiendas online y automatizaciones inteligentes para que los comercios y pymes crezcan de verdad.',
+  whatsappDirectUrl: 'https://wa.me/5491100000000?text=Hola%20Pedro!%20Vi%20tu%20video%20de%20presentaci%C3%B3n%20en%20OndiGu%20y%20quiero%20conversar%20sobre%20mi%20proyecto.',
+  location: 'Lanús, Buenos Aires (atención a todo el país)',
+  status: 'Disponible para nuevos desarrollos',
+  pillars: [
+    {
+      title: 'Trato directo de persona a persona',
+      desc: 'Hablás y coordinás cada detalle conmigo. Sin intermediarios ni teléfonos descompuestos.',
+      badge: 'Cero burocracia'
+    },
+    {
+      title: 'Claridad en español simple',
+      desc: 'Te explico cómo funciona cada herramienta y por qué conviene implementarla, sin palabras raras.',
+      badge: '100% Transparente'
+    },
+    {
+      title: 'Enfoque en ventas y tiempo libre',
+      desc: 'No hago páginas para ganar premios de arte: hago herramientas que generen clientes y te liberen horas.',
+      badge: 'Resultados reales'
+    }
+  ]
+};
+
 export const VALUE_DIFFERENTIATORS: ValueDiff[] = [
   {
     title: 'Rapidez de entrega',
@@ -174,27 +203,52 @@ export const QUICK_QUESTIONS: QuickQuestion[] = [
   {
     id: 'costo',
     question: '¿Cuánto cuesta un proyecto en OndiGu?',
-    answer: 'En OndiGu cada trabajo se cotiza por proyecto según lo que tu negocio necesita de verdad. No imponemos abonos ocultos ni paquetes inflados con cosas que no vas a usar. Una landing page inicial tiene un costo accesible para cualquier comercio o emprendedor, y si querés sumar tienda o automatizaciones, se presupuesta por etapas claras.'
+    answer: 'En OndiGu cada proyecto se cotiza a medida según lo que realmente necesita tu negocio: desde una Landing Express hasta una tienda con pasarelas de pago y automatizaciones con IA. No cobramos abonos sorpresa ni paquetes inflados. Te pasamos una cotización exacta sin vueltas.'
   },
   {
     id: 'tiempos',
     question: '¿Cuáles son los tiempos de entrega?',
-    answer: 'Con nuestra metodología en 3 partes, la primera versión (Landing Page) suele estar en línea y funcionando en 5 a 8 días hábiles. Las funcionalidades adicionales (catálogo, cuentas, pasarelas) se van sumando de forma continua sin frenar la actividad de tu negocio.'
+    answer: 'Nuestra metodología en 3 etapas permite que la Landing inicial esté en línea en 5 a 8 días hábiles (o en 24-48hs si contratás el plan Landing Express). Los módulos de e-commerce, catálogo interactivo y automatizaciones se van integrando de forma continua sin frenar las ventas de tu negocio.'
   },
   {
     id: 'ia',
-    question: '¿Cómo ayuda la IA a mi comercio o pyme?',
-    answer: 'La aplicamos en puntos prácticos: asistentes que responden a tus clientes cuando consultan por productos o precios (incluso de noche), categorización automática de consultas y conexión con tus planillas para no perder ventas por demorarte en contestar.'
+    question: '¿Cómo ayuda la Inteligencia Artificial a mi comercio o pyme?',
+    answer: 'La IA filtra y responde consultas frecuentes las 24 horas, incluso de noche y fines de semana. Atiende preguntas sobre precios, horarios, stock y envíos, y captura los pedidos para que te lleguen ordenados sin perder ventas por tardar en contestar.'
   },
   {
     id: 'tecnicismo',
-    question: '¿Tengo que saber de programación para administrarlo?',
-    answer: 'Para nada. Diseñamos todo pensando en el dueño del negocio: interfaces simples, explicaciones en español llano y te entregamos un instructivo para que puedas modificar precios, fotos o textos sin depender de nadie.'
+    question: '¿Tengo que saber de programación para administrar mi sitio?',
+    answer: 'Para nada. Construimos plataformas 100% autoadministrables con paneles simples en español. Te entregamos acceso total junto con un instructivo guiado para que puedas cambiar precios, subir fotos o pausar productos sin depender de nosotros para cada cambio.'
   },
   {
-    id: 'pasos',
-    question: '¿Cómo empezamos a trabajar?',
-    answer: 'Completás el formulario de presupuesto o nos mandás un mensaje por WhatsApp. Conversamos 15 minutos sobre lo que necesita tu negocio, te pasamos una propuesta concreta sin vueltas y, si estás de acuerdo, arrancamos la primera etapa.'
+    id: 'pagos',
+    question: '¿Qué formas y pasarelas de pago pueden integrar?',
+    answer: 'Integramos Mercado Pago, transferencias bancarias directas con confirmación por comprobante, tarjetas de crédito/débito, Modo, Stripe y cripto si tu negocio vende al exterior. El dinero va directo a tu cuenta bancaria sin retenciones de intermediarios.'
+  },
+  {
+    id: 'ecommerce',
+    question: '¿Hacen tiendas online (E-commerce) con catálogo y cobros?',
+    answer: 'Sí, creamos tiendas ultrarrápidas pensadas para vender desde el celular: catálogo autoadministrable, fotos nítidas, carrito ágil en 1 paso, cálculo de costo de envío automático y sincronización de stock para no vender productos que no tengas.'
+  },
+  {
+    id: 'whatsapp-redes',
+    question: '¿Puedo conectar la web directo con mi WhatsApp y redes?',
+    answer: 'Totalmente. Todos nuestros desarrollos incluyen botón directo a tu WhatsApp con mensajes pre-armados según el producto o servicio que mire el cliente. Además vinculamos tu catálogo con Instagram Shopping, Facebook y Google Maps.'
+  },
+  {
+    id: 'infraestructura',
+    question: '¿Cómo es el servicio de mantenimiento y servidores?',
+    answer: 'Nos encargamos de que tu página esté siempre activa, segura contra fallos y con tiempos de carga óptimos de 1 segundo. Incluye servidores en la nube de alta velocidad con 99.9% de actividad garantizada, certificado de seguridad SSL gratis y copias de seguridad continuas.'
+  },
+  {
+    id: 'cobertura',
+    question: '¿Trabajan solo en Lanús y Buenos Aires o en todo el país?',
+    answer: 'Nuestra base técnica está en Lanús, Buenos Aires, pero desarrollamos proyectos para comercios, distribuidoras y profesionales de toda Argentina y Latinoamérica de forma 100% remota con comunicación fluida por videollamada y WhatsApp.'
+  },
+  {
+    id: 'quien-atiende',
+    question: '¿Con quién hablo durante el proyecto y quién lo diseña?',
+    answer: 'Trabajás y hablás directamente con Pedro Gudiño, diseñador web y creador de OndiGu. Cero intermediarios, sin burocracia ni ejecutivos de cuenta. Cada ajuste, idea o reunión la coordinás de persona a persona con Pedro.'
   }
 ];
 
