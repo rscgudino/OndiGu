@@ -472,9 +472,9 @@ export const Hero: React.FC<HeroProps> = ({
           flex
           items-center
 
-          pt-40
-          sm:pt-44
-          lg:pt-40
+          pt-52
+          sm:pt-56
+          lg:pt-52
 
           pb-28
         "
