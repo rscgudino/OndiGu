@@ -885,7 +885,7 @@ export const Hero: React.FC<HeroProps> = ({
               {' '}y{' '}
 
               <span className="text-white font-medium">
-                E-commerce
+                Tecnología
               </span>
               .
             </p>

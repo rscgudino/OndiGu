@@ -1,6 +1,4 @@
-
-
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Zap, ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -8,20 +6,25 @@ interface FloatingExpressAdProps {
   onSelectExpress: () => void;
 }
 
-export default function FloatingExpressAd({
+export function FloatingExpressAd({
   onSelectExpress,
 }: FloatingExpressAdProps) {
-  const [position, setPosition] = useState({ x: 40, y: 180 });
-  const [velocity, setVelocity] = useState({ x: 0.45, y: 0.35 });
+  // Posición inicial discreta
+  const [position, setPosition] = useState({ x: 20, y: 180 });
+  const [velocity, setVelocity] = useState({ x: 0.35, y: 0.3 });
   const [isHovered, setIsHovered] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 640;
+    }
+    return false;
+  });
 
   const bubbleRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef(position);
   const velocityRef = useRef(velocity);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | null>(null);
 
-  // Mantener las referencias sincronizadas
   useEffect(() => {
     positionRef.current = position;
   }, [position]);
@@ -31,7 +34,7 @@ export default function FloatingExpressAd({
   }, [velocity]);
 
   // ============================================================
-  // MOVIMIENTO FLOTANTE
+  // MOVIMIENTO FLOTANTE SUAVE Y CONTROLADO
   // ============================================================
   useEffect(() => {
     const animate = () => {
@@ -55,33 +58,25 @@ export default function FloatingExpressAd({
         x += vx;
         y += vy;
 
-        // Rebote horizontal
-        if (x <= 8) {
-          x = 8;
-          vx = Math.abs(vx);
-        }
-
         if (x >= maxX) {
           x = maxX;
           vx = -Math.abs(vx);
-        }
-
-        // Rebote vertical
-        if (y <= 8) {
-          y = 8;
-          vy = Math.abs(vy);
+        } else if (x <= 12) {
+          x = 12;
+          vx = Math.abs(vx);
         }
 
         if (y >= maxY) {
           y = maxY;
           vy = -Math.abs(vy);
+        } else if (y <= 75) {
+          y = 75;
+          vy = Math.abs(vy);
         }
 
         positionRef.current = { x, y };
         velocityRef.current = { x: vx, y: vy };
-
         setPosition({ x, y });
-        setVelocity({ x: vx, y: vy });
       }
 
       animationRef.current = requestAnimationFrame(animate);
@@ -97,68 +92,51 @@ export default function FloatingExpressAd({
   }, [isHovered]);
 
   // ============================================================
-  // MINIMIZADA
+  // ESTADO MINIMIZADO: BOTÓN FLOTANTE COMPACTO Y ELEGANTE
   // ============================================================
   if (isMinimized) {
     return (
       <motion.button
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{
-          scale: [1, 1.05, 1],
-          opacity: 1,
-        }}
-        transition={{
-          scale: {
-            duration: 1.4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          },
-          opacity: {
-            duration: 0.25,
-          },
-        }}
-        whileHover={{
-          scale: 1.1,
-        }}
-        whileTap={{
-          scale: 0.94,
-        }}
-        onClick={onSelectExpress}
+        type="button"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        onClick={() => setIsMinimized(false)}
         className="
           fixed z-[9999]
-          w-12 h-12
-          sm:w-14 sm:h-14
+          w-9 h-9 sm:w-11 sm:h-11
           rounded-full
           overflow-hidden
           bg-white/[0.04]
           backdrop-blur-[3px]
-          border border-orange-300/45
-          shadow-[0_0_22px_rgba(249,115,22,0.28)]
+          border border-orange-400/40
+          shadow-[0_0_15px_rgba(249,115,22,0.25)]
           flex items-center justify-center
           cursor-pointer
+          transition-transform active:scale-95
         "
         style={{
           left: position.x,
           top: position.y,
         }}
-        aria-label="Abrir Express"
+        aria-label="Abrir promo Landing Express"
       >
         <div
           className="
             absolute inset-0
             rounded-full
-            bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.18),transparent_60%)]
+            bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.25),transparent_60%)]
             pointer-events-none
           "
         />
 
         <Zap
-          size={20}
+          size={16}
           className="
             relative z-10
             text-orange-300
             fill-orange-300
-            drop-shadow-[0_0_7px_rgba(249,115,22,0.6)]
+            drop-shadow-[0_0_5px_rgba(249,115,22,0.6)]
           "
         />
       </motion.button>
@@ -166,15 +144,15 @@ export default function FloatingExpressAd({
   }
 
   // ============================================================
-  // BURBUJA PRINCIPAL
+  // BURBUJA PRINCIPAL (COMPACTA, CRISTAL TRANSLÚCIDO)
   // ============================================================
   return (
     <div
       ref={bubbleRef}
       className="
         fixed z-[9999]
-        w-[135px] h-[135px]
-        sm:w-[150px] sm:h-[150px]
+        w-[86px] h-[86px]
+        sm:w-[108px] sm:h-[108px]
         rounded-full
         cursor-pointer
         select-none
@@ -187,180 +165,120 @@ export default function FloatingExpressAd({
       onMouseLeave={() => setIsHovered(false)}
       onClick={onSelectExpress}
     >
-      {/* ======================================================
-          CAPA DE LATIDO
-          TODO EL CÍRCULO PULSA
-          ====================================================== */}
+      {/* CAPA DE LATIDO / PULSO DISCRETO */}
       <motion.div
-        className="
-          absolute inset-0
-          rounded-full
-        "
+        className="absolute inset-0 rounded-full"
         animate={{
-          scale: [1, 1.035, 1.065, 1.025, 1],
+          scale: [1, 1.025, 1.05, 1.015, 1],
         }}
         transition={{
-          duration: 1.35,
+          duration: 1.5,
           repeat: Infinity,
           ease: "easeInOut",
           times: [0, 0.22, 0.38, 0.55, 1],
         }}
       >
-        {/* ====================================================
-            HALO EXTERIOR
-            ==================================================== */}
+        {/* Halo exterior suave */}
         <div
           className="
             absolute
-            -inset-3
+            -inset-2
             rounded-full
-            bg-orange-500/[0.07]
-            blur-xl
+            bg-orange-500/[0.06]
+            blur-lg
             pointer-events-none
           "
         />
 
-        {/* Halo pulsante */}
+        {/* Halo pulsante fino */}
         <motion.div
           className="
             absolute
-            -inset-1
+            -inset-0.5
             rounded-full
-            border border-orange-400/20
+            border border-orange-400/25
             pointer-events-none
           "
           animate={{
-            opacity: [0.35, 0.65, 0.35],
+            opacity: [0.3, 0.6, 0.3],
           }}
           transition={{
-            duration: 1.35,
+            duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut",
           }}
         />
 
-        {/* ====================================================
-            BURBUJA GLASS
-            ==================================================== */}
+        {/* Cristal transparente */}
         <div
           className="
             absolute inset-0
             rounded-full
             overflow-hidden
-            bg-white/[0.025]
+            bg-black/40 sm:bg-white/[0.025]
             backdrop-blur-[2px]
-            border border-orange-300/40
-            shadow-[0_0_25px_rgba(249,115,22,0.20)]
+            border border-orange-400/40
+            shadow-[0_0_18px_rgba(249,115,22,0.18)]
           "
         >
-          {/* Cristal transparente */}
+          {/* Luz radial interior */}
           <div
             className="
               absolute inset-0
               rounded-full
-              bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.10),transparent_58%)]
+              bg-[radial-gradient(circle_at_50%_30%,rgba(249,115,22,0.12),transparent_55%)]
               pointer-events-none
             "
           />
 
-          {/* Reflejo de cristal */}
+          {/* Reflejo superior */}
           <div
             className="
               absolute
-              top-[-18%]
-              left-[18%]
-              w-[64%]
-              h-[42%]
+              top-[-15%]
+              left-[20%]
+              w-[60%]
+              h-[35%]
               rounded-full
-              bg-white/[0.075]
-              blur-xl
-              pointer-events-none
-            "
-          />
-
-          {/* Brillo lateral */}
-          <div
-            className="
-              absolute
-              -right-[20%]
-              top-[25%]
-              w-[45%]
-              h-[45%]
-              rounded-full
-              bg-orange-400/[0.055]
-              blur-xl
-              pointer-events-none
-            "
-          />
-
-          {/* Anillo interior */}
-          <div
-            className="
-              absolute
-              inset-[6px]
-              rounded-full
-              border border-white/[0.10]
-              pointer-events-none
-            "
-          />
-
-          {/* Punto de luz */}
-          <div
-            className="
-              absolute
-              top-[18%]
-              left-[24%]
-              w-2 h-2
-              rounded-full
-              bg-white/30
-              blur-[1px]
+              bg-white/[0.06]
+              blur-md
               pointer-events-none
             "
           />
         </div>
 
         {/* ====================================================
-            CONTENIDO
+            CONTENIDO CENTRAL (PROPORCIÓN REFINADA)
             ==================================================== */}
         <div
           className="
-            absolute inset-0
-            z-10
-            flex flex-col
-            items-center
-            justify-center
+            relative z-20
+            w-full h-full
+            rounded-full
+            flex flex-col items-center justify-center
             text-center
-            px-3
+            px-2
           "
         >
-          {/* Rayo */}
+          {/* Rayo con animación de pulso */}
           <motion.div
-            className="
-              w-8 h-8
-              sm:w-9 sm:h-9
-              rounded-full
-              bg-orange-500/[0.25]
-              backdrop-blur-sm
-              border border-orange-300/35
-              flex items-center justify-center
-              shadow-[0_0_15px_rgba(249,115,22,0.25)]
-              mb-1
-            "
+            className="mb-0.5"
             animate={{
-              opacity: [0.75, 1, 0.75],
+              scale: [1, 1.1, 1],
+              opacity: [0.8, 1, 0.8],
             }}
             transition={{
-              duration: 1.35,
+              duration: 1.5,
               repeat: Infinity,
               ease: "easeInOut",
             }}
           >
             <Zap
-              size={17}
+              size={13}
               className="
                 text-orange-300
                 fill-orange-300
-                drop-shadow-[0_0_6px_rgba(249,115,22,0.65)]
+                drop-shadow-[0_0_5px_rgba(249,115,22,0.6)]
               "
             />
           </motion.div>
@@ -368,25 +286,26 @@ export default function FloatingExpressAd({
           {/* EXPRESS */}
           <span
             className="
-              text-[7px]
-              sm:text-[8px]
+              text-[6.5px]
+              sm:text-[7.5px]
               uppercase
-              tracking-[0.22em]
-              text-orange-300/85
+              tracking-[0.18em]
+              text-orange-300/90
               font-bold
+              leading-none
             "
           >
             EXPRESS
           </span>
 
-          {/* Landing */}
-          <div className="mt-0.5">
+          {/* Texto Landing 24hs */}
+          <div className="mt-0.5 leading-none">
             <div
               className="
-                text-[11px]
-                sm:text-[12px]
+                text-[9px]
+                sm:text-[11px]
                 font-semibold
-                text-white/85
+                text-white/90
                 leading-tight
               "
             >
@@ -395,12 +314,12 @@ export default function FloatingExpressAd({
 
             <div
               className="
-                text-[16px]
-                sm:text-[18px]
+                text-[13px]
+                sm:text-[15px]
                 font-black
                 text-orange-300
                 leading-tight
-                drop-shadow-[0_0_7px_rgba(249,115,22,0.45)]
+                drop-shadow-[0_0_6px_rgba(249,115,22,0.45)]
               "
             >
               24hs
@@ -408,10 +327,9 @@ export default function FloatingExpressAd({
           </div>
         </div>
 
-        {/* ====================================================
-            BOTÓN ARROW
-            ==================================================== */}
+        {/* Botón flecha pequeño */}
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onSelectExpress();
@@ -419,32 +337,27 @@ export default function FloatingExpressAd({
           className="
             absolute
             z-30
-            bottom-[10px]
-            right-[10px]
-            w-6 h-6
-            sm:w-7 sm:h-7
+            bottom-[6px]
+            right-[6px]
+            w-5 h-5
+            sm:w-6 sm:h-6
             rounded-full
             bg-orange-500/35
             backdrop-blur-md
             border border-orange-200/35
             hover:bg-orange-400/60
-            hover:border-orange-200/60
             flex items-center justify-center
             transition-all duration-200
-            shadow-[0_0_12px_rgba(249,115,22,0.25)]
+            shadow-[0_0_8px_rgba(249,115,22,0.25)]
           "
           aria-label="Ver Express"
         >
-          <ArrowRight
-            size={12}
-            className="text-white"
-          />
+          <ArrowRight size={10} className="text-white" />
         </button>
 
-        {/* ====================================================
-            BOTÓN X
-            ==================================================== */}
+        {/* Botón Cerrar / Minimizar */}
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             setIsMinimized(true);
@@ -452,53 +365,44 @@ export default function FloatingExpressAd({
           className="
             absolute
             z-30
-            top-[9px]
-            right-[9px]
-            w-5 h-5
+            top-[5px]
+            right-[5px]
+            w-4 h-4
+            sm:w-5 sm:h-5
             rounded-full
-            bg-black/[0.12]
+            bg-black/30
             backdrop-blur-md
-            hover:bg-black/30
-            border border-white/[0.15]
+            hover:bg-black/60
+            border border-white/20
             flex items-center justify-center
             transition-all
           "
-          aria-label="Minimizar"
+          aria-label="Minimizar burbuja"
         >
-          <X
-            size={10}
-            className="text-white/60"
-          />
+          <X size={8} className="text-white/70" />
         </button>
       </motion.div>
 
-      {/* ======================================================
-          TEXTO AL PASAR EL MOUSE
-          ====================================================== */}
+      {/* Tooltip al pasar el mouse en desktop */}
       {isHovered && (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 4,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
           className="
+            hidden sm:block
             absolute
             z-[100]
-            -bottom-8
+            -bottom-7
             left-1/2
             -translate-x-1/2
             whitespace-nowrap
-            px-2.5 py-1
+            px-2.5 py-0.5
             rounded-full
-            bg-black/35
+            bg-black/80
             backdrop-blur-md
-            border border-orange-400/20
+            border border-orange-400/30
             text-[9px]
-            text-white/75
+            text-white/90
             pointer-events-none
           "
         >
@@ -509,22 +413,4 @@ export default function FloatingExpressAd({
   );
 }
 
-
-### Qué cambié
-
-* **135 px en móvil / 150 px en escritorio** → más pequeña.
-* Fondo prácticamente transparente: `bg-white/[0.025]`.
-* `backdrop-blur-[2px]` → permite distinguir lo que está detrás.
-* Borde naranja muy sutil.
-* Halo muy suave, sin convertirla en una mancha naranja.
-* **El círculo completo pulsa**, no solamente el rayo.
-* El pulso tiene un movimiento tipo **latido: pequeño → grande → pequeño**.
-* El movimiento flotante y el latido están separados para evitar que se interfieran.
-* Al minimizarla también conserva el pequeño pulso.
-* Mantiene el rebote por toda la pantalla.
-* Conserva `EXPRESS`, `Tu Landing`, `24hs`, flecha y `X`.
-
-**Importante:** después de reemplazar el archivo, haz el `git add`, `commit` y `push` para que Vercel reciba esta versión.
-
-
-
+export default FloatingExpressAd;

@@ -17,7 +17,8 @@ import {
   Zap,
   Bot,
   Globe,
-  DollarSign
+  DollarSign,
+  Server
 } from 'lucide-react';
 
 interface ClientSpecialPortalModalProps {
@@ -237,7 +238,7 @@ export const ClientSpecialPortalModal: React.FC<ClientSpecialPortalModalProps> =
                   </div>
                   <div className="flex items-center gap-2 p-2 bg-[#12151f] rounded border border-[#212636]">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#FF8C00] shrink-0" />
-                    <span>Integración de cobros con Mercado Pago y Stripe</span>
+                    <span>Plan de automatización de procesos y avisos directos</span>
                   </div>
                   <div className="flex items-center gap-2 p-2 bg-[#12151f] rounded border border-[#212636]">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#FF8C00] shrink-0" />
@@ -333,17 +334,17 @@ export const ClientSpecialPortalModal: React.FC<ClientSpecialPortalModalProps> =
 
                 <div className="p-4 bg-[#141722] border border-[#242938] rounded-lg">
                   <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-1.5">
-                    <Globe className="w-4 h-4" />
-                    <span>Tiendas Online E-Commerce</span>
+                    <Zap className="w-4 h-4" />
+                    <span>Automatización de Tareas</span>
                   </div>
                   <p className="text-xs text-[#a0a6b8] mb-3">
-                    Catálogo con checkout nativo, Mercado Pago y cálculo de envíos.
+                    Conexión de formularios y planillas con avisos directos a tu WhatsApp.
                   </p>
                   <button
                     type="button"
                     onClick={() => {
                       onClose();
-                      onOpenCallScheduler('Tienda Online (E-commerce)');
+                      onOpenCallScheduler('Automatización & Procesos');
                     }}
                     className="text-xs font-semibold text-emerald-400 hover:text-white inline-flex items-center gap-1"
                   >
@@ -354,17 +355,17 @@ export const ClientSpecialPortalModal: React.FC<ClientSpecialPortalModalProps> =
 
                 <div className="p-4 bg-[#141722] border border-[#242938] rounded-lg">
                   <div className="flex items-center gap-2 text-purple-400 font-bold text-xs mb-1.5">
-                    <CreditCard className="w-4 h-4" />
-                    <span>Integraciones Mercado Pago & Stripe</span>
+                    <Server className="w-4 h-4" />
+                    <span>Infraestructura & Servidores</span>
                   </div>
                   <p className="text-xs text-[#a0a6b8] mb-3">
-                    Automatización de cobros, suscripciones y liquidaciones para tu sistema.
+                    Servidores en la nube, certificados SSL y copias de seguridad automáticas.
                   </p>
                   <button
                     type="button"
                     onClick={() => {
                       onClose();
-                      onOpenCallScheduler('Integraciones de Pago');
+                      onOpenCallScheduler('Tecnología e Infraestructura');
                     }}
                     className="text-xs font-semibold text-purple-400 hover:text-white inline-flex items-center gap-1"
                   >

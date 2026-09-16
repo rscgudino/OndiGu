@@ -59,10 +59,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
   const availableNeeds = [
     'Landing Page Express 24hs',
     'Desarrollo Web',
-    'Tienda Online (E-commerce)',
     'Asistente Inteligente con IA',
-    'Automatización de Mensajes y Pedidos',
-    'Integraciones con WhatsApp o Pagos',
+    'Automatización de Mensajes y Procesos',
     'Modernización de web existente',
   ];
 

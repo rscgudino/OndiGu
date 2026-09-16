@@ -6,7 +6,7 @@ export const BRAND_INFO = {
   signature: 'OndiGu. La señal de Gudiño.',
   valueProp: 'Todo en uno. Simple. Personalizado. Sin vueltas.',
   centralMessage: 'OndiGu conecta negocios con tecnología inteligente.',
-  positioning: 'Desarrollo Web + IA + Automatización + E-commerce + Integraciones + Tecnología',
+  positioning: 'Desarrollo Web + IA + Automatización + Tecnología',
   whatsappUrl: 'https://wa.me/5491100000000?text=Hola%20OndiGu!%20Quiero%20hacer%20una%20consulta%20sobre%20mi%20negocio.',
   telegramUrl: 'https://t.me/OndiGuTecnologia',
   location: 'Lanús, Buenos Aires, Argentina',
@@ -20,7 +20,7 @@ export const PEDRO_GUDINO_INFO = {
   tagline: 'Diseño web con personalidad, cercanía y resultados medibles.',
   posterUrl: '/assets/pedro-gudino.jpg',
   videoUrl: '/assets/pedro-gudino.mp4',
-  bio: 'Detrás de OndiGu no vas a encontrar un call center ni un ejecutivo que te derive a otra persona. Estoy yo, Pedro Gudiño. Me apasiona diseñar sitios web rápidos, tiendas online y automatizaciones inteligentes para que los comercios y pymes crezcan de verdad.',
+  bio: 'Detrás de OndiGu no vas a encontrar un call center ni un ejecutivo que te derive a otra persona. Estoy yo, Pedro Gudiño. Me apasiona diseñar sitios web rápidos y automatizaciones inteligentes para que los comercios y pymes crezcan de verdad.',
   whatsappDirectUrl: 'https://wa.me/5491100000000?text=Hola%20Pedro!%20Vi%20tu%20video%20de%20presentaci%C3%B3n%20en%20OndiGu%20y%20quiero%20conversar%20sobre%20mi%20proyecto.',
   location: 'Lanús, Buenos Aires (atención a todo el país)',
   status: 'Disponible para nuevos desarrollos',
@@ -56,7 +56,7 @@ export const VALUE_DIFFERENTIATORS: ValueDiff[] = [
   },
   {
     title: 'Todo en un solo proveedor',
-    description: 'Diseño, código, servidores, pasarelas de pago, integraciones y soporte en un único equipo. No tenés que lidiar con tres personas distintas.',
+    description: 'Diseño, código, servidores y soporte en un único equipo. No tenés que lidiar con tres personas distintas.',
     highlight: 'Cero intermediarios'
   },
   {
@@ -90,22 +90,6 @@ export const SERVICES_LIST: ServiceItem[] = [
     resolution: 'Conecta tus formularios, mensajes y planillas para que los pedidos y datos se guarden al instante sin tipeo manual.',
     iconName: 'Zap',
     realWorldExample: 'Cuando un cliente pide presupuesto, se genera una ficha y te llega aviso al celular.'
-  },
-  {
-    id: 'ecommerce',
-    title: 'E-commerce',
-    shortDesc: 'Tiendas online directas, claras y fáciles de usar.',
-    resolution: 'Tus clientes eligen productos, eligen el envío y pagan en pocos clics sin trabas que hagan caer la venta.',
-    iconName: 'ShoppingBag',
-    realWorldExample: 'Catálogo con fotos nítidas, stock sincronizado y cobro por medios locales.'
-  },
-  {
-    id: 'integraciones',
-    title: 'Integraciones',
-    shortDesc: 'Conexión entre las herramientas que ya usás a diario.',
-    resolution: 'Unimos tu web con WhatsApp, Mercado Pago, Google Sheets o tu sistema de facturación para que todo trabaje en equipo.',
-    iconName: 'Workflow',
-    realWorldExample: 'Sincronización automática de stock y notificaciones de compra a tu WhatsApp.'
   },
   {
     id: 'infraestructura',
@@ -174,14 +158,14 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
   {
     id: 'aura-deco',
     title: 'Aura Home & Deco',
-    category: 'E-commerce + Gestión de Stock',
-    result: 'Aumentó 140% las ventas directas fuera del local físico en su primer trimestre.',
-    description: 'Comercio minorista de diseño y decoración que dependía únicamente del salón de ventas. Ahora cuenta con tienda online de carga ultrarrápida, pagos integrados y cálculo de envíos en tiempo real.',
-    tags: ['E-commerce', 'Medios de Pago', 'Control de Stock'],
+    category: 'Catálogo Web + WhatsApp Directo',
+    result: 'Aumentó 140% las consultas directas fuera del local físico en su primer trimestre.',
+    description: 'Comercio minorista de diseño y decoración que dependía únicamente del salón de ventas. Ahora cuenta con un catálogo digital interactivo de carga ultrarrápida y botón de consulta directa.',
+    tags: ['Catálogo Digital', 'Alta Velocidad', 'WhatsApp Directo'],
     imagePlaceholder: {
       ratio: '16:10',
       dominantColor: '#0a0a0a',
-      subtitle: 'Tienda Digital de Alta Conversión'
+      subtitle: 'Catálogo Web de Alta Conversión'
     }
   },
   {
@@ -203,12 +187,12 @@ export const QUICK_QUESTIONS: QuickQuestion[] = [
   {
     id: 'costo',
     question: '¿Cuánto cuesta un proyecto en OndiGu?',
-    answer: 'En OndiGu cada proyecto se cotiza a medida según lo que realmente necesita tu negocio: desde una Landing Express hasta una tienda con pasarelas de pago y automatizaciones con IA. No cobramos abonos sorpresa ni paquetes inflados. Te pasamos una cotización exacta sin vueltas.'
+    answer: 'En OndiGu cada proyecto se cotiza a medida según lo que realmente necesita tu negocio: desde una Landing Express hasta desarrollos a medida y automatizaciones con IA. No cobramos abonos sorpresa ni paquetes inflados. Te pasamos una cotización exacta sin vueltas.'
   },
   {
     id: 'tiempos',
     question: '¿Cuáles son los tiempos de entrega?',
-    answer: 'Nuestra metodología en 3 etapas permite que la Landing inicial esté en línea en 5 a 8 días hábiles (o en 24-48hs si contratás el plan Landing Express). Los módulos de e-commerce, catálogo interactivo y automatizaciones se van integrando de forma continua sin frenar las ventas de tu negocio.'
+    answer: 'Nuestra metodología en 3 etapas permite que la Landing inicial esté en línea en 5 a 8 días hábiles (o en 24-48hs si contratás el plan Landing Express). Los módulos y automatizaciones se van integrando de forma continua sin frenar la actividad de tu negocio.'
   },
   {
     id: 'ia',
@@ -222,13 +206,8 @@ export const QUICK_QUESTIONS: QuickQuestion[] = [
   },
   {
     id: 'pagos',
-    question: '¿Qué formas y pasarelas de pago pueden integrar?',
-    answer: 'Integramos Mercado Pago, transferencias bancarias directas con confirmación por comprobante, tarjetas de crédito/débito, Modo, Stripe y cripto si tu negocio vende al exterior. El dinero va directo a tu cuenta bancaria sin retenciones de intermediarios.'
-  },
-  {
-    id: 'ecommerce',
-    question: '¿Hacen tiendas online (E-commerce) con catálogo y cobros?',
-    answer: 'Sí, creamos tiendas ultrarrápidas pensadas para vender desde el celular: catálogo autoadministrable, fotos nítidas, carrito ágil en 1 paso, cálculo de costo de envío automático y sincronización de stock para no vender productos que no tengas.'
+    question: '¿Qué medios de pago aceptan para contratar?',
+    answer: 'Aceptamos transferencias bancarias, tarjetas de crédito/débito y Mercado Pago. Emitimos factura por todos los desarrollos.'
   },
   {
     id: 'whatsapp-redes',
@@ -296,8 +275,8 @@ export const TESTIMONIALS_LIST: TestimonialItem[] = [
     location: 'Lanús Centro, Buenos Aires',
     avatarInitials: 'LR',
     rating: 5,
-    serviceTag: 'E-commerce & Pasarelas de Pago',
-    comment: 'Excelente experiencia. Nos armaron la tienda online con cobro por Mercado Pago en tiempo récord. No nos cobraron de más ni nos complicaron con cosas técnicas. Se nota que entienden la realidad de un comercio de barrio.',
+    serviceTag: 'Catálogo Digital & WhatsApp Directo',
+    comment: 'Excelente experiencia. Nos armaron el catálogo web con contacto directo en tiempo récord. No nos cobraron de más ni nos complicaron con cosas técnicas. Se nota que entienden la realidad de un comercio de barrio.',
     verifiedSource: 'Google Reviews Verificado',
     timeAgo: 'Hace 1 mes'
   },
@@ -308,7 +287,7 @@ export const TESTIMONIALS_LIST: TestimonialItem[] = [
     location: 'Gerli / Lanús, Buenos Aires',
     avatarInitials: 'EC',
     rating: 5,
-    serviceTag: 'Landing Express & Integraciones',
+    serviceTag: 'Landing Express & Automatización',
     comment: 'La atención personalizada de OndiGu marca la diferencia. Hicimos la landing en menos de un día y automatizamos las listas de precios en PDF para los clientes. Eficiencia pura, 100% recomendados en zona sur.',
     verifiedSource: 'Google Reviews Verificado',
     timeAgo: 'Hace 2 meses'

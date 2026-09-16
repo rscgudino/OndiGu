@@ -93,9 +93,9 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
   const motivosDisponibles = [
     'Sitio Web Nuevo',
     'Automatización & IA',
-    'Tienda Online (E-commerce)',
     'Consultoría Especial 1 a 1',
     'Modernización / Rediseño',
+    'Tecnología e Infraestructura',
     'Otro motivo',
   ];
 
