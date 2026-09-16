@@ -15,7 +15,7 @@ export const HeroBrandAnimation: React.FC = () => {
       <svg
         viewBox="0 0 600 240"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+        xmlns=""
         className="w-full h-full overflow-visible"
         aria-hidden="true"
       >
