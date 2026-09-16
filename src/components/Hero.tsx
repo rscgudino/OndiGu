@@ -1,4 +1,5 @@
 
+
 import React, { useRef } from 'react';
 import {
   motion,
@@ -31,10 +32,6 @@ export const Hero: React.FC<HeroProps> = ({
     restDelta: 0.001,
   });
 
-  // ============================================================
-  // VIDEO
-  // ============================================================
-
   const videoY = useTransform(
     smoothProgress,
     [0, 1],
@@ -46,10 +43,6 @@ export const Hero: React.FC<HeroProps> = ({
     [0, 1],
     [1, 1.035]
   );
-
-  // ============================================================
-  // TEXTO PRINCIPAL
-  // ============================================================
 
   const contentY = useTransform(
     smoothProgress,
@@ -63,19 +56,11 @@ export const Hero: React.FC<HeroProps> = ({
     [1, 0.95, 0.3]
   );
 
-  // ============================================================
-  // MARCA
-  // ============================================================
-
   const brandY = useTransform(
     smoothProgress,
     [0, 1],
     [0, -35]
   );
-
-  // ============================================================
-  // BADGE
-  // ============================================================
 
   const badgeY = useTransform(
     smoothProgress,
@@ -96,9 +81,9 @@ export const Hero: React.FC<HeroProps> = ({
       "
     >
 
-      {/* ========================================================
-          VIDEO DE FONDO
-      ======================================================== */}
+      {/* =====================================================
+          VIDEO BACKGROUND
+          ===================================================== */}
 
       <div
         className="
@@ -109,41 +94,43 @@ export const Hero: React.FC<HeroProps> = ({
           bg-black
         "
       >
-
         <motion.video
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-
           style={{
             y: videoY,
             scale: videoScale,
           }}
-
           className="
             absolute
             inset-0
-
             w-full
             h-full
 
             object-cover
 
-            object-[82%_center]
-            sm:object-[78%_center]
+            /* CELULARES */
+            object-[68%_center]
+
+            /* TELÉFONOS GRANDES */
+            sm:object-[72%_center]
+
+            /* TABLETS */
             md:object-[75%_center]
+
+            /* NOTEBOOK */
             lg:object-[72%_center]
+
+            /* DESKTOP */
             xl:object-[70%_center]
 
             grayscale
-
             contrast-[1.02]
-
             brightness-100
           "
-
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
         >
           <source
@@ -153,88 +140,66 @@ export const Hero: React.FC<HeroProps> = ({
 
           Tu navegador no soporta la reproducción de video.
         </motion.video>
-
       </div>
 
 
-      {/* ========================================================
-          OSCURECIMIENTO GENERAL
-      ======================================================== */}
+      {/* =====================================================
+          MOBILE DARK OVERLAY
+          ===================================================== */}
 
       <div
         className="
           absolute
           inset-0
           z-[1]
-
-          bg-black/10
-
           pointer-events-none
+
+          bg-black/25
+
+          sm:bg-black/15
+          lg:bg-black/10
         "
       />
 
 
-      {/* ========================================================
-          DEGRADADO IZQUIERDO
-          PROTEGE EL TEXTO PRINCIPAL
-      ======================================================== */}
+      {/* =====================================================
+          LEFT GRADIENT
+          ===================================================== */}
 
       <div
         className="
           absolute
           inset-y-0
           left-0
-
           z-[2]
 
           w-full
+
           lg:w-[60%]
 
           pointer-events-none
 
           bg-gradient-to-r
 
-          from-black/85
-
-          via-black/50
-
-          via-[40%]
-
+          from-black/90
+          via-black/60
+          via-[55%]
           to-transparent
+
+          sm:from-black/85
+          sm:via-black/50
+
+          lg:from-black/85
+          lg:via-black/50
+          lg:via-[40%]
+          lg:to-transparent
         "
       />
 
 
-      {/* ========================================================
-          GRADIENTE SUPERIOR
-      ======================================================== */}
-
-      <div
-        className="
-          absolute
-          top-0
-          left-0
-          right-0
-
-          h-28
-          sm:h-32
-
-          z-[2]
-
-          pointer-events-none
-
-          bg-gradient-to-b
-
-          from-black/55
-
-          to-transparent
-        "
-      />
-
-
-      {/* ========================================================
-          GRADIENTE INFERIOR
-      ======================================================== */}
+      {/* =====================================================
+          MOBILE BOTTOM GRADIENT
+          ===================================================== */}
 
       <div
         className="
@@ -243,60 +208,87 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-32
-          sm:h-36
+          h-[55%]
 
           z-[2]
 
           pointer-events-none
 
           bg-gradient-to-t
-
-          from-black/75
-
+          from-black/95
+          via-black/55
           to-transparent
+
+          sm:h-[45%]
+
+          lg:h-32
+          lg:bg-gradient-to-t
+          lg:from-black/75
+          lg:via-transparent
         "
       />
 
 
-      {/* ========================================================
-          ========================================================
-          MARCA — ARRIBA A LA DERECHA
-          ========================================================
-      ======================================================== */}
+      {/* =====================================================
+          TOP GRADIENT
+          ===================================================== */}
+
+      <div
+        className="
+          absolute
+          top-0
+          left-0
+          right-0
+
+          h-32
+
+          z-[2]
+
+          pointer-events-none
+
+          bg-gradient-to-b
+          from-black/65
+          to-transparent
+
+          sm:h-28
+
+          lg:h-28
+          lg:from-black/55
+        "
+      />
+
+
+      {/* =====================================================
+          BRAND
+          ===================================================== */}
 
       <motion.div
-        style={{
-          y: brandY,
-        }}
-
+        style={{ y: brandY }}
         initial={{
           opacity: 0,
           x: 40,
         }}
-
         animate={{
           opacity: 1,
           x: 0,
         }}
-
         transition={{
           duration: 0.9,
           ease: [0.16, 1, 0.3, 1],
         }}
-
         className="
           absolute
-
           z-20
 
-          top-24
-          sm:top-28
+          top-16
+
+          sm:top-20
           md:top-24
           lg:top-28
 
-          right-2
-          sm:right-4
+          right-3
+
+          sm:right-5
           md:right-6
           lg:right-8
           xl:right-12
@@ -305,48 +297,58 @@ export const Hero: React.FC<HeroProps> = ({
 
           flex
           flex-col
-
           items-center
-
           text-center
         "
       >
 
-        {/* ====================================================
-            G
-        ==================================================== */}
+        {/* G */}
 
-       <div
+        <div
           className="
-            scale-[0.68]
-            sm:scale-90
-            md:scale-100
+            scale-[0.48]
+
+            xs:scale-[0.55]
+
+            sm:scale-[0.72]
+
+            md:scale-90
+
+            lg:scale-100
 
             origin-center
 
-           -mb-2
-           sm:-mb-1
+            -mb-5
 
-           translate-x-2
-           sm:translate-x-3
-           md:translate-x-4
-         "
-     >
-      <HeroBrandAnimation />
-    </div>
+            sm:-mb-3
+
+            lg:-mb-1
+
+            translate-x-1
+
+            sm:translate-x-2
+
+            md:translate-x-3
+
+            lg:translate-x-4
+          "
+        >
+          <HeroBrandAnimation />
+        </div>
 
 
-        {/* ====================================================
-            ONDIGU
-        ==================================================== */}
+        {/* ONDIGU */}
 
         <h2
           className="
             font-brand
 
-            text-5xl
-            sm:text-6xl
-            md:text-7xl
+            text-4xl
+
+            sm:text-5xl
+
+            md:text-6xl
+
             lg:text-8xl
 
             font-black
@@ -361,10 +363,10 @@ export const Hero: React.FC<HeroProps> = ({
           "
         >
           Ondi
+
           <span
             className="
               text-transparent
-
               bg-clip-text
 
               bg-gradient-to-r
@@ -379,13 +381,13 @@ export const Hero: React.FC<HeroProps> = ({
         </h2>
 
 
-        {/* ====================================================
-            TAGLINE
-        ==================================================== */}
+        {/* TAGLINE */}
 
         <div
           className="
-            mt-2
+            mt-1
+
+            sm:mt-2
 
             flex
             flex-col
@@ -393,7 +395,7 @@ export const Hero: React.FC<HeroProps> = ({
 
             items-center
 
-            gap-1
+            gap-0.5
             sm:gap-2
           "
         >
@@ -416,9 +418,13 @@ export const Hero: React.FC<HeroProps> = ({
 
           <p
             className="
-              text-[10px]
-              sm:text-xs
-              md:text-sm
+              text-[8px]
+
+              sm:text-[10px]
+
+              md:text-xs
+
+              lg:text-sm
 
               font-medium
 
@@ -433,7 +439,7 @@ export const Hero: React.FC<HeroProps> = ({
           >
             Tecnología con onda
 
-            <span className="mx-1.5 text-white/40">
+            <span className="mx-1 text-white/40">
               •
             </span>
 
@@ -447,35 +453,39 @@ export const Hero: React.FC<HeroProps> = ({
       </motion.div>
 
 
-      {/* ========================================================
-          ========================================================
-          CONTENIDO PRINCIPAL — ABAJO / IZQUIERDA
-          ========================================================
-      ======================================================== */}
+      {/* =====================================================
+          MAIN CONTENT
+          ===================================================== */}
 
-     <div
-  className="
-    absolute
-    z-10
+      <div
+        className="
+          absolute
+          z-10
 
-    left-0
-    right-0
+          left-0
+          right-0
 
-    bottom-20
-    sm:bottom-20
-    md:bottom-20
-    lg:bottom-18
+          bottom-16
 
-    w-full
-    max-w-7xl
+          sm:bottom-18
 
-    mx-auto
+          md:bottom-20
 
-    px-5
-    sm:px-8
-    lg:px-10
-  "
->
+          lg:bottom-18
+
+          w-full
+
+          max-w-7xl
+
+          mx-auto
+
+          px-4
+
+          sm:px-8
+
+          lg:px-10
+        "
+      >
 
         <motion.div
           style={{
@@ -507,20 +517,18 @@ export const Hero: React.FC<HeroProps> = ({
             flex-col
 
             items-center
+
             lg:items-start
 
             text-center
-            lg:text-left
 
-            mt-16
-            sm:mt-20
-            lg:mt-24
+            lg:text-left
           "
         >
 
-          {/* ==================================================
-              TITULAR PRINCIPAL
-          ================================================== */}
+          {/* =================================================
+              TITLE
+              ================================================= */}
 
           <motion.h1
             initial={{
@@ -543,17 +551,19 @@ export const Hero: React.FC<HeroProps> = ({
 
               max-w-2xl
 
-              text-[1.9rem]
+              text-[1.55rem]
 
-              sm:text-4xl
+              xs:text-[1.7rem]
 
-              md:text-5xl
+              sm:text-3xl
+
+              md:text-4xl
 
               lg:text-[3.5rem]
 
               xl:text-[3.8rem]
 
-              leading-[1.05]
+              leading-[1.06]
 
               font-extrabold
 
@@ -561,18 +571,20 @@ export const Hero: React.FC<HeroProps> = ({
 
               text-white
 
-              mb-4
+              mb-3
+
+              sm:mb-4
 
               drop-shadow-[0_4px_18px_rgba(0,0,0,1)]
             "
           >
-            Tecnología      inteligente.
+            Conectamos tu negocio con tecnología inteligente.
           </motion.h1>
 
 
-          {/* ==================================================
-              SUBTÍTULO
-          ================================================== */}
+          {/* =================================================
+              DESCRIPTION
+              ================================================= */}
 
           <motion.p
             initial={{
@@ -595,15 +607,21 @@ export const Hero: React.FC<HeroProps> = ({
 
               max-w-xl
 
-              text-sm
-              sm:text-base
-              md:text-lg
+              text-xs
+
+              sm:text-sm
+
+              md:text-base
+
+              lg:text-lg
 
               text-white/90
 
               leading-relaxed
 
-              mb-6
+              mb-4
+
+              sm:mb-6
 
               drop-shadow-[0_2px_12px_black]
             "
@@ -613,9 +631,9 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.p>
 
 
-          {/* ==================================================
-              BOTONES
-          ================================================== */}
+          {/* =================================================
+              BUTTONS
+              ================================================= */}
 
           <motion.div
             initial={{
@@ -637,35 +655,47 @@ export const Hero: React.FC<HeroProps> = ({
               flex
 
               flex-col
+
               sm:flex-row
 
               items-center
+
               lg:items-start
 
-              gap-3
+              gap-2.5
+
+              sm:gap-3
 
               w-full
+
               sm:w-auto
 
-              mb-6
+              mb-4
+
+              sm:mb-6
             "
           >
 
             <button
               id="hero-primary-quote-cta"
-
               type="button"
-
               onClick={onQuoteClick}
-
               className="
                 w-full
+
                 sm:w-auto
 
-                min-w-[205px]
+                min-w-[190px]
 
-                px-7
-                py-3.5
+                sm:min-w-[205px]
+
+                px-6
+
+                sm:px-7
+
+                py-3
+
+                sm:py-3.5
 
                 rounded-xl
 
@@ -674,6 +704,7 @@ export const Hero: React.FC<HeroProps> = ({
                 text-white
 
                 text-sm
+
                 sm:text-base
 
                 font-semibold
@@ -693,23 +724,28 @@ export const Hero: React.FC<HeroProps> = ({
 
             <button
               id="hero-secondary-portfolio-cta"
-
               type="button"
-
               onClick={onPortfolioClick}
-
               className="
                 w-full
+
                 sm:w-auto
 
-                min-w-[170px]
+                min-w-[160px]
 
-                px-7
-                py-3.5
+                sm:min-w-[170px]
+
+                px-6
+
+                sm:px-7
+
+                py-3
+
+                sm:py-3.5
 
                 rounded-xl
 
-                bg-black/35
+                bg-black/40
 
                 border
                 border-white/20
@@ -719,6 +755,7 @@ export const Hero: React.FC<HeroProps> = ({
                 text-white
 
                 text-sm
+
                 sm:text-base
 
                 hover:bg-black/50
@@ -732,9 +769,9 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.div>
 
 
-          {/* ==================================================
-              POSICIONAMIENTO
-          ================================================== */}
+          {/* =================================================
+              POSITIONING TEXT
+              ================================================= */}
 
           <motion.div
             initial={{
@@ -751,7 +788,9 @@ export const Hero: React.FC<HeroProps> = ({
             }}
 
             className="
-              pt-4
+              pt-3
+
+              sm:pt-4
 
               border-t
               border-white/15
@@ -764,9 +803,13 @@ export const Hero: React.FC<HeroProps> = ({
 
             <p
               className="
-                text-[10px]
-                sm:text-xs
-                md:text-sm
+                text-[9px]
+
+                sm:text-[10px]
+
+                md:text-xs
+
+                lg:text-sm
 
                 text-white/70
 
@@ -776,19 +819,27 @@ export const Hero: React.FC<HeroProps> = ({
               "
             >
               No somos una persona que hace páginas sueltas.
+
               Somos tu equipo de{' '}
+
               <span className="text-white font-medium">
                 Desarrollo Web
               </span>
+
               ,{' '}
+
               <span className="text-white font-medium">
                 IA
               </span>
+
               ,{' '}
+
               <span className="text-white font-medium">
                 Automatización
-              </span>{' '}
-              y{' '}
+              </span>
+
+              {' '}y{' '}
+
               <span className="text-white font-medium">
                 E-commerce
               </span>
@@ -802,9 +853,9 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
 
-      {/* ========================================================
-          BADGE PEDRO
-      ======================================================== */}
+      {/* =====================================================
+          PEDRO BADGE
+          ===================================================== */}
 
       <motion.div
         style={{
@@ -828,17 +879,22 @@ export const Hero: React.FC<HeroProps> = ({
 
         className="
           absolute
-
           z-20
 
           right-4
+
           sm:right-8
+
           md:right-10
+
           lg:right-12
+
           xl:right-20
 
           bottom-20
+
           sm:bottom-20
+
           lg:bottom-24
 
           px-4
@@ -856,6 +912,7 @@ export const Hero: React.FC<HeroProps> = ({
           shadow-[0_10px_35px_rgba(0,0,0,0.5)]
 
           hidden
+
           sm:flex
 
           items-center
@@ -930,9 +987,9 @@ export const Hero: React.FC<HeroProps> = ({
       </motion.div>
 
 
-      {/* ========================================================
-          SCROLL
-      ======================================================== */}
+      {/* =====================================================
+          SCROLL INDICATOR
+          ===================================================== */}
 
       <motion.div
         initial={{
@@ -950,20 +1007,25 @@ export const Hero: React.FC<HeroProps> = ({
 
         className="
           absolute
-
           z-20
 
-          bottom-4
+          bottom-3
+
+          sm:bottom-4
 
           left-0
           right-0
 
-          px-5
+          px-4
+
           sm:px-8
+
           lg:px-10
 
           flex
+
           items-center
+
           justify-between
 
           text-white/55
@@ -973,7 +1035,9 @@ export const Hero: React.FC<HeroProps> = ({
         <div
           className="
             flex
+
             items-center
+
             gap-2
 
             animate-bounce
@@ -984,7 +1048,9 @@ export const Hero: React.FC<HeroProps> = ({
             className="
               font-mono
 
-              text-[9px]
+              text-[8px]
+
+              sm:text-[9px]
 
               uppercase
 
@@ -996,8 +1062,13 @@ export const Hero: React.FC<HeroProps> = ({
 
           <ArrowDown
             className="
-              w-3.5
-              h-3.5
+              w-3
+
+              h-3
+
+              sm:w-3.5
+
+              sm:h-3.5
 
               text-[#FF8C00]
             "
@@ -1009,6 +1080,7 @@ export const Hero: React.FC<HeroProps> = ({
         <span
           className="
             hidden
+
             sm:inline
 
             font-mono
