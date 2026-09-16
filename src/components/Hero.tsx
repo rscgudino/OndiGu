@@ -334,31 +334,27 @@ export const Hero: React.FC<HeroProps> = ({
         {/* LOGO G */}
 
         <div
-          className="
-            scale-[0.48]
+           className="
+             scale-[0.48]
 
-            sm:scale-[0.72]
+             sm:scale-[0.72]
+             md:scale-90
+             lg:scale-100
 
-            md:scale-90
+             origin-center
 
-            lg:scale-100
-
-            origin-center
-
-            -mb-5
+            -mb-12
 
             sm:-mb-3
+            md:-mb-2
+           lg:-mb-1
 
-            lg:-mb-1
+           translate-x-1
+           sm:translate-x-2
+           md:translate-x-3
+           lg:translate-x-4
+         "
 
-            translate-x-1
-
-            sm:translate-x-2
-
-            md:translate-x-3
-
-            lg:translate-x-4
-          "
         >
           <HeroBrandAnimation />
         </div>
