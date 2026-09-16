@@ -1,682 +1,347 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Zap, ArrowRight, X, Clock } from 'lucide-react';
+
+import { useEffect, useRef, useState } from "react";
+import { Zap, ArrowRight, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface FloatingExpressAdProps {
   onSelectExpress: () => void;
 }
 
-export const FloatingExpressAd: React.FC<FloatingExpressAdProps> = ({
+export default function FloatingExpressAd({
   onSelectExpress,
-}) => {
-  const [position, setPosition] = useState({ x: 40, y: 140 });
+}: FloatingExpressAdProps) {
+  const [position, setPosition] = useState({ x: 40, y: 180 });
+  const [velocity, setVelocity] = useState({ x: 0.45, y: 0.35 });
   const [isHovered, setIsHovered] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
 
   const cardRef = useRef<HTMLDivElement>(null);
-  const animFrameRef = useRef<number | null>(null);
-
-  // ============================================================
-  // POSICIÓN Y VELOCIDAD
-  // ============================================================
-
-  const posRef = useRef({
-    x: 40,
-    y: 140,
-  });
-
-  const velRef = useRef({
-    vx: 1.1,
-    vy: 0.9,
-  });
-
-  // ============================================================
-  // ANIMACIÓN FLOTANTE
-  // ============================================================
+  const animFrameRef = useRef<number>();
 
   useEffect(() => {
-    const initialX = Math.min(
-      Math.max(30, window.innerWidth * 0.15),
-      window.innerWidth - 190
-    );
-
-    const initialY = Math.min(
-      Math.max(100, window.innerHeight * 0.25),
-      window.innerHeight - 190
-    );
-
-    posRef.current = {
-      x: initialX,
-      y: initialY,
-    };
-
-    setPosition({
-      x: initialX,
-      y: initialY,
-    });
-
-    const move = () => {
-      if (!isHovered && !isMinimized && isVisible) {
-        const size = cardRef.current
-          ? Math.max(
-              cardRef.current.offsetWidth,
-              cardRef.current.offsetHeight
-            )
-          : 170;
-
-        const maxX = window.innerWidth - size - 15;
-        const maxY = window.innerHeight - size - 15;
-
-        const minX = 15;
-        const minY = 80;
-
-        let newX =
-          posRef.current.x + velRef.current.vx;
-
-        let newY =
-          posRef.current.y + velRef.current.vy;
-
-        // Rebote horizontal
-        if (newX >= maxX) {
-          newX = maxX;
-          velRef.current.vx =
-            -Math.abs(velRef.current.vx);
-        } else if (newX <= minX) {
-          newX = minX;
-          velRef.current.vx =
-            Math.abs(velRef.current.vx);
-        }
-
-        // Rebote vertical
-        if (newY >= maxY) {
-          newY = maxY;
-          velRef.current.vy =
-            -Math.abs(velRef.current.vy);
-        } else if (newY <= minY) {
-          newY = minY;
-          velRef.current.vy =
-            Math.abs(velRef.current.vy);
-        }
-
-        posRef.current = {
-          x: newX,
-          y: newY,
-        };
-
-        setPosition({
-          x: newX,
-          y: newY,
-        });
+    const animate = () => {
+      if (!cardRef.current || isHovered) {
+        animFrameRef.current = requestAnimationFrame(animate);
+        return;
       }
 
-      animFrameRef.current =
-        requestAnimationFrame(move);
+      const card = cardRef.current;
+      const width = card.offsetWidth;
+      const height = card.offsetHeight;
+
+      const maxX = window.innerWidth - width - 12;
+      const maxY = window.innerHeight - height - 12;
+
+      setPosition((prev) => {
+        let nextX = prev.x + velocity.x;
+        let nextY = prev.y + velocity.y;
+
+        let nextVelocityX = velocity.x;
+        let nextVelocityY = velocity.y;
+
+        if (nextX <= 8 || nextX >= maxX) {
+          nextVelocityX = -velocity.x;
+          nextX = Math.max(8, Math.min(nextX, maxX));
+        }
+
+        if (nextY <= 8 || nextY >= maxY) {
+          nextVelocityY = -velocity.y;
+          nextY = Math.max(8, Math.min(nextY, maxY));
+        }
+
+        if (
+          nextVelocityX !== velocity.x ||
+          nextVelocityY !== velocity.y
+        ) {
+          setVelocity({
+            x: nextVelocityX,
+            y: nextVelocityY,
+          });
+        }
+
+        return {
+          x: nextX,
+          y: nextY,
+        };
+      });
+
+      animFrameRef.current = requestAnimationFrame(animate);
     };
 
-    animFrameRef.current =
-      requestAnimationFrame(move);
+    animFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
       if (animFrameRef.current) {
-        cancelAnimationFrame(
-          animFrameRef.current
-        );
+        cancelAnimationFrame(animFrameRef.current);
       }
     };
-  }, [
-    isHovered,
-    isMinimized,
-    isVisible,
-  ]);
-
-  // ============================================================
-  // OCULTO
-  // ============================================================
-
-  if (!isVisible) {
-    return null;
-  }
-
-  // ============================================================
-  // MINIMIZADO
-  // ============================================================
+  }, [velocity, isHovered]);
 
   if (isMinimized) {
     return (
-      <button
-        type="button"
-        onClick={() =>
-          setIsMinimized(false)
-        }
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onSelectExpress}
         className="
-          fixed
-          bottom-5
-          left-5
-          z-40
-
-          w-14
-          h-14
-
-          flex
-          items-center
-          justify-center
-
-          bg-[#151821]
-
-          hover:bg-[#1e222e]
-
-          text-[#FF8C00]
-
-          border-2
-          border-[#FF4500]/60
-
+          fixed z-[9999]
+          w-12 h-12
+          sm:w-14 sm:h-14
           rounded-full
-
-          shadow-[0_4px_20px_rgba(255,69,0,0.4)]
-
-          cursor-pointer
-
-          transition-all
-
-          hover:scale-110
+          bg-orange-500/75
+          backdrop-blur-md
+          border border-orange-300/60
+          shadow-[0_0_25px_rgba(249,115,22,0.45)]
+          flex items-center justify-center
         "
-        title="Restaurar Landing Express 24hs"
-        aria-label="Restaurar Landing Express 24hs"
+        style={{
+          left: position.x,
+          top: position.y,
+        }}
       >
         <Zap
-          className="
-            w-6
-            h-6
-
-            text-[#FF4500]
-
-            fill-[#FF4500]
-
-            animate-bounce
-          "
+          size={21}
+          className="text-white fill-white"
         />
-      </button>
+      </motion.button>
     );
   }
 
-  // ============================================================
-  // TARJETA CIRCULAR
-  // ============================================================
-
   return (
-    <div
+    <motion.div
       ref={cardRef}
-      style={{
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+        left: position.x,
+        top: position.y,
       }}
-      onMouseEnter={() =>
-        setIsHovered(true)
-      }
-      onMouseLeave={() =>
-        setIsHovered(false)
-      }
+      transition={{
+        scale: {
+          duration: 0.45,
+          type: "spring",
+          stiffness: 180,
+        },
+        opacity: {
+          duration: 0.3,
+        },
+        left: {
+          duration: 0.08,
+          ease: "linear",
+        },
+        top: {
+          duration: 0.08,
+          ease: "linear",
+        },
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onSelectExpress}
       className="
-        fixed
-        top-0
-        left-0
-
-        z-40
-
-        pointer-events-auto
-
-        will-change-transform
-
-        transition-transform
-        duration-75
+        fixed z-[9999]
+        w-[145px] h-[145px]
+        sm:w-[160px] sm:h-[160px]
+        rounded-full
+        overflow-hidden
+        cursor-pointer
+        select-none
       "
     >
-
-      {/* ======================================================
-          CÍRCULO PRINCIPAL
-          ====================================================== */}
-
+      {/* Halo exterior */}
       <div
-        onClick={onSelectExpress}
         className="
-          group
-
-          relative
-
-          w-[175px]
-          h-[175px]
-
-          sm:w-[190px]
-          sm:h-[190px]
-
+          absolute inset-[-5px]
           rounded-full
-
-          bg-gradient-to-br
-          from-[#141722]
-          via-[#1a1e2b]
-          to-[#0e1017]
-
-          border-[3px]
-          border-[#FF4500]
-
-          hover:border-[#FF8C00]
-
-          shadow-[0_0_35px_rgba(255,69,0,0.5)]
-
-          hover:shadow-[0_0_50px_rgba(255,140,0,0.65)]
-
-          backdrop-blur-md
-
-          flex
-          flex-col
-
-          items-center
-          justify-center
-
-          text-center
-
-          select-none
-
-          cursor-pointer
-
-          overflow-visible
-
-          transition-all
-          duration-300
-
-          hover:scale-105
+          bg-orange-500/15
+          blur-md
         "
-      >
+      />
 
-        {/* ====================================================
-            HALO NEÓN
-            ==================================================== */}
+      {/* Círculo principal */}
+      <div
+        className="
+          absolute inset-0
+          rounded-full
+          border border-orange-300/50
+          bg-black/35
+          backdrop-blur-xl
+          shadow-[0_0_30px_rgba(249,115,22,0.30)]
+        "
+      />
 
+      {/* Anillo interior */}
+      <div
+        className="
+          absolute inset-[7px]
+          rounded-full
+          border border-orange-400/20
+          pointer-events-none
+        "
+      />
+
+      {/* Brillo superior */}
+      <div
+        className="
+          absolute
+          top-2 left-1/2
+          -translate-x-1/2
+          w-16 h-8
+          rounded-full
+          bg-orange-400/15
+          blur-xl
+          pointer-events-none
+        "
+      />
+
+      {/* Contenido */}
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-center px-3">
+
+        {/* Icono */}
         <div
           className="
-            absolute
-
-            -inset-2
-
+            w-9 h-9
+            sm:w-10 sm:h-10
             rounded-full
-
-            bg-gradient-to-r
-            from-[#FF4500]
-            via-[#FF8C00]
-            to-[#FF4500]
-
-            blur-xl
-
-            opacity-30
-
-            group-hover:opacity-60
-
-            transition-opacity
-
-            -z-10
-
-            pointer-events-none
-          "
-        />
-
-        {/* ====================================================
-            SEGUNDO ANILLO
-            ==================================================== */}
-
-        <div
-          className="
-            absolute
-
-            inset-1
-
-            rounded-full
-
-            border
-
-            border-[#FF8C00]/20
-
-            pointer-events-none
-          "
-        />
-
-        {/* ====================================================
-            ICONO
-            ==================================================== */}
-
-        <div
-          className="
-            relative
-
-            w-11
-            h-11
-
-            sm:w-12
-            sm:h-12
-
-            rounded-full
-
-            bg-gradient-to-br
-            from-[#FF4500]
-            to-[#FF8C00]
-
-            flex
-            items-center
-            justify-center
-
-            text-white
-
-            shadow-[0_0_20px_rgba(255,69,0,0.45)]
-
-            group-hover:scale-110
-
-            transition-transform
+            bg-orange-500/75
+            border border-orange-200/50
+            flex items-center justify-center
+            shadow-[0_0_18px_rgba(249,115,22,0.45)]
+            mb-1
           "
         >
           <Zap
-            className="
-              w-6
-              h-6
-
-              sm:w-7
-              sm:h-7
-
-              fill-white
-
-              text-white
-
-              animate-pulse
-            "
+            size={18}
+            className="text-white fill-white"
           />
         </div>
 
-
-        {/* ====================================================
-            ENTREGA RÉCORD
-            ==================================================== */}
-
-        <div
+        {/* Texto pequeño */}
+        <span
           className="
-            flex
-            items-center
-
-            gap-1
-
-            mt-2
+            text-[8px]
+            sm:text-[9px]
+            uppercase
+            tracking-[0.18em]
+            text-orange-300
+            font-semibold
           "
         >
-          <Clock
+          EXPRESS
+        </span>
+
+        {/* Texto principal */}
+        <div className="mt-0.5">
+          <div
             className="
-              w-3
-              h-3
-
-              text-[#FF4500]
-            "
-          />
-
-          <span
-            className="
-              text-[8px]
-
-              sm:text-[9px]
-
-              font-mono
-
-              font-bold
-
-              text-[#FF8C00]
-
-              uppercase
-
-              tracking-wider
+              text-[13px]
+              sm:text-[14px]
+              font-black
+              text-white
+              leading-tight
             "
           >
-            Entrega récord
-          </span>
+            Tu Landing
+          </div>
 
-          <span
+          <div
             className="
-              w-1.5
-              h-1.5
-
-              rounded-full
-
-              bg-emerald-400
-
-              animate-ping
+              text-[16px]
+              sm:text-[18px]
+              font-black
+              text-orange-400
+              leading-tight
+              drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]
             "
-          />
+          >
+            24hs
+          </div>
         </div>
 
-
-        {/* ====================================================
-            TITULO
-            ==================================================== */}
-
-        <h4
-          className="
-            mt-1
-
-            px-5
-
-            text-[12px]
-
-            sm:text-[13px]
-
-            font-black
-
-            text-white
-
-            leading-tight
-
-            tracking-tight
-
-            group-hover:text-[#FF8C00]
-
-            transition-colors
-          "
-        >
-          Tu Landing Page
-        </h4>
-
-
-        <p
-          className="
-            text-[17px]
-
-            sm:text-[18px]
-
-            font-black
-
-            text-[#FF4500]
-
-            leading-tight
-
-            mt-0.5
-          "
-        >
-          en 24hs
-        </p>
-
-
-        {/* ====================================================
-            SUBTEXTO
-            ==================================================== */}
-
-        <p
-          className="
-            mt-1
-
-            text-[9px]
-
-            sm:text-[10px]
-
-            text-[#a5abbd]
-
-            font-medium
-          "
-        >
-          100% lista
-        </p>
-
-
-        {/* ====================================================
-            BOTÓN FLECHA
-            ==================================================== */}
-
+        {/* CTA circular */}
         <button
-          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onSelectExpress();
           }}
           className="
             absolute
-
-            bottom-2
-            right-2
-
-            w-8
-            h-8
-
+            bottom-[13px]
+            right-[13px]
+            w-7 h-7
+            sm:w-8 sm:h-8
             rounded-full
-
-            bg-[#FF4500]
-
-            hover:bg-[#FF8C00]
-
-            text-white
-
-            flex
-            items-center
-            justify-center
-
-            shadow-[0_0_15px_rgba(255,69,0,0.5)]
-
+            bg-orange-500/80
+            hover:bg-orange-400
+            border border-orange-200/50
+            flex items-center justify-center
             transition-all
-
-            hover:scale-110
-
-            cursor-pointer
+            shadow-[0_0_14px_rgba(249,115,22,0.4)]
           "
-          title="Pedir Landing en 24hs"
-          aria-label="Pedir Landing en 24hs"
+          aria-label="Ver Express"
         >
           <ArrowRight
-            className="
-              w-4
-              h-4
-            "
+            size={14}
+            className="text-white"
           />
         </button>
-
-
-        {/* ====================================================
-            BOTÓN MINIMIZAR
-            ==================================================== */}
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsMinimized(true);
-          }}
-          className="
-            absolute
-
-            -top-2
-            -right-2
-
-            w-6
-            h-6
-
-            rounded-full
-
-            bg-[#1c202e]
-
-            border
-            border-[#3a4052]
-
-            text-[#8e94a5]
-
-            hover:text-white
-
-            hover:bg-[#252a39]
-
-            flex
-            items-center
-            justify-center
-
-            shadow-[0_2px_10px_rgba(0,0,0,0.5)]
-
-            transition-all
-
-            hover:scale-110
-
-            cursor-pointer
-          "
-          title="Minimizar anuncio"
-          aria-label="Minimizar anuncio"
-        >
-          <X
-            className="
-              w-3.5
-              h-3.5
-            "
-          />
-        </button>
-
       </div>
 
+      {/* Botón minimizar */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsMinimized(true);
+        }}
+        className="
+          absolute
+          top-[13px]
+          right-[13px]
+          z-30
+          w-6 h-6
+          rounded-full
+          bg-black/35
+          hover:bg-black/60
+          border border-white/20
+          flex items-center justify-center
+          transition-all
+        "
+        aria-label="Minimizar"
+      >
+        <X
+          size={11}
+          className="text-white/75"
+        />
+      </button>
 
-      {/* ======================================================
-          MENSAJE AL PASAR EL MOUSE
-          ====================================================== */}
-
+      {/* Texto flotante al pasar el mouse */}
       {isHovered && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
           className="
             absolute
-
-            top-full
-
+            -bottom-8
             left-1/2
-
             -translate-x-1/2
-
-            mt-2
-
             whitespace-nowrap
-
-            text-center
+            px-2.5 py-1
+            rounded-full
+            bg-black/65
+            backdrop-blur-md
+            border border-orange-400/20
+            text-[9px]
+            text-white/80
+            pointer-events-none
           "
         >
-          <span
-            className="
-              text-[10px]
-
-              font-mono
-
-              text-[#FF8C00]
-
-              bg-[#0c0e12]/95
-
-              px-3
-              py-1
-
-              rounded-full
-
-              border
-              border-[#232738]
-
-              shadow-lg
-            "
-          >
-            Click para cotizar ahora
-          </span>
-        </div>
+          Landing lista en 24hs
+        </motion.div>
       )}
-
-    </div>
+    </motion.div>
   );
-};
+}
 
