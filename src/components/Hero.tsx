@@ -453,32 +453,29 @@ export const Hero: React.FC<HeroProps> = ({
           ========================================================
       ======================================================== */}
 
-      <div
-        className="
-          relative
-          z-10
+     <div
+  className="
+    absolute
+    z-10
 
-          min-h-screen
+    left-0
+    right-0
 
-          w-full
-          max-w-7xl
+    bottom-20
+    sm:bottom-20
+    md:bottom-20
+    lg:bottom-18
 
-          mx-auto
+    w-full
+    max-w-7xl
 
-          px-5
-          sm:px-8
-          lg:px-10
+    mx-auto
 
-          flex
-          items-center
-
-          pt-52
-          sm:pt-56
-          lg:pt-52
-
-          pb-28
-        "
-      >
+    px-5
+    sm:px-8
+    lg:px-10
+  "
+>
 
         <motion.div
           style={{
