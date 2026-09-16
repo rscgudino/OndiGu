@@ -32,7 +32,7 @@ export const Hero: React.FC<HeroProps> = ({
   });
 
   // ============================================================
-  // PARALLAX DEL VIDEO
+  // VIDEO
   // ============================================================
 
   const videoY = useTransform(
@@ -48,7 +48,7 @@ export const Hero: React.FC<HeroProps> = ({
   );
 
   // ============================================================
-  // PARALLAX DEL CONTENIDO
+  // TEXTO PRINCIPAL
   // ============================================================
 
   const contentY = useTransform(
@@ -61,6 +61,16 @@ export const Hero: React.FC<HeroProps> = ({
     smoothProgress,
     [0, 0.75, 1],
     [1, 0.95, 0.3]
+  );
+
+  // ============================================================
+  // MARCA
+  // ============================================================
+
+  const brandY = useTransform(
+    smoothProgress,
+    [0, 1],
+    [0, -35]
   );
 
   // ============================================================
@@ -87,7 +97,7 @@ export const Hero: React.FC<HeroProps> = ({
     >
 
       {/* ========================================================
-          VIDEO
+          VIDEO DE FONDO
       ======================================================== */}
 
       <div
@@ -121,20 +131,10 @@ export const Hero: React.FC<HeroProps> = ({
 
             object-cover
 
-            /*
-             * IMPORTANTE:
-             * movemos el encuadre hacia la DERECHA
-             * para que Pedro quede más visible.
-             */
-
             object-[82%_center]
-
             sm:object-[78%_center]
-
             md:object-[75%_center]
-
             lg:object-[72%_center]
-
             xl:object-[70%_center]
 
             grayscale
@@ -158,8 +158,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* ========================================================
-          OSCURECIMIENTO MUY SUAVE
-          NO TAPAMOS EL VIDEO
+          OSCURECIMIENTO GENERAL
       ======================================================== */}
 
       <div
@@ -176,7 +175,8 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* ========================================================
-          DEGRADADO SOLO DETRÁS DEL TEXTO
+          DEGRADADO IZQUIERDO
+          PROTEGE EL TEXTO PRINCIPAL
       ======================================================== */}
 
       <div
@@ -188,7 +188,7 @@ export const Hero: React.FC<HeroProps> = ({
           z-[2]
 
           w-full
-          lg:w-[62%]
+          lg:w-[60%]
 
           pointer-events-none
 
@@ -196,9 +196,9 @@ export const Hero: React.FC<HeroProps> = ({
 
           from-black/85
 
-          via-black/55
+          via-black/50
 
-          via-[38%]
+          via-[40%]
 
           to-transparent
         "
@@ -216,7 +216,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-24
+          h-28
           sm:h-32
 
           z-[2]
@@ -243,7 +243,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-28
+          h-32
           sm:h-36
 
           z-[2]
@@ -260,7 +260,193 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* ========================================================
-          CONTENIDO
+          ========================================================
+          MARCA — ARRIBA A LA DERECHA
+          ========================================================
+      ======================================================== */}
+
+      <motion.div
+        style={{
+          y: brandY,
+        }}
+
+        initial={{
+          opacity: 0,
+          x: 40,
+        }}
+
+        animate={{
+          opacity: 1,
+          x: 0,
+        }}
+
+        transition={{
+          duration: 0.9,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+
+        className="
+          absolute
+
+          z-20
+
+          top-24
+          sm:top-28
+          md:top-24
+          lg:top-28
+
+          right-5
+          sm:right-8
+          md:right-12
+          lg:right-16
+          xl:right-24
+
+          w-auto
+
+          flex
+          flex-col
+
+          items-center
+
+          text-center
+        "
+      >
+
+        {/* ====================================================
+            G
+        ==================================================== */}
+
+        <div
+          className="
+            scale-[0.68]
+            sm:scale-90
+            md:scale-100
+
+            origin-center
+
+            -mb-2
+            sm:-mb-1
+          "
+        >
+          <HeroBrandAnimation />
+        </div>
+
+
+        {/* ====================================================
+            ONDIGU
+        ==================================================== */}
+
+        <h2
+          className="
+            font-brand
+
+            text-5xl
+            sm:text-6xl
+            md:text-7xl
+            lg:text-8xl
+
+            font-black
+
+            tracking-[-0.05em]
+
+            leading-none
+
+            text-white
+
+            drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]
+          "
+        >
+          Ondi
+          <span
+            className="
+              text-transparent
+
+              bg-clip-text
+
+              bg-gradient-to-r
+
+              from-[#FF8C00]
+              via-[#FF6000]
+              to-[#FF4500]
+            "
+          >
+            Gu
+          </span>
+        </h2>
+
+
+        {/* ====================================================
+            TAGLINE
+        ==================================================== */}
+
+        <div
+          className="
+            mt-2
+
+            flex
+            flex-col
+            sm:flex-row
+
+            items-center
+
+            gap-1
+            sm:gap-2
+          "
+        >
+
+          <span
+            className="
+              w-1.5
+              h-1.5
+
+              rounded-full
+
+              bg-[#FF4500]
+
+              animate-pulse
+
+              hidden
+              sm:block
+            "
+          />
+
+          <p
+            className="
+              text-[10px]
+              sm:text-xs
+              md:text-sm
+
+              font-medium
+
+              tracking-wide
+
+              text-white/85
+
+              whitespace-nowrap
+
+              drop-shadow-[0_2px_8px_black]
+            "
+          >
+            Tecnología con onda
+
+            <span className="mx-1.5 text-white/40">
+              •
+            </span>
+
+            <span className="text-[#FF8C00]">
+              La señal de Gudiño
+            </span>
+          </p>
+
+        </div>
+
+      </motion.div>
+
+
+      {/* ========================================================
+          ========================================================
+          CONTENIDO PRINCIPAL — ABAJO / IZQUIERDA
+          ========================================================
       ======================================================== */}
 
       <div
@@ -282,12 +468,11 @@ export const Hero: React.FC<HeroProps> = ({
           flex
           items-center
 
-          pt-24
-          sm:pt-28
-          lg:pt-24
+          pt-40
+          sm:pt-44
+          lg:pt-40
 
           pb-28
-          sm:pb-24
         "
       >
 
@@ -325,172 +510,15 @@ export const Hero: React.FC<HeroProps> = ({
 
             text-center
             lg:text-left
+
+            mt-16
+            sm:mt-20
+            lg:mt-24
           "
         >
 
           {/* ==================================================
-              ANIMACIÓN DE MARCA
-          ================================================== */}
-
-          <motion.div
-            initial={{
-              opacity: 0,
-              scale: 0.92,
-            }}
-
-            animate={{
-              opacity: 1,
-              scale: 1,
-            }}
-
-            transition={{
-              duration: 0.7,
-              delay: 0.1,
-            }}
-
-            className="
-              mb-1
-
-              scale-[0.72]
-
-              sm:scale-90
-
-              md:scale-100
-
-              origin-center
-
-              lg:origin-left
-            "
-          >
-            <HeroBrandAnimation />
-          </motion.div>
-
-
-          {/* ==================================================
-              ONDIGU
-          ================================================== */}
-
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 15,
-            }}
-
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-
-            transition={{
-              duration: 0.7,
-              delay: 0.2,
-            }}
-
-            className="
-              mb-4
-              sm:mb-5
-
-              flex
-              flex-col
-
-              items-center
-              lg:items-start
-            "
-          >
-
-            <h2
-              className="
-                font-brand
-
-                text-5xl
-                sm:text-6xl
-                md:text-7xl
-                lg:text-8xl
-
-                font-black
-
-                tracking-[-0.05em]
-
-                leading-none
-
-                text-white
-
-                drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]
-              "
-            >
-              Ondi
-              <span
-                className="
-                  text-transparent
-                  bg-clip-text
-                  bg-gradient-to-r
-                  from-[#FF8C00]
-                  via-[#FF6000]
-                  to-[#FF4500]
-                "
-              >
-                Gu
-              </span>
-            </h2>
-
-
-            <div
-              className="
-                mt-2
-
-                flex
-                items-center
-
-                gap-2
-              "
-            >
-
-              <span
-                className="
-                  w-1.5
-                  h-1.5
-
-                  rounded-full
-
-                  bg-[#FF4500]
-
-                  animate-pulse
-                "
-              />
-
-              <p
-                className="
-                  text-[10px]
-                  sm:text-xs
-                  md:text-sm
-
-                  font-medium
-
-                  tracking-wide
-
-                  text-white/85
-
-                  drop-shadow-[0_2px_8px_black]
-                "
-              >
-                Tecnología con onda
-
-                <span className="mx-1.5 text-white/40">
-                  •
-                </span>
-
-                <span className="text-[#FF8C00]">
-                  La señal de Gudiño
-                </span>
-              </p>
-
-            </div>
-
-          </motion.div>
-
-
-          {/* ==================================================
-              TITULAR
+              TITULAR PRINCIPAL
           ================================================== */}
 
           <motion.h1
@@ -506,7 +534,7 @@ export const Hero: React.FC<HeroProps> = ({
 
             transition={{
               duration: 0.7,
-              delay: 0.3,
+              delay: 0.25,
             }}
 
             className="
@@ -558,7 +586,7 @@ export const Hero: React.FC<HeroProps> = ({
 
             transition={{
               duration: 0.7,
-              delay: 0.4,
+              delay: 0.35,
             }}
 
             className="
@@ -601,7 +629,7 @@ export const Hero: React.FC<HeroProps> = ({
 
             transition={{
               duration: 0.7,
-              delay: 0.5,
+              delay: 0.45,
             }}
 
             className="
@@ -718,7 +746,7 @@ export const Hero: React.FC<HeroProps> = ({
 
             transition={{
               duration: 0.7,
-              delay: 0.6,
+              delay: 0.55,
             }}
 
             className="
@@ -886,9 +914,11 @@ export const Hero: React.FC<HeroProps> = ({
             "
           >
             Fundador & Diseñador Web
+
             <span className="mx-1">
               •
             </span>
+
             <span className="text-[#FF8C00]">
               En línea
             </span>
