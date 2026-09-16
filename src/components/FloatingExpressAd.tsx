@@ -1,4 +1,4 @@
-```tsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Zap, ArrowRight, X, Clock } from 'lucide-react';
 
@@ -679,4 +679,4 @@ export const FloatingExpressAd: React.FC<FloatingExpressAdProps> = ({
     </div>
   );
 };
-```
+
