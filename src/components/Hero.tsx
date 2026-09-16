@@ -50,7 +50,7 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onPortfolioClick }) =>
         className="absolute top-0 right-0 w-full lg:w-[58%] xl:w-[52%] h-[118%] z-0 pointer-events-none overflow-hidden select-none"
       >
         <img
-          src="/assets/pedro-bg.jpg"
+          src="/assets/pedro-bg.mp4"
           alt="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
           className="w-full h-full object-cover object-[center_14%] sm:object-[center_16%] lg:object-[center_20%] filter grayscale contrast-[1.14] brightness-[1.08]"
         />
