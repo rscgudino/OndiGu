@@ -1,4 +1,4 @@
-```tsx
+
 import React, { useRef } from 'react';
 import {
   motio
@@ -1125,4 +1125,4 @@ export const Hero: React.FC<HeroProps> = ({
     </section>
   );
 };
-```
+
