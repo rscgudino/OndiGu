@@ -91,12 +91,12 @@ export const Hero: React.FC<HeroProps> = ({
           z-0
           overflow-hidden
           bg-black
-
           flex
           items-center
           justify-center
         "
       >
+
         <motion.video
           autoPlay
           muted
@@ -109,6 +109,19 @@ export const Hero: React.FC<HeroProps> = ({
             scale: videoScale,
           }}
 
+          /*
+           * IMPORTANTE
+           *
+           * MÓVIL:
+           * object-contain
+           *
+           * Esto evita que el navegador recorte
+           * agresivamente el video.
+           *
+           * TABLET / DESKTOP:
+           * volvemos a object-cover.
+           */
+
           className="
             absolute
             inset-0
@@ -116,42 +129,15 @@ export const Hero: React.FC<HeroProps> = ({
             w-full
             h-full
 
-            object-cover
+            object-contain
 
-            /*
-             * =================================================
-             * CELULARES
-             * =================================================
-             *
-             * Bajamos el punto vertical para intentar mostrar
-             * más del cuerpo y conservar el gesto de la mano.
-             */
+            sm:object-contain
 
-            object-[50%_35%]
+            md:object-cover
 
-            /*
-             * CELULARES GRANDES
-             */
+            lg:object-cover
 
-            sm:object-[52%_38%]
-
-            /*
-             * TABLETS
-             */
-
-            md:object-[60%_center]
-
-            /*
-             * NOTEBOOK
-             */
-
-            lg:object-[72%_center]
-
-            /*
-             * DESKTOP
-             */
-
-            xl:object-[70%_center]
+            xl:object-cover
 
             grayscale
             contrast-[1.02]
@@ -160,13 +146,16 @@ export const Hero: React.FC<HeroProps> = ({
 
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
         >
+
           <source
             src="/assets/pedro-bg.mp4"
             type="video/mp4"
           />
 
           Tu navegador no soporta la reproducción de video.
+
         </motion.video>
+
       </div>
 
 
@@ -179,12 +168,11 @@ export const Hero: React.FC<HeroProps> = ({
           absolute
           inset-0
           z-[1]
-
           pointer-events-none
 
-          bg-black/30
+          bg-black/35
 
-          sm:bg-black/20
+          sm:bg-black/25
 
           lg:bg-black/10
         "
@@ -245,6 +233,7 @@ export const Hero: React.FC<HeroProps> = ({
           pointer-events-none
 
           bg-gradient-to-t
+
           from-black/95
           via-black/60
           to-transparent
@@ -254,6 +243,7 @@ export const Hero: React.FC<HeroProps> = ({
           lg:h-32
 
           lg:bg-gradient-to-t
+
           lg:from-black/75
           lg:via-transparent
         "
@@ -278,19 +268,21 @@ export const Hero: React.FC<HeroProps> = ({
           pointer-events-none
 
           bg-gradient-to-b
+
           from-black/65
           to-transparent
 
           sm:h-28
 
           lg:h-28
+
           lg:from-black/55
         "
       />
 
 
       {/* =====================================================
-          BRAND
+          BRAND ONDIGU
           ===================================================== */}
 
       <motion.div
@@ -339,7 +331,7 @@ export const Hero: React.FC<HeroProps> = ({
         "
       >
 
-        {/* G */}
+        {/* LOGO G */}
 
         <div
           className="
@@ -398,6 +390,7 @@ export const Hero: React.FC<HeroProps> = ({
           "
         >
           Ondi
+
           <span
             className="
               text-transparent
@@ -433,6 +426,7 @@ export const Hero: React.FC<HeroProps> = ({
             sm:gap-2
           "
         >
+
           <span
             className="
               w-1.5
@@ -480,6 +474,7 @@ export const Hero: React.FC<HeroProps> = ({
               La señal de Gudiño
             </span>
           </p>
+
         </div>
 
       </motion.div>
@@ -558,7 +553,9 @@ export const Hero: React.FC<HeroProps> = ({
           "
         >
 
-          {/* TITULO */}
+          {/* =================================================
+              TITULO
+              ================================================= */}
 
           <motion.h1
             initial={{
@@ -610,7 +607,9 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.h1>
 
 
-          {/* DESCRIPCION */}
+          {/* =================================================
+              DESCRIPCIÓN
+              ================================================= */}
 
           <motion.p
             initial={{
@@ -657,7 +656,9 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.p>
 
 
-          {/* BOTONES */}
+          {/* =================================================
+              BOTONES
+              ================================================= */}
 
           <motion.div
             initial={{
@@ -795,7 +796,9 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.div>
 
 
-          {/* TEXTO INFERIOR */}
+          {/* =================================================
+              TEXTO INFERIOR
+              ================================================= */}
 
           <motion.div
             initial={{
@@ -824,6 +827,7 @@ export const Hero: React.FC<HeroProps> = ({
               max-w-xl
             "
           >
+
             <p
               className="
                 text-[9px]
@@ -864,9 +868,11 @@ export const Hero: React.FC<HeroProps> = ({
               </span>
               .
             </p>
+
           </motion.div>
 
         </motion.div>
+
       </div>
 
 
@@ -950,6 +956,7 @@ export const Hero: React.FC<HeroProps> = ({
             bg-emerald-400
           "
         >
+
           <span
             className="
               absolute
@@ -962,10 +969,12 @@ export const Hero: React.FC<HeroProps> = ({
               animate-ping
             "
           />
+
         </div>
 
 
         <div>
+
           <p
             className="
               font-mono
@@ -979,6 +988,7 @@ export const Hero: React.FC<HeroProps> = ({
           >
             Pedro Gudiño
           </p>
+
 
           <p
             className="
@@ -997,6 +1007,7 @@ export const Hero: React.FC<HeroProps> = ({
               En línea
             </span>
           </p>
+
         </div>
 
       </motion.div>
@@ -1052,9 +1063,11 @@ export const Hero: React.FC<HeroProps> = ({
             flex
             items-center
             gap-2
+
             animate-bounce
           "
         >
+
           <span
             className="
               font-mono
@@ -1071,6 +1084,7 @@ export const Hero: React.FC<HeroProps> = ({
             Deslizá para explorar
           </span>
 
+
           <ArrowDown
             className="
               w-3
@@ -1082,6 +1096,7 @@ export const Hero: React.FC<HeroProps> = ({
               text-[#FF8C00]
             "
           />
+
         </div>
 
 
