@@ -566,7 +566,7 @@ export const Hero: React.FC<HeroProps> = ({
               drop-shadow-[0_4px_18px_rgba(0,0,0,1)]
             "
           >
-            Tu tecnología inteligente.
+            Tecnología inteligente.
           </motion.h1>
 
 
