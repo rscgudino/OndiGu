@@ -5,7 +5,7 @@ export const HeroBrandAnimation: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto h-52 sm:h-64 flex items-center justify-center overflow-visible">
+    <div className="relative w-full max-w-2xl mx-auto h-24 sm:h-32 md:h-44 lg:h-52 flex items-center justify-center overflow-visible">
       {/* Background radial energy field */}
       <div 
         className="absolute inset-0 bg-radial from-[#FF4500]/15 via-transparent to-transparent blur-3xl pointer-events-none" 
@@ -15,7 +15,7 @@ export const HeroBrandAnimation: React.FC = () => {
       <svg
         viewBox="0 0 600 240"
         fill="none"
-        xmlns=""
+        xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full overflow-visible"
         aria-hidden="true"
       >
