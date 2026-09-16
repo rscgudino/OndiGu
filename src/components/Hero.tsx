@@ -299,12 +299,12 @@ export const Hero: React.FC<HeroProps> = ({
 
         initial={{
           opacity: 0,
-          x: 40,
+          scale: 0.96,
         }}
 
         animate={{
           opacity: 1,
-          x: 0,
+          scale: 1,
         }}
 
         transition={{
@@ -318,26 +318,29 @@ export const Hero: React.FC<HeroProps> = ({
 
           /*
            * CELULAR:
-           * subimos el bloque completo.
+           * bajado y perfectamente centrado.
            */
-          top-2
+          top-24
+          left-0
+          right-0
+          mx-auto
+          w-fit
+          px-4
 
           /*
-           * Desde sm conserva la posición anterior.
+           * Desde sm vuelve a la derecha.
            */
           sm:top-20
+          sm:left-auto
+          sm:right-5
+          sm:mx-0
+          sm:px-0
 
           md:top-24
-          lg:top-28
-
-          right-3
-
-          sm:right-5
           md:right-6
+          lg:top-28
           lg:right-8
           xl:right-12
-
-          w-auto
 
           flex
           flex-col
@@ -370,7 +373,7 @@ export const Hero: React.FC<HeroProps> = ({
             md:-mb-2
             lg:-mb-1
 
-            translate-x-1
+            translate-x-0
 
             sm:translate-x-2
             md:translate-x-3
@@ -433,7 +436,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         <div
           className="
-            mt-1
+            mt-1.5
 
             sm:mt-2
 
@@ -442,6 +445,7 @@ export const Hero: React.FC<HeroProps> = ({
             sm:flex-row
 
             items-center
+            justify-center
 
             gap-0.5
             sm:gap-2
@@ -466,7 +470,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           <p
             className="
-              text-[8px]
+              text-[9px]
 
               sm:text-[10px]
 
@@ -480,6 +484,8 @@ export const Hero: React.FC<HeroProps> = ({
 
               text-white/85
 
+              text-center
+
               whitespace-nowrap
 
               drop-shadow-[0_2px_8px_black]
@@ -487,7 +493,7 @@ export const Hero: React.FC<HeroProps> = ({
           >
             Tecnología con onda
 
-            <span className="mx-1 text-white/40">
+            <span className="mx-1.5 text-white/40">
               •
             </span>
 
