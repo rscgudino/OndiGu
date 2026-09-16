@@ -309,7 +309,7 @@ export const Hero: React.FC<HeroProps> = ({
           absolute
           z-20
 
-          top-16
+          top-2
 
           sm:top-20
           md:top-24
