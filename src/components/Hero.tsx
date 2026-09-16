@@ -56,7 +56,7 @@ export const Hero: React.FC<HeroProps> = ({ onQuoteClick, onPortfolioClick }) =>
   playsInline
   preload="auto"
   aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
-  className="w-full h-full object-cover object-[center_14%] sm:object-[center_16%] lg:object-[center_20%] scale-[0.90] filter grayscale contrast-[1.14] brightness-[1.08]"
+  className="w-full h-full object-cover object-[center_14%] sm:object-[center_16%] lg:object-[center_20%] scale-[0.85] filter grayscale contrast-[1.14] brightness-[1.08]"
 >
   <source src="/assets/pedro-bg.mp4" type="video/mp4" />
 </video>
