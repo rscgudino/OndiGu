@@ -96,7 +96,6 @@ export const Hero: React.FC<HeroProps> = ({
           justify-center
         "
       >
-
         <motion.video
           autoPlay
           muted
@@ -109,19 +108,6 @@ export const Hero: React.FC<HeroProps> = ({
             scale: videoScale,
           }}
 
-          /*
-           * IMPORTANTE
-           *
-           * MÓVIL:
-           * object-contain
-           *
-           * Esto evita que el navegador recorte
-           * agresivamente el video.
-           *
-           * TABLET / DESKTOP:
-           * volvemos a object-cover.
-           */
-
           className="
             absolute
             inset-0
@@ -129,14 +115,38 @@ export const Hero: React.FC<HeroProps> = ({
             w-full
             h-full
 
+            /*
+             * En celulares:
+             * mostramos el encuadre original del video.
+             */
             object-contain
 
+            /*
+             * Solo celulares:
+             * subimos ligeramente el video.
+             */
+            -translate-y-[3%]
+
+            /*
+             * Desde sm:
+             * vuelve a su posición normal.
+             */
+            sm:translate-y-0
             sm:object-contain
 
+            /*
+             * Tablet.
+             */
+            md:translate-y-0
             md:object-cover
 
+            /*
+             * Desktop.
+             */
+            lg:translate-y-0
             lg:object-cover
 
+            xl:translate-y-0
             xl:object-cover
 
             grayscale
@@ -146,16 +156,13 @@ export const Hero: React.FC<HeroProps> = ({
 
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
         >
-
           <source
             src="/assets/pedro-bg.mp4"
             type="video/mp4"
           />
 
           Tu navegador no soporta la reproducción de video.
-
         </motion.video>
-
       </div>
 
 
@@ -309,9 +316,17 @@ export const Hero: React.FC<HeroProps> = ({
           absolute
           z-20
 
+          /*
+           * CELULAR:
+           * subimos el bloque completo.
+           */
           top-2
 
+          /*
+           * Desde sm conserva la posición anterior.
+           */
           sm:top-20
+
           md:top-24
           lg:top-28
 
@@ -331,36 +346,44 @@ export const Hero: React.FC<HeroProps> = ({
         "
       >
 
-        {/* LOGO G */}
+        {/* =================================================
+            ANIMACIÓN G
+            ================================================= */}
 
         <div
-           className="
-             scale-[0.48]
+          className="
+            scale-[0.48]
 
-             sm:scale-[0.72]
-             md:scale-90
-             lg:scale-100
+            sm:scale-[0.72]
+            md:scale-90
+            lg:scale-100
 
-             origin-center
+            origin-center
 
+            /*
+             * En celular acercamos ONDIGU
+             * a la G.
+             */
             -mb-12
 
             sm:-mb-3
             md:-mb-2
-           lg:-mb-1
+            lg:-mb-1
 
-           translate-x-1
-           sm:translate-x-2
-           md:translate-x-3
-           lg:translate-x-4
-         "
+            translate-x-1
 
+            sm:translate-x-2
+            md:translate-x-3
+            lg:translate-x-4
+          "
         >
           <HeroBrandAnimation />
         </div>
 
 
-        {/* ONDIGU */}
+        {/* =================================================
+            ONDIGU
+            ================================================= */}
 
         <h2
           className="
@@ -404,7 +427,9 @@ export const Hero: React.FC<HeroProps> = ({
         </h2>
 
 
-        {/* TAGLINE */}
+        {/* =================================================
+            TAGLINE
+            ================================================= */}
 
         <div
           className="
@@ -952,7 +977,6 @@ export const Hero: React.FC<HeroProps> = ({
             bg-emerald-400
           "
         >
-
           <span
             className="
               absolute
@@ -965,7 +989,6 @@ export const Hero: React.FC<HeroProps> = ({
               animate-ping
             "
           />
-
         </div>
 
 
@@ -1117,4 +1140,5 @@ export const Hero: React.FC<HeroProps> = ({
     </section>
   );
 };
+
 
