@@ -1,4 +1,5 @@
 
+
 import { useEffect, useRef, useState } from "react";
 import { Zap, ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,402 +16,515 @@ export default function FloatingExpressAd({
   const [isHovered, setIsHovered] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
-  const cardRef = useRef<HTMLDivElement>(null);
-  const animFrameRef = useRef<number>();
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const positionRef = useRef(position);
+  const velocityRef = useRef(velocity);
+  const animationRef = useRef<number>();
 
-  // Movimiento flotante
+  // Mantener las referencias sincronizadas
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
+
+  useEffect(() => {
+    velocityRef.current = velocity;
+  }, [velocity]);
+
+  // ============================================================
+  // MOVIMIENTO FLOTANTE
+  // ============================================================
   useEffect(() => {
     const animate = () => {
-      if (!cardRef.current || isHovered) {
-        animFrameRef.current = requestAnimationFrame(animate);
+      const bubble = bubbleRef.current;
+
+      if (!bubble) {
+        animationRef.current = requestAnimationFrame(animate);
         return;
       }
 
-      const card = cardRef.current;
-      const width = card.offsetWidth;
-      const height = card.offsetHeight;
+      if (!isHovered) {
+        const width = bubble.offsetWidth;
+        const height = bubble.offsetHeight;
 
-      const maxX = window.innerWidth - width - 12;
-      const maxY = window.innerHeight - height - 12;
+        const maxX = window.innerWidth - width - 12;
+        const maxY = window.innerHeight - height - 12;
 
-      setPosition((prev) => {
-        let nextX = prev.x + velocity.x;
-        let nextY = prev.y + velocity.y;
+        let { x, y } = positionRef.current;
+        let { x: vx, y: vy } = velocityRef.current;
 
-        let nextVelocityX = velocity.x;
-        let nextVelocityY = velocity.y;
+        x += vx;
+        y += vy;
 
-        if (nextX <= 8 || nextX >= maxX) {
-          nextVelocityX = -velocity.x;
-          nextX = Math.max(8, Math.min(nextX, maxX));
+        // Rebote horizontal
+        if (x <= 8) {
+          x = 8;
+          vx = Math.abs(vx);
         }
 
-        if (nextY <= 8 || nextY >= maxY) {
-          nextVelocityY = -velocity.y;
-          nextY = Math.max(8, Math.min(nextY, maxY));
+        if (x >= maxX) {
+          x = maxX;
+          vx = -Math.abs(vx);
         }
 
-        if (
-          nextVelocityX !== velocity.x ||
-          nextVelocityY !== velocity.y
-        ) {
-          setVelocity({
-            x: nextVelocityX,
-            y: nextVelocityY,
-          });
+        // Rebote vertical
+        if (y <= 8) {
+          y = 8;
+          vy = Math.abs(vy);
         }
 
-        return {
-          x: nextX,
-          y: nextY,
-        };
-      });
+        if (y >= maxY) {
+          y = maxY;
+          vy = -Math.abs(vy);
+        }
 
-      animFrameRef.current = requestAnimationFrame(animate);
+        positionRef.current = { x, y };
+        velocityRef.current = { x: vx, y: vy };
+
+        setPosition({ x, y });
+        setVelocity({ x: vx, y: vy });
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    animFrameRef.current = requestAnimationFrame(animate);
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [velocity, isHovered]);
+  }, [isHovered]);
 
-  // Burbuja minimizada
+  // ============================================================
+  // MINIMIZADA
+  // ============================================================
   if (isMinimized) {
     return (
       <motion.button
-        initial={{ scale: 0 }}
+        initial={{ scale: 0, opacity: 0 }}
         animate={{
-          scale: [1, 1.06, 1],
+          scale: [1, 1.05, 1],
+          opacity: 1,
         }}
         transition={{
           scale: {
-            duration: 1.5,
+            duration: 1.4,
             repeat: Infinity,
             ease: "easeInOut",
           },
+          opacity: {
+            duration: 0.25,
+          },
         }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{
+          scale: 1.1,
+        }}
+        whileTap={{
+          scale: 0.94,
+        }}
         onClick={onSelectExpress}
         className="
           fixed z-[9999]
           w-12 h-12
           sm:w-14 sm:h-14
           rounded-full
-          bg-orange-500/25
-          backdrop-blur-md
-          border border-orange-300/50
-          shadow-[0_0_22px_rgba(249,115,22,0.35)]
+          overflow-hidden
+          bg-white/[0.04]
+          backdrop-blur-[3px]
+          border border-orange-300/45
+          shadow-[0_0_22px_rgba(249,115,22,0.28)]
           flex items-center justify-center
+          cursor-pointer
         "
         style={{
           left: position.x,
           top: position.y,
         }}
+        aria-label="Abrir Express"
       >
+        <div
+          className="
+            absolute inset-0
+            rounded-full
+            bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.18),transparent_60%)]
+            pointer-events-none
+          "
+        />
+
         <Zap
           size={20}
-          className="text-orange-300 fill-orange-300"
+          className="
+            relative z-10
+            text-orange-300
+            fill-orange-300
+            drop-shadow-[0_0_7px_rgba(249,115,22,0.6)]
+          "
         />
       </motion.button>
     );
   }
 
+  // ============================================================
+  // BURBUJA PRINCIPAL
+  // ============================================================
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{
+    <div
+      ref={bubbleRef}
+      className="
+        fixed z-[9999]
+        w-[135px] h-[135px]
+        sm:w-[150px] sm:h-[150px]
+        rounded-full
+        cursor-pointer
+        select-none
+      "
+      style={{
         left: position.x,
         top: position.y,
-        opacity: 1,
-        scale: [1, 1.055, 1],
-      }}
-      transition={{
-        left: {
-          duration: 0.08,
-          ease: "linear",
-        },
-        top: {
-          duration: 0.08,
-          ease: "linear",
-        },
-        opacity: {
-          duration: 0.3,
-        },
-        scale: {
-          duration: 1.6,
-          repeat: Infinity,
-          ease: "easeInOut",
-        },
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onSelectExpress}
-      className="
-        fixed z-[9999]
-        w-[145px] h-[145px]
-        sm:w-[160px] sm:h-[160px]
-        rounded-full
-        overflow-visible
-        cursor-pointer
-        select-none
-      "
     >
-      {/* =====================================================
-          HALO EXTERIOR
-          ===================================================== */}
-      <div
-        className="
-          absolute
-          -inset-3
-          rounded-full
-          bg-orange-500/10
-          blur-xl
-          pointer-events-none
-        "
-      />
-
-      {/* Segundo halo muy suave */}
-      <div
-        className="
-          absolute
-          -inset-1
-          rounded-full
-          border border-orange-400/20
-          pointer-events-none
-        "
-      />
-
-      {/* =====================================================
-          BURBUJA DE VIDRIO
-          ===================================================== */}
-      <div
+      {/* ======================================================
+          CAPA DE LATIDO
+          TODO EL CÍRCULO PULSA
+          ====================================================== */}
+      <motion.div
         className="
           absolute inset-0
           rounded-full
-          overflow-hidden
-          bg-white/[0.035]
-          backdrop-blur-[3px]
-          border border-orange-300/45
-          shadow-[0_0_25px_rgba(249,115,22,0.22)]
         "
+        animate={{
+          scale: [1, 1.035, 1.065, 1.025, 1],
+        }}
+        transition={{
+          duration: 1.35,
+          repeat: Infinity,
+          ease: "easeInOut",
+          times: [0, 0.22, 0.38, 0.55, 1],
+        }}
       >
-        {/* Reflejo superior */}
+        {/* ====================================================
+            HALO EXTERIOR
+            ==================================================== */}
         <div
           className="
             absolute
-            top-[-20%]
-            left-[15%]
-            w-[70%]
-            h-[45%]
+            -inset-3
             rounded-full
-            bg-white/[0.08]
+            bg-orange-500/[0.07]
             blur-xl
             pointer-events-none
           "
         />
 
-        {/* Brillo naranja interno */}
-        <div
+        {/* Halo pulsante */}
+        <motion.div
           className="
             absolute
-            inset-0
+            -inset-1
             rounded-full
-            bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.13),transparent_55%)]
+            border border-orange-400/20
             pointer-events-none
           "
+          animate={{
+            opacity: [0.35, 0.65, 0.35],
+          }}
+          transition={{
+            duration: 1.35,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
 
-        {/* Anillo interior */}
+        {/* ====================================================
+            BURBUJA GLASS
+            ==================================================== */}
         <div
           className="
-            absolute
-            inset-[7px]
+            absolute inset-0
             rounded-full
-            border border-white/[0.10]
-            pointer-events-none
-          "
-        />
-      </div>
-
-      {/* =====================================================
-          CONTENIDO
-          ===================================================== */}
-      <div
-        className="
-          absolute inset-0
-          z-10
-          flex flex-col
-          items-center
-          justify-center
-          text-center
-          px-3
-        "
-      >
-        {/* Rayo */}
-        <div
-          className="
-            w-9 h-9
-            sm:w-10 sm:h-10
-            rounded-full
-            bg-orange-500/35
-            backdrop-blur-sm
+            overflow-hidden
+            bg-white/[0.025]
+            backdrop-blur-[2px]
             border border-orange-300/40
-            flex items-center justify-center
-            shadow-[0_0_16px_rgba(249,115,22,0.35)]
-            mb-1
+            shadow-[0_0_25px_rgba(249,115,22,0.20)]
           "
         >
-          <Zap
-            size={18}
+          {/* Cristal transparente */}
+          <div
             className="
-              text-orange-300
-              fill-orange-300
+              absolute inset-0
+              rounded-full
+              bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.10),transparent_58%)]
+              pointer-events-none
+            "
+          />
+
+          {/* Reflejo de cristal */}
+          <div
+            className="
+              absolute
+              top-[-18%]
+              left-[18%]
+              w-[64%]
+              h-[42%]
+              rounded-full
+              bg-white/[0.075]
+              blur-xl
+              pointer-events-none
+            "
+          />
+
+          {/* Brillo lateral */}
+          <div
+            className="
+              absolute
+              -right-[20%]
+              top-[25%]
+              w-[45%]
+              h-[45%]
+              rounded-full
+              bg-orange-400/[0.055]
+              blur-xl
+              pointer-events-none
+            "
+          />
+
+          {/* Anillo interior */}
+          <div
+            className="
+              absolute
+              inset-[6px]
+              rounded-full
+              border border-white/[0.10]
+              pointer-events-none
+            "
+          />
+
+          {/* Punto de luz */}
+          <div
+            className="
+              absolute
+              top-[18%]
+              left-[24%]
+              w-2 h-2
+              rounded-full
+              bg-white/30
+              blur-[1px]
+              pointer-events-none
             "
           />
         </div>
 
-        {/* EXPRESS */}
-        <span
+        {/* ====================================================
+            CONTENIDO
+            ==================================================== */}
+        <div
           className="
-            text-[8px]
-            sm:text-[9px]
-            uppercase
-            tracking-[0.20em]
-            text-orange-300/90
-            font-bold
+            absolute inset-0
+            z-10
+            flex flex-col
+            items-center
+            justify-center
+            text-center
+            px-3
           "
         >
-          EXPRESS
-        </span>
-
-        {/* Landing */}
-        <div className="mt-0.5">
-          <div
+          {/* Rayo */}
+          <motion.div
             className="
-              text-[12px]
-              sm:text-[13px]
+              w-8 h-8
+              sm:w-9 sm:h-9
+              rounded-full
+              bg-orange-500/[0.25]
+              backdrop-blur-sm
+              border border-orange-300/35
+              flex items-center justify-center
+              shadow-[0_0_15px_rgba(249,115,22,0.25)]
+              mb-1
+            "
+            animate={{
+              opacity: [0.75, 1, 0.75],
+            }}
+            transition={{
+              duration: 1.35,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <Zap
+              size={17}
+              className="
+                text-orange-300
+                fill-orange-300
+                drop-shadow-[0_0_6px_rgba(249,115,22,0.65)]
+              "
+            />
+          </motion.div>
+
+          {/* EXPRESS */}
+          <span
+            className="
+              text-[7px]
+              sm:text-[8px]
+              uppercase
+              tracking-[0.22em]
+              text-orange-300/85
               font-bold
-              text-white/90
-              leading-tight
             "
           >
-            Tu Landing
-          </div>
+            EXPRESS
+          </span>
 
-          <div
-            className="
-              text-[17px]
-              sm:text-[19px]
-              font-black
-              text-orange-300
-              leading-tight
-              drop-shadow-[0_0_7px_rgba(249,115,22,0.45)]
-            "
-          >
-            24hs
+          {/* Landing */}
+          <div className="mt-0.5">
+            <div
+              className="
+                text-[11px]
+                sm:text-[12px]
+                font-semibold
+                text-white/85
+                leading-tight
+              "
+            >
+              Tu Landing
+            </div>
+
+            <div
+              className="
+                text-[16px]
+                sm:text-[18px]
+                font-black
+                text-orange-300
+                leading-tight
+                drop-shadow-[0_0_7px_rgba(249,115,22,0.45)]
+              "
+            >
+              24hs
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* =====================================================
-          BOTÓN ARROW
-          ===================================================== */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelectExpress();
-        }}
-        className="
-          absolute
-          z-30
-          bottom-[12px]
-          right-[12px]
-          w-7 h-7
-          sm:w-8 sm:h-8
-          rounded-full
-          bg-orange-500/45
-          backdrop-blur-md
-          border border-orange-200/40
-          hover:bg-orange-400/65
-          hover:border-orange-200/70
-          flex items-center justify-center
-          transition-all duration-200
-          shadow-[0_0_13px_rgba(249,115,22,0.30)]
-        "
-        aria-label="Ver Express"
-      >
-        <ArrowRight
-          size={14}
-          className="text-white"
-        />
-      </button>
-
-      {/* =====================================================
-          BOTÓN MINIMIZAR
-          ===================================================== */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsMinimized(true);
-        }}
-        className="
-          absolute
-          z-30
-          top-[11px]
-          right-[11px]
-          w-6 h-6
-          rounded-full
-          bg-black/15
-          backdrop-blur-md
-          hover:bg-black/35
-          border border-white/15
-          flex items-center justify-center
-          transition-all
-        "
-        aria-label="Minimizar"
-      >
-        <X
-          size={11}
-          className="text-white/65"
-        />
-      </button>
-
-      {/* =====================================================
-          TEXTO AL PASAR EL MOUSE
-          ===================================================== */}
-      {isHovered && (
-        <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
+        {/* ====================================================
+            BOTÓN ARROW
+            ==================================================== */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectExpress();
+          }}
           className="
             absolute
-            z-50
+            z-30
+            bottom-[10px]
+            right-[10px]
+            w-6 h-6
+            sm:w-7 sm:h-7
+            rounded-full
+            bg-orange-500/35
+            backdrop-blur-md
+            border border-orange-200/35
+            hover:bg-orange-400/60
+            hover:border-orange-200/60
+            flex items-center justify-center
+            transition-all duration-200
+            shadow-[0_0_12px_rgba(249,115,22,0.25)]
+          "
+          aria-label="Ver Express"
+        >
+          <ArrowRight
+            size={12}
+            className="text-white"
+          />
+        </button>
+
+        {/* ====================================================
+            BOTÓN X
+            ==================================================== */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsMinimized(true);
+          }}
+          className="
+            absolute
+            z-30
+            top-[9px]
+            right-[9px]
+            w-5 h-5
+            rounded-full
+            bg-black/[0.12]
+            backdrop-blur-md
+            hover:bg-black/30
+            border border-white/[0.15]
+            flex items-center justify-center
+            transition-all
+          "
+          aria-label="Minimizar"
+        >
+          <X
+            size={10}
+            className="text-white/60"
+          />
+        </button>
+      </motion.div>
+
+      {/* ======================================================
+          TEXTO AL PASAR EL MOUSE
+          ====================================================== */}
+      {isHovered && (
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 4,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          className="
+            absolute
+            z-[100]
             -bottom-8
             left-1/2
             -translate-x-1/2
             whitespace-nowrap
             px-2.5 py-1
             rounded-full
-            bg-black/45
+            bg-black/35
             backdrop-blur-md
             border border-orange-400/20
             text-[9px]
-            text-white/80
+            text-white/75
             pointer-events-none
           "
         >
           Landing lista en 24hs
         </motion.div>
       )}
-    </motion.div>
+    </div>
   );
 }
+
+
+### Qué cambié
+
+* **135 px en móvil / 150 px en escritorio** → más pequeña.
+* Fondo prácticamente transparente: `bg-white/[0.025]`.
+* `backdrop-blur-[2px]` → permite distinguir lo que está detrás.
+* Borde naranja muy sutil.
+* Halo muy suave, sin convertirla en una mancha naranja.
+* **El círculo completo pulsa**, no solamente el rayo.
+* El pulso tiene un movimiento tipo **latido: pequeño → grande → pequeño**.
+* El movimiento flotante y el latido están separados para evitar que se interfieran.
+* Al minimizarla también conserva el pequeño pulso.
+* Mantiene el rebote por toda la pantalla.
+* Conserva `EXPRESS`, `Tu Landing`, `24hs`, flecha y `X`.
+
+**Importante:** después de reemplazar el archivo, haz el `git add`, `commit` y `push` para que Vercel reciba esta versión.
 
 
 
