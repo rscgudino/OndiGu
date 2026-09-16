@@ -1454,7 +1454,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
               ZONA PEDRO — FOTO EN LA PC
           =================================================== */}
           <div
-            id="public/assets/imagen2.png"
+            id="imagen2.png"
             className="
               col-span-12
               relative
