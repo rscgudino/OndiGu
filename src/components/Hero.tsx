@@ -1,5 +1,4 @@
 
-
 import React, { useRef } from 'react';
 import {
   motion,
@@ -82,7 +81,7 @@ export const Hero: React.FC<HeroProps> = ({
     >
 
       {/* =====================================================
-          VIDEO BACKGROUND
+          VIDEO
           ===================================================== */}
 
       <div
@@ -107,24 +106,43 @@ export const Hero: React.FC<HeroProps> = ({
           className="
             absolute
             inset-0
+
             w-full
             h-full
 
             object-cover
 
-            /* CELULARES */
-            object-[68%_center]
+            /*
+             * =================================================
+             * CELULARES
+             * =================================================
+             *
+             * Probamos un encuadre más abierto.
+             * La posición se lleva hacia el centro para evitar
+             * que solamente aparezca media cara.
+             */
 
-            /* TELÉFONOS GRANDES */
-            sm:object-[72%_center]
+            object-[50%_center]
 
-            /* TABLETS */
-            md:object-[75%_center]
+            /*
+             * TELÉFONOS GRANDES
+             */
 
-            /* NOTEBOOK */
+            sm:object-[55%_center]
+
+            /*
+             * TABLETS
+             */
+
+            md:object-[65%_center]
+
+            /*
+             * DESKTOP
+             * Conservamos el comportamiento anterior.
+             */
+
             lg:object-[72%_center]
 
-            /* DESKTOP */
             xl:object-[70%_center]
 
             grayscale
@@ -144,7 +162,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          MOBILE DARK OVERLAY
+          OVERLAY GENERAL
           ===================================================== */}
 
       <div
@@ -154,16 +172,17 @@ export const Hero: React.FC<HeroProps> = ({
           z-[1]
           pointer-events-none
 
-          bg-black/25
+          bg-black/30
 
-          sm:bg-black/15
+          sm:bg-black/20
+
           lg:bg-black/10
         "
       />
 
 
       {/* =====================================================
-          LEFT GRADIENT
+          GRADIENTE LATERAL
           ===================================================== */}
 
       <div
@@ -198,7 +217,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          MOBILE BOTTOM GRADIENT
+          GRADIENTE INFERIOR
           ===================================================== */}
 
       <div
@@ -208,7 +227,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-[55%]
+          h-[58%]
 
           z-[2]
 
@@ -216,12 +235,13 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-t
           from-black/95
-          via-black/55
+          via-black/60
           to-transparent
 
-          sm:h-[45%]
+          sm:h-[48%]
 
           lg:h-32
+
           lg:bg-gradient-to-t
           lg:from-black/75
           lg:via-transparent
@@ -230,7 +250,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          TOP GRADIENT
+          GRADIENTE SUPERIOR
           ===================================================== */}
 
       <div
@@ -259,7 +279,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          BRAND
+          BRAND ONDIGU
           ===================================================== */}
 
       <motion.div
@@ -307,8 +327,6 @@ export const Hero: React.FC<HeroProps> = ({
         <div
           className="
             scale-[0.48]
-
-            xs:scale-[0.55]
 
             sm:scale-[0.72]
 
@@ -363,7 +381,6 @@ export const Hero: React.FC<HeroProps> = ({
           "
         >
           Ondi
-
           <span
             className="
               text-transparent
@@ -454,7 +471,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          MAIN CONTENT
+          CONTENIDO PRINCIPAL
           ===================================================== */}
 
       <div
@@ -526,9 +543,7 @@ export const Hero: React.FC<HeroProps> = ({
           "
         >
 
-          {/* =================================================
-              TITLE
-              ================================================= */}
+          {/* TITULO */}
 
           <motion.h1
             initial={{
@@ -552,8 +567,6 @@ export const Hero: React.FC<HeroProps> = ({
               max-w-2xl
 
               text-[1.55rem]
-
-              xs:text-[1.7rem]
 
               sm:text-3xl
 
@@ -582,9 +595,7 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.h1>
 
 
-          {/* =================================================
-              DESCRIPTION
-              ================================================= */}
+          {/* DESCRIPCION */}
 
           <motion.p
             initial={{
@@ -631,9 +642,7 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.p>
 
 
-          {/* =================================================
-              BUTTONS
-              ================================================= */}
+          {/* BOTONES */}
 
           <motion.div
             initial={{
@@ -769,9 +778,7 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.div>
 
 
-          {/* =================================================
-              POSITIONING TEXT
-              ================================================= */}
+          {/* TEXTO INFERIOR */}
 
           <motion.div
             initial={{
@@ -819,25 +826,21 @@ export const Hero: React.FC<HeroProps> = ({
               "
             >
               No somos una persona que hace páginas sueltas.
-
               Somos tu equipo de{' '}
 
               <span className="text-white font-medium">
                 Desarrollo Web
               </span>
-
               ,{' '}
 
               <span className="text-white font-medium">
                 IA
               </span>
-
               ,{' '}
 
               <span className="text-white font-medium">
                 Automatización
               </span>
-
               {' '}y{' '}
 
               <span className="text-white font-medium">
@@ -854,7 +857,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          PEDRO BADGE
+          BADGE PEDRO
           ===================================================== */}
 
       <motion.div
@@ -988,7 +991,7 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          SCROLL INDICATOR
+          SCROLL
           ===================================================== */}
 
       <motion.div
@@ -1035,11 +1038,8 @@ export const Hero: React.FC<HeroProps> = ({
         <div
           className="
             flex
-
             items-center
-
             gap-2
-
             animate-bounce
           "
         >
@@ -1063,11 +1063,9 @@ export const Hero: React.FC<HeroProps> = ({
           <ArrowDown
             className="
               w-3
-
               h-3
 
               sm:w-3.5
-
               sm:h-3.5
 
               text-[#FF8C00]
@@ -1080,7 +1078,6 @@ export const Hero: React.FC<HeroProps> = ({
         <span
           className="
             hidden
-
             sm:inline
 
             font-mono
@@ -1098,4 +1095,6 @@ export const Hero: React.FC<HeroProps> = ({
     </section>
   );
 };
+
+
 
