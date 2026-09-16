@@ -295,11 +295,11 @@ export const Hero: React.FC<HeroProps> = ({
           md:top-24
           lg:top-28
 
-          right-5
-          sm:right-8
-          md:right-12
-          lg:right-16
-          xl:right-24
+          right-2
+          sm:right-4
+          md:right-6
+          lg:right-8
+          xl:right-12
 
           w-auto
 
