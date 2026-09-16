@@ -1,8 +1,7 @@
 
 import React, { useRef } from 'react';
 import {
-  motio
-n,
+  motion,
   useScroll,
   useTransform,
   useSpring,
@@ -21,10 +20,6 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const containerRef = useRef<HTMLElement>(null);
 
-  // ============================================================
-  // SCROLL
-  // ============================================================
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
@@ -37,51 +32,45 @@ export const Hero: React.FC<HeroProps> = ({
   });
 
   // ============================================================
-  // VIDEO PARALLAX
+  // PARALLAX DEL VIDEO
   // ============================================================
 
-  const yBg = useTransform(
+  const videoY = useTransform(
     smoothProgress,
     [0, 1],
-    ['0%', '6%']
+    ['0%', '3%']
   );
 
-  const scaleBg = useTransform(
+  const videoScale = useTransform(
     smoothProgress,
     [0, 1],
-    [1.01, 1.05]
+    [1, 1.035]
   );
 
   // ============================================================
-  // TEXTO PARALLAX
+  // PARALLAX DEL CONTENIDO
   // ============================================================
 
-  const yText = useTransform(
+  const contentY = useTransform(
     smoothProgress,
     [0, 1],
-    [0, -70]
+    [0, -60]
   );
 
-  const opacityText = useTransform(
+  const contentOpacity = useTransform(
     smoothProgress,
     [0, 0.75, 1],
-    [1, 0.85, 0.25]
+    [1, 0.95, 0.3]
   );
 
   // ============================================================
   // BADGE
   // ============================================================
 
-  const yBadge = useTransform(
+  const badgeY = useTransform(
     smoothProgress,
     [0, 1],
-    [0, 35]
-  );
-
-  const opacityBadge = useTransform(
-    smoothProgress,
-    [0, 0.85],
-    [1, 0.3]
+    [0, 25]
   );
 
   return (
@@ -93,14 +82,12 @@ export const Hero: React.FC<HeroProps> = ({
         min-h-screen
         w-full
         overflow-hidden
-        bg-[#0c0e12]
-        flex
-        flex-col
+        bg-black
       "
     >
 
       {/* ========================================================
-          1. VIDEO DE FONDO
+          VIDEO
       ======================================================== */}
 
       <div
@@ -109,8 +96,7 @@ export const Hero: React.FC<HeroProps> = ({
           inset-0
           z-0
           overflow-hidden
-          pointer-events-none
-          select-none
+          bg-black
         "
       >
 
@@ -120,10 +106,12 @@ export const Hero: React.FC<HeroProps> = ({
           loop
           playsInline
           preload="auto"
+
           style={{
-            y: yBg,
-            scale: scaleBg,
+            y: videoY,
+            scale: videoScale,
           }}
+
           className="
             absolute
             inset-0
@@ -133,17 +121,29 @@ export const Hero: React.FC<HeroProps> = ({
 
             object-cover
 
-            object-[68%_center]
-            sm:object-[65%_center]
-            lg:object-[63%_center]
-            xl:object-[62%_center]
+            /*
+             * IMPORTANTE:
+             * movemos el encuadre hacia la DERECHA
+             * para que Pedro quede más visible.
+             */
+
+            object-[82%_center]
+
+            sm:object-[78%_center]
+
+            md:object-[75%_center]
+
+            lg:object-[72%_center]
+
+            xl:object-[70%_center]
 
             grayscale
 
-            contrast-[1.05]
+            contrast-[1.02]
 
-            brightness-[0.98]
+            brightness-100
           "
+
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
         >
           <source
@@ -158,7 +158,8 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* ========================================================
-          2. OSCURECIMIENTO GENERAL MUY SUAVE
+          OSCURECIMIENTO MUY SUAVE
+          NO TAPAMOS EL VIDEO
       ======================================================== */}
 
       <div
@@ -167,17 +168,15 @@ export const Hero: React.FC<HeroProps> = ({
           inset-0
           z-[1]
 
-          bg-[#0c0e12]/5
+          bg-black/10
 
           pointer-events-none
         "
-        aria-hidden="true"
       />
 
 
       {/* ========================================================
-          3. DEGRADADO IZQUIERDO
-          SOLO PROTEGE LA ZONA DEL TEXTO
+          DEGRADADO SOLO DETRÁS DEL TEXTO
       ======================================================== */}
 
       <div
@@ -186,39 +185,39 @@ export const Hero: React.FC<HeroProps> = ({
           inset-y-0
           left-0
 
-          w-full
-          lg:w-[72%]
-
           z-[2]
+
+          w-full
+          lg:w-[62%]
 
           pointer-events-none
 
           bg-gradient-to-r
 
-          from-[#0c0e12]
+          from-black/85
 
-          via-[#0c0e12]/75
+          via-black/55
 
-          via-[42%]
+          via-[38%]
 
           to-transparent
         "
-        aria-hidden="true"
       />
 
 
       {/* ========================================================
-          4. PROTECCIÓN SUPERIOR
+          GRADIENTE SUPERIOR
       ======================================================== */}
 
       <div
         className="
           absolute
-          inset-x-0
           top-0
+          left-0
+          right-0
 
-          h-32
-          sm:h-36
+          h-24
+          sm:h-32
 
           z-[2]
 
@@ -226,26 +225,26 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-b
 
-          from-[#0c0e12]/75
+          from-black/55
 
           to-transparent
         "
-        aria-hidden="true"
       />
 
 
       {/* ========================================================
-          5. DEGRADADO INFERIOR
+          GRADIENTE INFERIOR
       ======================================================== */}
 
       <div
         className="
           absolute
-          inset-x-0
           bottom-0
+          left-0
+          right-0
 
-          h-40
-          sm:h-48
+          h-28
+          sm:h-36
 
           z-[2]
 
@@ -253,77 +252,15 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-t
 
-          from-[#0c0e12]
-
-          via-[#0c0e12]/45
+          from-black/75
 
           to-transparent
         "
-        aria-hidden="true"
       />
 
 
       {/* ========================================================
-          6. GRID MUY SUTIL
-      ======================================================== */}
-
-      <div
-        className="
-          absolute
-          inset-0
-
-          z-[3]
-
-          pointer-events-none
-
-          bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]
-
-          bg-[size:5rem_5rem]
-
-          [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_75%)]
-
-          opacity-[0.07]
-        "
-        aria-hidden="true"
-      />
-
-
-      {/* ========================================================
-          7. GLOW NARANJA
-      ======================================================== */}
-
-      <div
-        className="
-          absolute
-
-          top-[30%]
-          left-[25%]
-
-          w-[500px]
-          h-[350px]
-
-          z-[3]
-
-          bg-gradient-to-b
-
-          from-[#FF4500]/8
-
-          via-[#FF8C00]/4
-
-          to-transparent
-
-          rounded-full
-
-          blur-3xl
-
-          pointer-events-none
-        "
-        aria-hidden="true"
-      />
-
-
-      {/* ========================================================
-          8. CONTENIDO
+          CONTENIDO
       ======================================================== */}
 
       <div
@@ -331,602 +268,545 @@ export const Hero: React.FC<HeroProps> = ({
           relative
           z-10
 
-          flex-1
+          min-h-screen
 
           w-full
-
           max-w-7xl
 
           mx-auto
 
           px-5
-          sm:px-6
-          lg:px-8
+          sm:px-8
+          lg:px-10
 
           flex
           items-center
 
-          pt-28
-          sm:pt-32
-          lg:pt-36
+          pt-24
+          sm:pt-28
+          lg:pt-24
 
-          pb-24
-          sm:pb-28
+          pb-28
+          sm:pb-24
         "
       >
 
-        <div
+        <motion.div
+          style={{
+            y: contentY,
+            opacity: contentOpacity,
+          }}
+
+          initial={{
+            opacity: 0,
+            y: 25,
+          }}
+
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+
+          transition={{
+            duration: 0.9,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+
           className="
             w-full
 
-            grid
-            grid-cols-1
-            lg:grid-cols-12
+            lg:w-[56%]
 
-            gap-8
-            lg:gap-10
+            flex
+            flex-col
 
             items-center
+            lg:items-start
+
+            text-center
+            lg:text-left
           "
         >
 
-          {/* ====================================================
-              COLUMNA DE TEXTO
-          ==================================================== */}
+          {/* ==================================================
+              ANIMACIÓN DE MARCA
+          ================================================== */}
 
           <motion.div
-            style={{
-              y: yText,
-              opacity: opacityText,
-            }}
             initial={{
               opacity: 0,
-              y: 30,
+              scale: 0.92,
             }}
+
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+
+            transition={{
+              duration: 0.7,
+              delay: 0.1,
+            }}
+
+            className="
+              mb-1
+
+              scale-[0.72]
+
+              sm:scale-90
+
+              md:scale-100
+
+              origin-center
+
+              lg:origin-left
+            "
+          >
+            <HeroBrandAnimation />
+          </motion.div>
+
+
+          {/* ==================================================
+              ONDIGU
+          ================================================== */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 15,
+            }}
+
             animate={{
               opacity: 1,
               y: 0,
             }}
-            transition={{
-              duration: 0.9,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="
-              lg:col-span-7
 
-              w-full
+            transition={{
+              duration: 0.7,
+              delay: 0.2,
+            }}
+
+            className="
+              mb-4
+              sm:mb-5
 
               flex
               flex-col
 
               items-center
               lg:items-start
-
-              text-center
-              lg:text-left
             "
           >
 
-            {/* ==================================================
-                LOGO
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.92,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.1,
-              }}
+            <h2
               className="
-                w-full
+                font-brand
 
-                flex
-                justify-center
-                lg:justify-start
+                text-5xl
+                sm:text-6xl
+                md:text-7xl
+                lg:text-8xl
 
-                mb-1
-              "
-            >
-              <div
-                className="
-                  scale-[0.78]
-                  sm:scale-90
-                  md:scale-100
+                font-black
 
-                  origin-center
-                  lg:origin-left
-                "
-              >
-                <HeroBrandAnimation />
-              </div>
-            </motion.div>
+                tracking-[-0.05em]
 
-
-            {/* ==================================================
-                ONDIGU
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 15,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.2,
-              }}
-              className="
-                flex
-                flex-col
-
-                items-center
-                lg:items-start
-
-                mb-4
-                sm:mb-5
-              "
-            >
-
-              <h2
-                className="
-                  font-brand
-
-                  text-5xl
-                  sm:text-6xl
-                  md:text-7xl
-                  lg:text-8xl
-
-                  font-black
-
-                  tracking-[-0.05em]
-
-                  text-white
-
-                  leading-none
-
-                  select-none
-
-                  drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]
-                "
-              >
-                Ondi
-
-                <span
-                  className="
-                    text-transparent
-
-                    bg-clip-text
-
-                    bg-gradient-to-r
-
-                    from-[#FF8C00]
-                    via-[#FF6000]
-                    to-[#FF4500]
-
-                    drop-shadow-[0_0_30px_rgba(255,69,0,0.4)]
-                  "
-                >
-                  Gu
-                </span>
-              </h2>
-
-
-              <div
-                className="
-                  mt-2
-
-                  flex
-                  items-center
-
-                  gap-2
-                "
-              >
-
-                <span
-                  className="
-                    w-1.5
-                    h-1.5
-
-                    rounded-full
-
-                    bg-[#FF4500]
-
-                    animate-pulse
-                  "
-                />
-
-                <p
-                  className="
-                    text-[11px]
-                    sm:text-xs
-                    md:text-sm
-
-                    font-medium
-
-                    tracking-wide
-
-                    text-[#c2c7d4]
-
-                    drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]
-                  "
-                >
-                  Tecnología con onda
-
-                  <span className="text-[#555b6d] mx-1.5">
-                    •
-                  </span>
-
-                  <span className="text-[#FF8C00]">
-                    La señal de Gudiño
-                  </span>
-                </p>
-
-              </div>
-
-            </motion.div>
-
-
-            {/* ==================================================
-                TITULAR PRINCIPAL
-            ================================================== */}
-
-            <motion.h1
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.3,
-              }}
-              className="
-                w-full
-
-                max-w-3xl
-
-                text-[2rem]
-                leading-[1.08]
-
-                sm:text-4xl
-                sm:leading-[1.1]
-
-                md:text-5xl
-
-                lg:text-6xl
-
-                font-extrabold
+                leading-none
 
                 text-white
 
-                tracking-tight
-
-                mb-4
-                sm:mb-5
-
-                drop-shadow-[0_4px_18px_rgba(0,0,0,1)]
+                drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]
               "
             >
-              Conectamos tu negocio con tecnología inteligente.
-            </motion.h1>
-
-
-            {/* ==================================================
-                SUBTÍTULO
-            ================================================== */}
-
-            <motion.p
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.4,
-              }}
-              className="
-                w-full
-
-                max-w-xl
-
-                text-sm
-                sm:text-base
-                md:text-lg
-                lg:text-xl
-
-                text-[#edf0f7]
-
-                font-normal
-
-                leading-relaxed
-
-                mb-6
-                sm:mb-8
-
-                drop-shadow-[0_2px_12px_rgba(0,0,0,1)]
-              "
-            >
-              Desarrollo web, IA y automatización.
-              Todo en uno. Simple. Sin vueltas.
-            </motion.p>
-
-
-            {/* ==================================================
-                BOTONES
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.5,
-              }}
-              className="
-                flex
-
-                flex-col
-                sm:flex-row
-
-                items-center
-                justify-center
-                lg:justify-start
-
-                gap-3
-                sm:gap-4
-
-                w-full
-                sm:w-auto
-
-                mb-6
-                sm:mb-8
-              "
-            >
-
-              <button
-                id="hero-primary-quote-cta"
-                type="button"
-                onClick={onQuoteClick}
+              Ondi
+              <span
                 className="
-                  w-full
-                  sm:w-auto
+                  text-transparent
+                  bg-clip-text
+                  bg-gradient-to-r
+                  from-[#FF8C00]
+                  via-[#FF6000]
+                  to-[#FF4500]
+                "
+              >
+                Gu
+              </span>
+            </h2>
 
-                  min-w-[210px]
 
-                  px-7
-                  sm:px-8
+            <div
+              className="
+                mt-2
 
-                  py-3.5
-                  sm:py-4
+                flex
+                items-center
 
-                  text-sm
-                  sm:text-base
+                gap-2
+              "
+            >
 
-                  font-semibold
+              <span
+                className="
+                  w-1.5
+                  h-1.5
 
-                  text-white
+                  rounded-full
 
                   bg-[#FF4500]
 
-                  hover:bg-[#e03d00]
-
-                  rounded-xl
-
-                  shadow-[0_0_35px_rgba(255,69,0,0.4)]
-
-                  hover:shadow-[0_0_45px_rgba(255,69,0,0.6)]
-
-                  transition-all
-                  duration-200
-
-                  active:scale-[0.98]
-
-                  cursor-pointer
+                  animate-pulse
                 "
-              >
-                Pedí tu presupuesto
-              </button>
-
-
-              <button
-                id="hero-secondary-portfolio-cta"
-                type="button"
-                onClick={onPortfolioClick}
-                className="
-                  w-full
-                  sm:w-auto
-
-                  min-w-[170px]
-
-                  px-7
-
-                  py-3.5
-                  sm:py-4
-
-                  text-sm
-                  sm:text-base
-
-                  font-medium
-
-                  text-white
-
-                  bg-[#151822]/75
-
-                  hover:bg-[#1f2434]/90
-
-                  border
-                  border-white/15
-
-                  hover:border-white/30
-
-                  rounded-xl
-
-                  transition-all
-                  duration-200
-
-                  backdrop-blur-md
-
-                  cursor-pointer
-                "
-              >
-                Ver portfolio
-              </button>
-
-            </motion.div>
-
-
-            {/* ==================================================
-                POSITIONING
-            ================================================== */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              transition={{
-                duration: 0.7,
-                delay: 0.6,
-              }}
-              className="
-                pt-5
-                sm:pt-6
-
-                border-t
-                border-white/10
-
-                w-full
-
-                max-w-xl
-
-                text-center
-                lg:text-left
-              "
-            >
+              />
 
               <p
                 className="
-                  text-[11px]
+                  text-[10px]
                   sm:text-xs
                   md:text-sm
 
-                  text-[#b2b7c5]
+                  font-medium
 
-                  leading-relaxed
+                  tracking-wide
 
-                  drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]
+                  text-white/85
+
+                  drop-shadow-[0_2px_8px_black]
                 "
               >
-                No somos una persona que hace páginas sueltas.
+                Tecnología con onda
 
-                Somos tu equipo de{' '}
-
-                <span className="text-white font-medium">
-                  Desarrollo Web
+                <span className="mx-1.5 text-white/40">
+                  •
                 </span>
-                ,{' '}
 
-                <span className="text-white font-medium">
-                  IA
+                <span className="text-[#FF8C00]">
+                  La señal de Gudiño
                 </span>
-                ,{' '}
-
-                <span className="text-white font-medium">
-                  Automatización
-                </span>{' '}
-
-                y{' '}
-
-                <span className="text-white font-medium">
-                  E-commerce
-                </span>
-                .
               </p>
 
-            </motion.div>
+            </div>
 
           </motion.div>
 
 
-          {/* ====================================================
-              ESPACIO DERECHO
-          ==================================================== */}
+          {/* ==================================================
+              TITULAR
+          ================================================== */}
 
-          <div
+          <motion.h1
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+
+            transition={{
+              duration: 0.7,
+              delay: 0.3,
+            }}
+
             className="
-              hidden
-              lg:block
+              w-full
 
-              lg:col-span-5
+              max-w-2xl
 
-              min-h-[400px]
+              text-[1.9rem]
 
-              pointer-events-none
-              select-none
+              sm:text-4xl
+
+              md:text-5xl
+
+              lg:text-[3.5rem]
+
+              xl:text-[3.8rem]
+
+              leading-[1.05]
+
+              font-extrabold
+
+              tracking-tight
+
+              text-white
+
+              mb-4
+
+              drop-shadow-[0_4px_18px_rgba(0,0,0,1)]
             "
-          />
+          >
+            Conectamos tu negocio con tecnología inteligente.
+          </motion.h1>
 
-        </div>
+
+          {/* ==================================================
+              SUBTÍTULO
+          ================================================== */}
+
+          <motion.p
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+
+            transition={{
+              duration: 0.7,
+              delay: 0.4,
+            }}
+
+            className="
+              w-full
+
+              max-w-xl
+
+              text-sm
+              sm:text-base
+              md:text-lg
+
+              text-white/90
+
+              leading-relaxed
+
+              mb-6
+
+              drop-shadow-[0_2px_12px_black]
+            "
+          >
+            Desarrollo web, IA y automatización.
+            Todo en uno. Simple. Sin vueltas.
+          </motion.p>
+
+
+          {/* ==================================================
+              BOTONES
+          ================================================== */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+
+            transition={{
+              duration: 0.7,
+              delay: 0.5,
+            }}
+
+            className="
+              flex
+
+              flex-col
+              sm:flex-row
+
+              items-center
+              lg:items-start
+
+              gap-3
+
+              w-full
+              sm:w-auto
+
+              mb-6
+            "
+          >
+
+            <button
+              id="hero-primary-quote-cta"
+
+              type="button"
+
+              onClick={onQuoteClick}
+
+              className="
+                w-full
+                sm:w-auto
+
+                min-w-[205px]
+
+                px-7
+                py-3.5
+
+                rounded-xl
+
+                bg-[#FF4500]
+
+                text-white
+
+                text-sm
+                sm:text-base
+
+                font-semibold
+
+                shadow-[0_0_30px_rgba(255,69,0,0.35)]
+
+                hover:bg-[#e03d00]
+
+                transition-all
+
+                active:scale-[0.98]
+              "
+            >
+              Pedí tu presupuesto
+            </button>
+
+
+            <button
+              id="hero-secondary-portfolio-cta"
+
+              type="button"
+
+              onClick={onPortfolioClick}
+
+              className="
+                w-full
+                sm:w-auto
+
+                min-w-[170px]
+
+                px-7
+                py-3.5
+
+                rounded-xl
+
+                bg-black/35
+
+                border
+                border-white/20
+
+                backdrop-blur-sm
+
+                text-white
+
+                text-sm
+                sm:text-base
+
+                hover:bg-black/50
+
+                transition-all
+              "
+            >
+              Ver portfolio
+            </button>
+
+          </motion.div>
+
+
+          {/* ==================================================
+              POSICIONAMIENTO
+          ================================================== */}
+
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+
+            animate={{
+              opacity: 1,
+            }}
+
+            transition={{
+              duration: 0.7,
+              delay: 0.6,
+            }}
+
+            className="
+              pt-4
+
+              border-t
+              border-white/15
+
+              w-full
+
+              max-w-xl
+            "
+          >
+
+            <p
+              className="
+                text-[10px]
+                sm:text-xs
+                md:text-sm
+
+                text-white/70
+
+                leading-relaxed
+
+                drop-shadow-[0_2px_8px_black]
+              "
+            >
+              No somos una persona que hace páginas sueltas.
+              Somos tu equipo de{' '}
+              <span className="text-white font-medium">
+                Desarrollo Web
+              </span>
+              ,{' '}
+              <span className="text-white font-medium">
+                IA
+              </span>
+              ,{' '}
+              <span className="text-white font-medium">
+                Automatización
+              </span>{' '}
+              y{' '}
+              <span className="text-white font-medium">
+                E-commerce
+              </span>
+              .
+            </p>
+
+          </motion.div>
+
+        </motion.div>
 
       </div>
 
 
       {/* ========================================================
-          9. BADGE DE PEDRO
+          BADGE PEDRO
       ======================================================== */}
 
       <motion.div
         style={{
-          y: yBadge,
-          opacity: opacityBadge,
+          y: badgeY,
         }}
+
         initial={{
           opacity: 0,
-          scale: 0.85,
+          scale: 0.9,
         }}
+
         animate={{
           opacity: 1,
           scale: 1,
         }}
+
         transition={{
-          duration: 0.9,
-          delay: 0.5,
+          duration: 0.8,
+          delay: 0.6,
         }}
+
         className="
           absolute
 
           z-20
 
-          right-5
+          right-4
           sm:right-8
-          lg:right-10
-          xl:right-16
+          md:right-10
+          lg:right-12
+          xl:right-20
 
           bottom-20
           sm:bottom-20
@@ -937,21 +817,21 @@ export const Hero: React.FC<HeroProps> = ({
 
           rounded-2xl
 
-          bg-[#0f121a]/65
+          bg-black/40
 
           border
-          border-white/10
-
-          shadow-[0_15px_40px_rgba(0,0,0,0.65)]
+          border-white/15
 
           backdrop-blur-md
 
-          flex
+          shadow-[0_10px_35px_rgba(0,0,0,0.5)]
+
+          hidden
+          sm:flex
+
           items-center
 
           gap-3
-
-          pointer-events-none
         "
       >
 
@@ -967,7 +847,6 @@ export const Hero: React.FC<HeroProps> = ({
             bg-emerald-400
           "
         >
-
           <span
             className="
               absolute
@@ -980,11 +859,10 @@ export const Hero: React.FC<HeroProps> = ({
               animate-ping
             "
           />
-
         </div>
 
 
-        <div className="text-left">
+        <div>
 
           <p
             className="
@@ -995,29 +873,22 @@ export const Hero: React.FC<HeroProps> = ({
               font-semibold
 
               text-white
-
-              tracking-wide
             "
           >
             Pedro Gudiño
           </p>
 
-
           <p
             className="
               text-[10px]
 
-              text-[#c0c5d1]
-
-              font-light
+              text-white/65
             "
           >
             Fundador & Diseñador Web
-
             <span className="mx-1">
               •
             </span>
-
             <span className="text-[#FF8C00]">
               En línea
             </span>
@@ -1029,27 +900,29 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* ========================================================
-          10. SCROLL
+          SCROLL
       ======================================================== */}
 
       <motion.div
         initial={{
           opacity: 0,
         }}
+
         animate={{
           opacity: 1,
         }}
+
         transition={{
           duration: 0.7,
           delay: 0.8,
         }}
+
         className="
           absolute
 
           z-20
 
-          bottom-5
-          sm:bottom-6
+          bottom-4
 
           left-0
           right-0
@@ -1062,9 +935,7 @@ export const Hero: React.FC<HeroProps> = ({
           items-center
           justify-between
 
-          text-xs
-
-          text-[#a0a6b5]
+          text-white/55
         "
       >
 
@@ -1083,11 +954,10 @@ export const Hero: React.FC<HeroProps> = ({
               font-mono
 
               text-[9px]
-              sm:text-[10px]
-
-              tracking-wider
 
               uppercase
+
+              tracking-wider
             "
           >
             Deslizá para explorar
@@ -1107,14 +977,14 @@ export const Hero: React.FC<HeroProps> = ({
 
         <span
           className="
+            hidden
+            sm:inline
+
             font-mono
 
             text-[10px]
 
-            hidden
-            sm:inline
-
-            text-[#82899b]
+            text-white/40
           "
         >
           Lanús • Argentina & Remoto al mundo
