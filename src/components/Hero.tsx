@@ -316,7 +316,7 @@ export const Hero: React.FC<HeroProps> = ({
             G
         ==================================================== */}
 
-        <div
+       <div
           className="
             scale-[0.68]
             sm:scale-90
@@ -324,12 +324,16 @@ export const Hero: React.FC<HeroProps> = ({
 
             origin-center
 
-            -mb-2
-            sm:-mb-1
-          "
-        >
-          <HeroBrandAnimation />
-        </div>
+           -mb-2
+           sm:-mb-1
+
+           translate-x-2
+           sm:translate-x-3
+           md:translate-x-4
+         "
+     >
+      <HeroBrandAnimation />
+    </div>
 
 
         {/* ====================================================
