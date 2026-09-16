@@ -81,7 +81,7 @@ export const Hero: React.FC<HeroProps> = ({
     >
 
       {/* =====================================================
-          VIDEO
+          VIDEO BACKGROUND
           ===================================================== */}
 
       <div
@@ -91,6 +91,10 @@ export const Hero: React.FC<HeroProps> = ({
           z-0
           overflow-hidden
           bg-black
+
+          flex
+          items-center
+          justify-center
         "
       >
         <motion.video
@@ -99,10 +103,12 @@ export const Hero: React.FC<HeroProps> = ({
           loop
           playsInline
           preload="auto"
+
           style={{
             y: videoY,
             scale: videoScale,
           }}
+
           className="
             absolute
             inset-0
@@ -117,31 +123,33 @@ export const Hero: React.FC<HeroProps> = ({
              * CELULARES
              * =================================================
              *
-             * Probamos un encuadre más abierto.
-             * La posición se lleva hacia el centro para evitar
-             * que solamente aparezca media cara.
+             * Bajamos el punto vertical para intentar mostrar
+             * más del cuerpo y conservar el gesto de la mano.
              */
 
-            object-[50%_center]
+            object-[50%_35%]
 
             /*
-             * TELÉFONOS GRANDES
+             * CELULARES GRANDES
              */
 
-            sm:object-[55%_center]
+            sm:object-[52%_38%]
 
             /*
              * TABLETS
              */
 
-            md:object-[65%_center]
+            md:object-[60%_center]
 
             /*
-             * DESKTOP
-             * Conservamos el comportamiento anterior.
+             * NOTEBOOK
              */
 
             lg:object-[72%_center]
+
+            /*
+             * DESKTOP
+             */
 
             xl:object-[70%_center]
 
@@ -149,6 +157,7 @@ export const Hero: React.FC<HeroProps> = ({
             contrast-[1.02]
             brightness-100
           "
+
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
         >
           <source
@@ -170,6 +179,7 @@ export const Hero: React.FC<HeroProps> = ({
           absolute
           inset-0
           z-[1]
+
           pointer-events-none
 
           bg-black/30
@@ -190,6 +200,7 @@ export const Hero: React.FC<HeroProps> = ({
           absolute
           inset-y-0
           left-0
+
           z-[2]
 
           w-full
@@ -279,23 +290,29 @@ export const Hero: React.FC<HeroProps> = ({
 
 
       {/* =====================================================
-          BRAND ONDIGU
+          BRAND
           ===================================================== */}
 
       <motion.div
-        style={{ y: brandY }}
+        style={{
+          y: brandY,
+        }}
+
         initial={{
           opacity: 0,
           x: 40,
         }}
+
         animate={{
           opacity: 1,
           x: 0,
         }}
+
         transition={{
           duration: 0.9,
           ease: [0.16, 1, 0.3, 1],
         }}
+
         className="
           absolute
           z-20
@@ -416,7 +433,6 @@ export const Hero: React.FC<HeroProps> = ({
             sm:gap-2
           "
         >
-
           <span
             className="
               w-1.5
@@ -464,7 +480,6 @@ export const Hero: React.FC<HeroProps> = ({
               La señal de Gudiño
             </span>
           </p>
-
         </div>
 
       </motion.div>
@@ -689,6 +704,7 @@ export const Hero: React.FC<HeroProps> = ({
               id="hero-primary-quote-cta"
               type="button"
               onClick={onQuoteClick}
+
               className="
                 w-full
 
@@ -735,6 +751,7 @@ export const Hero: React.FC<HeroProps> = ({
               id="hero-secondary-portfolio-cta"
               type="button"
               onClick={onPortfolioClick}
+
               className="
                 w-full
 
@@ -807,7 +824,6 @@ export const Hero: React.FC<HeroProps> = ({
               max-w-xl
             "
           >
-
             <p
               className="
                 text-[9px]
@@ -848,11 +864,9 @@ export const Hero: React.FC<HeroProps> = ({
               </span>
               .
             </p>
-
           </motion.div>
 
         </motion.div>
-
       </div>
 
 
@@ -952,7 +966,6 @@ export const Hero: React.FC<HeroProps> = ({
 
 
         <div>
-
           <p
             className="
               font-mono
@@ -984,7 +997,6 @@ export const Hero: React.FC<HeroProps> = ({
               En línea
             </span>
           </p>
-
         </div>
 
       </motion.div>
@@ -1043,7 +1055,6 @@ export const Hero: React.FC<HeroProps> = ({
             animate-bounce
           "
         >
-
           <span
             className="
               font-mono
@@ -1071,13 +1082,13 @@ export const Hero: React.FC<HeroProps> = ({
               text-[#FF8C00]
             "
           />
-
         </div>
 
 
         <span
           className="
             hidden
+
             sm:inline
 
             font-mono
@@ -1095,6 +1106,4 @@ export const Hero: React.FC<HeroProps> = ({
     </section>
   );
 };
-
-
 
