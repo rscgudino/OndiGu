@@ -150,8 +150,10 @@ export const Hero: React.FC<HeroProps> = ({
             xl:object-cover
 
             grayscale
-            contrast-[1.02]
-            brightness-100
+            contrast-[1.08]
+            brightness-[1.18]
+            sm:brightness-100
+            sm:contrast-[1.02]
           "
 
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
@@ -177,7 +179,7 @@ export const Hero: React.FC<HeroProps> = ({
           z-[1]
           pointer-events-none
 
-          bg-black/35
+          bg-black/10
 
           sm:bg-black/25
 
@@ -206,13 +208,15 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-r
 
-          from-black/90
-          via-black/60
-          via-[55%]
+          from-black/40
+          via-black/15
+          via-[40%]
           to-transparent
 
           sm:from-black/85
           sm:via-black/50
+          sm:via-[55%]
+          sm:to-transparent
 
           lg:from-black/85
           lg:via-black/50
@@ -233,7 +237,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-[58%]
+          h-[44%]
 
           z-[2]
 
@@ -241,11 +245,13 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-t
 
-          from-black/95
-          via-black/60
+          from-black/80
+          via-black/30
           to-transparent
 
           sm:h-[48%]
+          sm:from-black/95
+          sm:via-black/60
 
           lg:h-32
 
@@ -268,7 +274,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-32
+          h-24
 
           z-[2]
 
@@ -276,10 +282,11 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-b
 
-          from-black/65
+          from-black/35
           to-transparent
 
           sm:h-28
+          sm:from-black/65
 
           lg:h-28
 
