@@ -18,13 +18,13 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact }) => {
   const { user } = useAuth();
   return (
-    <footer className="bg-[#0a0c10] border-t border-[#1e222e] pt-16 pb-12 px-4 sm:px-6 lg:px-8 text-[#9c9c9c]">
+    <footer className="bg-slate-100 dark:bg-[#0a0c10] border-t border-slate-200 dark:border-[#1e222e] pt-16 pb-12 px-4 sm:px-6 lg:px-8 text-slate-600 dark:text-[#9c9c9c] transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand Col */}
           <div className="md:col-span-2 space-y-4">
             <BrandLogo size="lg" />
-            <p className="text-sm text-[#b5b5b5] max-w-md leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-[#b5b5b5] max-w-md leading-relaxed">
               {BRAND_INFO.centralMessage} Desarrollo web, inteligencia artificial y automatización para pymes, comercios y emprendedores.
             </p>
             
@@ -34,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                 href={BRAND_INFO.googleMapsUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-mono text-[#FF8C00] bg-[#151821] hover:bg-[#1d222f] border border-[#252a38] hover:border-[#FF4500]/40 px-3 py-1.5 rounded transition-all"
+                className="inline-flex items-center gap-2 text-xs font-mono text-[#FF4500] dark:text-[#FF8C00] bg-white dark:bg-[#151821] hover:bg-slate-50 dark:hover:bg-[#1d222f] border border-slate-200 dark:border-[#252a38] hover:border-[#FF4500]/40 px-3 py-1.5 rounded-lg transition-all shadow-xs cursor-pointer"
                 title="Ver ubicación en Google Maps"
               >
                 <MapPin className="w-3.5 h-3.5 text-[#FF4500]" />
@@ -42,14 +42,14 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                 <ExternalLink className="w-3 h-3 opacity-60" />
               </a>
 
-              <span className="inline-flex items-center gap-1 text-xs font-mono text-[#a5abbd] bg-[#151821] border border-[#252a38] px-2.5 py-1.5 rounded">
+              <span className="inline-flex items-center gap-1 text-xs font-mono text-slate-700 dark:text-[#a5abbd] bg-white dark:bg-[#151821] border border-slate-200 dark:border-[#252a38] px-2.5 py-1.5 rounded-lg shadow-xs">
                 <Star className="w-3.5 h-3.5 fill-[#FF8C00] text-[#FF8C00]" />
-                <span className="text-white font-bold">5.0</span> en Google Reviews
+                <span className="text-slate-900 dark:text-white font-bold">5.0</span> en Google Reviews
               </span>
             </div>
 
             <div className="pt-2">
-              <span className="inline-block text-xs font-mono text-[#d0d0d0] bg-[#151821] border border-[#252a38] px-3 py-1.5 rounded">
+              <span className="inline-block text-xs font-mono text-slate-700 dark:text-[#d0d0d0] bg-white dark:bg-[#151821] border border-slate-200 dark:border-[#252a38] px-3 py-1.5 rounded-lg shadow-xs">
                 {BRAND_INFO.signature}
               </span>
             </div>
@@ -57,37 +57,37 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
 
           {/* Navigation links */}
           <div>
-            <span className="block text-xs font-bold uppercase tracking-wider text-white mb-4">
+            <span className="block text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4">
               Navegación
             </span>
             <ul className="space-y-2.5 text-xs sm:text-sm">
               <li>
-                <a href="#propuesta" className="hover:text-white transition-colors">
+                <a href="#propuesta" className="text-slate-600 dark:text-[#9c9c9c] hover:text-slate-900 dark:hover:text-white transition-colors">
                   Propuesta de valor
                 </a>
               </li>
               <li>
-                <a href="#servicios" className="hover:text-white transition-colors">
+                <a href="#servicios" className="text-slate-600 dark:text-[#9c9c9c] hover:text-slate-900 dark:hover:text-white transition-colors">
                   Servicios comerciales
                 </a>
               </li>
               <li>
-                <a href="#metodologia" className="hover:text-white transition-colors">
+                <a href="#metodologia" className="text-slate-600 dark:text-[#9c9c9c] hover:text-slate-900 dark:hover:text-white transition-colors">
                   Metodología en 3 etapas
                 </a>
               </li>
               <li>
-                <a href="#referencias" className="hover:text-white transition-colors">
+                <a href="#referencias" className="text-slate-600 dark:text-[#9c9c9c] hover:text-slate-900 dark:hover:text-white transition-colors">
                   Referencias de clientes
                 </a>
               </li>
               <li>
-                <a href="#comunidad-redes" className="hover:text-white transition-colors">
+                <a href="#comunidad-redes" className="text-slate-600 dark:text-[#9c9c9c] hover:text-slate-900 dark:hover:text-white transition-colors">
                   Redes & Ubicación Lanús
                 </a>
               </li>
               <li>
-                <a href="#portfolio" className="hover:text-white transition-colors">
+                <a href="#portfolio" className="text-slate-600 dark:text-[#9c9c9c] hover:text-slate-900 dark:hover:text-white transition-colors">
                   Casos de éxito
                 </a>
               </li>
@@ -95,7 +95,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                 <button
                   type="button"
                   onClick={onOpenPortal}
-                  className="hover:text-[#FF8C00] transition-colors text-left cursor-pointer"
+                  className="text-slate-600 dark:text-[#9c9c9c] hover:text-[#FF4500] dark:hover:text-[#FF8C00] transition-colors text-left cursor-pointer"
                 >
                   {user ? 'Mi cuenta' : 'Ingresar / Portal de clientes'}
                 </button>
@@ -105,7 +105,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
 
           {/* Social Networks & Channels */}
           <div>
-            <span className="block text-xs font-bold uppercase tracking-wider text-white mb-4">
+            <span className="block text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4">
               Redes & Contacto
             </span>
             <div className="space-y-3 text-xs sm:text-sm">
@@ -113,7 +113,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                 href={BRAND_INFO.googleMapsUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2.5 text-[#d0d0d0] hover:text-white transition-colors"
+                className="flex items-center gap-2.5 text-slate-700 dark:text-[#d0d0d0] hover:text-slate-950 dark:hover:text-white transition-colors"
               >
                 <MapPin className="w-4 h-4 text-[#FF4500]" />
                 <span>Google Maps (Lanús)</span>
@@ -126,7 +126,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                   target="_blank" 
                   rel="noreferrer" 
                   aria-label="Instagram de OndiGu"
-                  className="w-8 h-8 rounded bg-[#151821] hover:bg-[#202534] border border-[#252a38] flex items-center justify-center text-[#E4405F] transition-colors"
+                  className="w-8 h-8 rounded bg-white dark:bg-[#151821] hover:bg-slate-100 dark:hover:bg-[#202534] border border-slate-200 dark:border-[#252a38] flex items-center justify-center text-[#E4405F] transition-colors shadow-xs"
                 >
                   <Instagram className="w-4 h-4" />
                 </a>
@@ -135,7 +135,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                   target="_blank" 
                   rel="noreferrer" 
                   aria-label="Facebook de OndiGu"
-                  className="w-8 h-8 rounded bg-[#151821] hover:bg-[#202534] border border-[#252a38] flex items-center justify-center text-[#1877F2] transition-colors"
+                  className="w-8 h-8 rounded bg-white dark:bg-[#151821] hover:bg-slate-100 dark:hover:bg-[#202534] border border-slate-200 dark:border-[#252a38] flex items-center justify-center text-[#1877F2] transition-colors shadow-xs"
                 >
                   <Facebook className="w-4 h-4" />
                 </a>
@@ -144,7 +144,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                   target="_blank" 
                   rel="noreferrer" 
                   aria-label="TikTok de OndiGu"
-                  className="w-8 h-8 rounded bg-[#151821] hover:bg-[#202534] border border-[#252a38] flex items-center justify-center text-[#EE1D52] transition-colors"
+                  className="w-8 h-8 rounded bg-white dark:bg-[#151821] hover:bg-slate-100 dark:hover:bg-[#202534] border border-slate-200 dark:border-[#252a38] flex items-center justify-center text-[#EE1D52] transition-colors shadow-xs"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.3 6.3 0 0 0 1.86-4.49V8.65a8.28 8.28 0 0 0 4.91 1.57v-3.53Z"/>
@@ -156,7 +156,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
                 <button
                   type="button"
                   onClick={onNavigateContact}
-                  className="w-full text-center px-4 py-2.5 text-xs font-semibold text-white bg-[#151821] hover:bg-[#1e222f] border border-[#2b3142] rounded transition-colors cursor-pointer"
+                  className="w-full text-center px-4 py-2.5 text-xs font-semibold text-slate-800 dark:text-white bg-white dark:bg-[#151821] hover:bg-slate-50 dark:hover:bg-[#1e222f] border border-slate-300 dark:border-[#2b3142] rounded-lg transition-colors cursor-pointer shadow-xs"
                 >
                   Pedir presupuesto
                 </button>
@@ -166,9 +166,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-[#1a1d26] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6e6e6e]">
+        <div className="pt-8 border-t border-slate-200 dark:border-[#1a1d26] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-[#6e6e6e]">
           <p>© {new Date().getFullYear()} OndiGu. Todos los derechos reservados.</p>
-          <p className="font-mono text-[#8b91a2] flex items-center gap-2">
+          <p className="font-mono text-slate-600 dark:text-[#8b91a2] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF4500]" />
             <span>Lanús, Buenos Aires // Tecnología con onda // La señal de Gudiño</span>
           </p>

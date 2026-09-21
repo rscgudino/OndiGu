@@ -56,9 +56,10 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
       className="
         py-10 sm:py-16 lg:py-24
         px-3 sm:px-6 lg:px-8
-        bg-[#0c0e12]
-        border-t border-[#1a1d26]
+        bg-slate-50 dark:bg-[#0c0e12]
+        border-t border-slate-200 dark:border-[#1a1d26]
         overflow-hidden
+        transition-colors duration-300
       "
     >
       <div className="max-w-7xl mx-auto">
@@ -74,7 +75,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
             md:justify-between
             mb-7 sm:mb-10 lg:mb-12
             pb-5
-            border-b border-[#202430]
+            border-b border-slate-200 dark:border-[#202430]
             gap-4
           "
         >
@@ -107,7 +108,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
                 sm:text-3xl
                 lg:text-5xl
                 font-extrabold
-                text-white
+                text-slate-900 dark:text-white
                 tracking-tight
                 leading-[1.12]
               "
@@ -121,7 +122,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
                 text-sm
                 sm:text-base
                 lg:text-lg
-                text-[#949aa8]
+                text-slate-600 dark:text-[#949aa8]
                 leading-relaxed
                 max-w-2xl
               "
@@ -138,7 +139,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
               gap-2
               text-xs
               font-mono
-              text-[#8e94a5]
+              text-slate-500 dark:text-[#8e94a5]
               shrink-0
             "
           >

@@ -101,7 +101,8 @@ export const Hero: React.FC<HeroProps> = ({
           muted
           loop
           playsInline
-          preload="auto"
+          poster="/assets/pedro-bg.jpg"
+          preload="metadata"
 
           style={{
             y: videoY,
@@ -149,11 +150,14 @@ export const Hero: React.FC<HeroProps> = ({
             xl:translate-y-0
             xl:object-cover
 
-            grayscale
-            contrast-[1.08]
-            brightness-[1.18]
+            grayscale-[0.2]
+            sm:grayscale
+            contrast-[1.04]
+            brightness-[1.38]
+            saturate-[1.15]
             sm:brightness-100
             sm:contrast-[1.02]
+            sm:saturate-100
           "
 
           aria-label="Pedro Gudiño - Fundador y Diseñador Web de OndiGu"
@@ -179,10 +183,8 @@ export const Hero: React.FC<HeroProps> = ({
           z-[1]
           pointer-events-none
 
-          bg-black/10
-
+          bg-black/5
           sm:bg-black/25
-
           lg:bg-black/10
         "
       />
@@ -208,9 +210,8 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-r
 
-          from-black/40
-          via-black/15
-          via-[40%]
+          from-black/25
+          via-transparent
           to-transparent
 
           sm:from-black/85
@@ -237,7 +238,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-[44%]
+          h-[34%]
 
           z-[2]
 
@@ -245,8 +246,8 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-t
 
-          from-black/80
-          via-black/30
+          from-black/75
+          via-black/20
           to-transparent
 
           sm:h-[48%]
@@ -274,7 +275,7 @@ export const Hero: React.FC<HeroProps> = ({
           left-0
           right-0
 
-          h-24
+          h-20
 
           z-[2]
 
@@ -282,7 +283,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           bg-gradient-to-b
 
-          from-black/35
+          from-black/20
           to-transparent
 
           sm:h-28

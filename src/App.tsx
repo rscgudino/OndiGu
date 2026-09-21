@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ValueProposition } from './components/ValueProposition';
@@ -12,10 +13,20 @@ import { ContactForm } from './components/ContactForm';
 import { Footer } from './components/Footer';
 import { FloatingAssist } from './components/FloatingAssist';
 import { FloatingExpressAd } from './components/FloatingExpressAd';
-import { AuthModal } from './components/AuthModal';
-import { UserProfileModal } from './components/UserProfileModal';
-import { ClientSpecialPortalModal } from './components/ClientSpecialPortalModal';
-import { AdminPanelModal } from './components/AdminPanelModal';
+
+// Lazy load secondary modals for maximum initial load performance
+const AuthModal = React.lazy(() =>
+  import('./components/AuthModal').then((m) => ({ default: m.AuthModal }))
+);
+const UserProfileModal = React.lazy(() =>
+  import('./components/UserProfileModal').then((m) => ({ default: m.UserProfileModal }))
+);
+const ClientSpecialPortalModal = React.lazy(() =>
+  import('./components/ClientSpecialPortalModal').then((m) => ({ default: m.ClientSpecialPortalModal }))
+);
+const AdminPanelModal = React.lazy(() =>
+  import('./components/AdminPanelModal').then((m) => ({ default: m.AdminPanelModal }))
+);
 
 function MainApp() {
   const { user } = useAuth();
@@ -53,7 +64,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0e12] text-[#F3F4F6] flex flex-col selection:bg-[#FF4500] selection:text-white relative">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0c0e12] dark:text-[#F3F4F6] flex flex-col selection:bg-[#FF4500] selection:text-white relative transition-colors duration-300">
       {/* Top Navigation */}
       <Navbar
         onOpenPortal={() => handleOpenAccountOrAuth('login')}
@@ -104,43 +115,53 @@ function MainApp() {
       {/* Smart Predefined Bot Dock */}
       <FloatingAssist />
 
-      {/* Supabase Auth Modal: Login, Register, Forgot Password */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        initialView={authView}
-      />
+      {/* Lazy Loaded On-Demand Modals */}
+      <Suspense fallback={null}>
+        {authModalOpen && (
+          <AuthModal
+            isOpen={authModalOpen}
+            onClose={() => setAuthModalOpen(false)}
+            initialView={authView}
+          />
+        )}
 
-      {/* Supabase Authenticated User Profile Modal */}
-      <UserProfileModal
-        isOpen={profileModalOpen}
-        onClose={() => setProfileModalOpen(false)}
-      />
+        {profileModalOpen && (
+          <UserProfileModal
+            isOpen={profileModalOpen}
+            onClose={() => setProfileModalOpen(false)}
+          />
+        )}
 
-      {/* Menú Especial del Cliente Registrado: Consultoría & Servicios */}
-      <ClientSpecialPortalModal
-        isOpen={clientPortalOpen}
-        onClose={() => setClientPortalOpen(false)}
-        onOpenCallScheduler={(motivo) => {
-          if (motivo) setPreselectedService(motivo);
-          scrollToSection('contacto');
-        }}
-        onOpenAdminPanel={() => setAdminPanelOpen(true)}
-      />
+        {clientPortalOpen && (
+          <ClientSpecialPortalModal
+            isOpen={clientPortalOpen}
+            onClose={() => setClientPortalOpen(false)}
+            onOpenCallScheduler={(motivo) => {
+              if (motivo) setPreselectedService(motivo);
+              scrollToSection('contacto');
+            }}
+            onOpenAdminPanel={() => setAdminPanelOpen(true)}
+          />
+        )}
 
-      {/* Panel de Control y Agenda del Administrador */}
-      <AdminPanelModal
-        isOpen={adminPanelOpen}
-        onClose={() => setAdminPanelOpen(false)}
-      />
+        {adminPanelOpen && (
+          <AdminPanelModal
+            isOpen={adminPanelOpen}
+            onClose={() => setAdminPanelOpen(false)}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MainApp />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <MainApp />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
+

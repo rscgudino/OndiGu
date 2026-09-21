@@ -38,27 +38,27 @@ export const SocialNetworksBar: React.FC = () => {
   };
 
   return (
-    <section id="comunidad-redes" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#0c0e12] border-t border-[#1a1d26]">
+    <section id="comunidad-redes" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[#0c0e12] border-t border-slate-200 dark:border-[#1a1d26] transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#151821] border border-[#272c3d] rounded-full text-xs font-mono text-[#FF8C00] mb-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-slate-100 dark:bg-[#151821] border border-slate-200 dark:border-[#272c3d] rounded-full text-xs font-mono text-[#FF4500] dark:text-[#FF8C00] mb-3">
             <MapPin className="w-3.5 h-3.5 text-[#FF4500]" />
             <span>Lanús, Buenos Aires • Conexión Nacional</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Canales Oficiales & Ubicación
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-[#949aa8] leading-relaxed">
+          <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-[#949aa8] leading-relaxed">
             Seguinos en redes sociales, encontranos en Google Maps y contactate directo con el equipo de OndiGu.
           </p>
         </div>
 
         {/* Highlight Card: Google Location in Lanús */}
-        <div className="mb-12 bg-gradient-to-r from-[#141722] via-[#161a27] to-[#141722] border border-[#252b3d] hover:border-[#FF4500]/50 p-6 sm:p-8 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-all">
+        <div className="mb-12 bg-slate-50 dark:bg-gradient-to-r dark:from-[#141722] dark:via-[#161a27] dark:to-[#141722] border border-slate-200 dark:border-[#252b3d] hover:border-[#FF4500]/50 p-6 sm:p-8 rounded-xl shadow-xs dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition-all">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
-              <div className="w-16 h-16 rounded-xl bg-[#1c202e] border border-[#2c3246] flex items-center justify-center p-3 shrink-0 shadow-inner">
+              <div className="w-16 h-16 rounded-xl bg-white dark:bg-[#1c202e] border border-slate-200 dark:border-[#2c3246] flex items-center justify-center p-3 shrink-0 shadow-xs dark:shadow-inner">
                 {/* Google multi-color icon big */}
                 <svg className="w-9 h-9" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -70,32 +70,32 @@ export const SocialNetworksBar: React.FC = () => {
 
               <div>
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                  <span className="text-xs font-mono font-semibold text-[#FF8C00] uppercase tracking-wider">
+                  <span className="text-xs font-mono font-semibold text-[#FF4500] dark:text-[#FF8C00] uppercase tracking-wider">
                     Google Mi Negocio & Google Maps
                   </span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 rounded">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                     Punto Verificado
                   </span>
                 </div>
 
-                <h3 className="text-2xl font-bold text-white tracking-tight">
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                   OndiGu en Lanús, Buenos Aires
                 </h3>
 
-                <p className="mt-1 text-sm text-[#949aa8] max-w-xl">
+                <p className="mt-1 text-sm text-slate-600 dark:text-[#949aa8] max-w-xl">
                   {BRAND_INFO.locationDetails}. Visitanos en el mapa o dejanos tu reseña para seguir impulsando el ecosistema pyme del Gran Buenos Aires.
                 </p>
 
-                <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs font-mono text-[#7b8192]">
+                <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs font-mono text-slate-500 dark:text-[#7b8192]">
                   <div className="flex items-center gap-1 text-[#FF8C00]">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-3.5 h-3.5 fill-[#FF8C00] text-[#FF8C00]" />
                     ))}
-                    <span className="font-bold text-white ml-1">5.0 / 5.0</span>
+                    <span className="font-bold text-slate-900 dark:text-white ml-1">5.0 / 5.0</span>
                   </div>
                   <span>•</span>
-                  <span className="text-white">Lanús Centro / Oeste / Este</span>
+                  <span className="text-slate-700 dark:text-white font-medium">Lanús Centro / Oeste / Este</span>
                   <span>•</span>
                   <span>Atención presencial y virtual</span>
                 </div>
@@ -108,7 +108,7 @@ export const SocialNetworksBar: React.FC = () => {
                 href={BRAND_INFO.googleMapsUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-[#FF4500] to-[#FF8C00] hover:brightness-110 rounded-lg transition-all shadow-[0_4px_16px_rgba(255,69,0,0.3)]"
+                className="inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-[#FF4500] to-[#FF8C00] hover:brightness-110 rounded-lg transition-all shadow-[0_4px_16px_rgba(255,69,0,0.3)] cursor-pointer"
               >
                 <Compass className="w-4 h-4" />
                 <span>Abrir en Google Maps</span>
@@ -126,7 +126,7 @@ export const SocialNetworksBar: React.FC = () => {
               href={social.url}
               target="_blank"
               rel="noreferrer"
-              className="bg-[#141722] hover:bg-[#1c202e] border border-[#232738] hover:border-[#384058] p-4 rounded-lg flex flex-col items-center text-center transition-all duration-200 group relative"
+              className="bg-slate-50 dark:bg-[#141722] hover:bg-white dark:hover:bg-[#1c202e] border border-slate-200 dark:border-[#232738] hover:border-slate-300 dark:hover:border-[#384058] p-4 rounded-xl flex flex-col items-center text-center transition-all duration-200 group relative shadow-xs dark:shadow-none"
             >
               {social.highlight && (
                 <span className="absolute -top-2 px-2 py-0.5 bg-[#FF4500] text-[9px] font-mono font-bold text-white rounded-full uppercase tracking-wider">
@@ -134,15 +134,15 @@ export const SocialNetworksBar: React.FC = () => {
                 </span>
               )}
 
-              <div className="w-11 h-11 rounded-full bg-[#1b1f2b] border border-[#2a3042] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+              <div className="w-11 h-11 rounded-full bg-white dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2a3042] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-xs">
                 {renderSocialIcon(social.iconKey)}
               </div>
 
-              <span className="text-xs font-bold text-white group-hover:text-[#FF8C00] transition-colors leading-tight">
+              <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#FF4500] dark:group-hover:text-[#FF8C00] transition-colors leading-tight">
                 {social.name}
               </span>
 
-              <span className="text-[11px] text-[#717789] font-mono mt-1 truncate max-w-full">
+              <span className="text-[11px] text-slate-500 dark:text-[#717789] font-mono mt-1 truncate max-w-full">
                 {social.handle}
               </span>
             </a>

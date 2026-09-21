@@ -1,9 +1,28 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
+    --bg-main: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --border-subtle: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-orange: #FF4500;
+    --accent-amber: #FF8C00;
+  }
+
+  :root.dark, html.dark {
     --bg-main: #0c0e12;
     --bg-surface: #151821;
+    --bg-card: #151821;
+    --border-subtle: #202430;
+    --text-primary: #F3F4F6;
+    --text-secondary: #9CA3AF;
+    --text-muted: #6B7280;
     --accent-orange: #FF4500;
     --accent-amber: #FF8C00;
   }
@@ -11,9 +30,10 @@
 
 body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #0c0e12;
-  color: #F3F4F6;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .font-brand {

@@ -183,39 +183,39 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
 
   if (submittedTurno) {
     return (
-      <div className="bg-[#151821] border border-[#282e3f] p-6 sm:p-8 rounded-xl shadow-[0_10px_35px_rgba(0,0,0,0.6)] text-center animate-fade-in">
-        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#FF4500]/15 border border-[#FF4500]/40 flex items-center justify-center text-[#FF8C00]">
+      <div className="bg-white dark:bg-[#151821] border border-slate-200 dark:border-[#282e3f] p-6 sm:p-8 rounded-xl shadow-lg dark:shadow-[0_10px_35px_rgba(0,0,0,0.6)] text-center animate-fade-in transition-colors">
+        <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#FF4500]/15 border border-[#FF4500]/40 flex items-center justify-center text-[#FF4500] dark:text-[#FF8C00]">
           <CalendarCheck className="w-7 h-7" />
         </div>
 
-        <span className="text-[11px] font-mono uppercase tracking-widest text-[#FF8C00] block mb-1">
+        <span className="text-[11px] font-mono uppercase tracking-widest text-[#FF4500] dark:text-[#FF8C00] block mb-1 font-semibold">
           Llamada Confirmada // {submittedTurno.id}
         </span>
 
-        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">
           Listo, te vamos a llamar el {formatFriendlyDate(submittedTurno.fecha)}
         </h3>
 
-        <div className="max-w-md mx-auto my-5 p-4 bg-[#1a1d27] border border-[#262b3b] rounded-lg text-left space-y-2 text-xs sm:text-sm text-[#d5d9e5]">
+        <div className="max-w-md mx-auto my-5 p-4 bg-slate-50 dark:bg-[#1a1d27] border border-slate-200 dark:border-[#262b3b] rounded-lg text-left space-y-2 text-xs sm:text-sm text-slate-700 dark:text-[#d5d9e5]">
           <div className="flex justify-between">
-            <span className="text-[#8e95a8]">Cliente:</span>
-            <span className="font-semibold text-white">{submittedTurno.nombre}</span>
+            <span className="text-slate-500 dark:text-[#8e95a8]">Cliente:</span>
+            <span className="font-semibold text-slate-900 dark:text-white">{submittedTurno.nombre}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#8e95a8]">Teléfono de contacto:</span>
-            <span className="font-semibold text-white">{submittedTurno.telefono}</span>
+            <span className="text-slate-500 dark:text-[#8e95a8]">Teléfono de contacto:</span>
+            <span className="font-semibold text-slate-900 dark:text-white">{submittedTurno.telefono}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#8e95a8]">Horario preferido:</span>
-            <span className="font-semibold text-[#FF8C00]">{submittedTurno.franja}</span>
+            <span className="text-slate-500 dark:text-[#8e95a8]">Horario preferido:</span>
+            <span className="font-semibold text-[#FF4500] dark:text-[#FF8C00]">{submittedTurno.franja}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#8e95a8]">Motivo:</span>
-            <span className="font-semibold text-white">{submittedTurno.motivo}</span>
+            <span className="text-slate-500 dark:text-[#8e95a8]">Motivo:</span>
+            <span className="font-semibold text-slate-900 dark:text-white">{submittedTurno.motivo}</span>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-[#9da3b4] max-w-md mx-auto mb-6">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-[#9da3b4] max-w-md mx-auto mb-6">
           Guardamos tu turno en nuestra agenda comercial. Si querés dejarnos un mensaje previo o coordinar por WhatsApp, podés escribirnos ahora con un clic.
         </p>
 
@@ -224,7 +224,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
             href={`${BRAND_INFO.whatsappUrl}%20Hola!%20Agend%C3%A9%20una%20llamada%20para%20el%20d%C3%ADa%20${submittedTurno.fecha}%20(${submittedTurno.franja})%20por%20${encodeURIComponent(submittedTurno.motivo)}.%20Mi%20turno%20es%20${submittedTurno.id}.`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1eb857] rounded-lg shadow-md transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold text-white bg-[#25D366] hover:bg-[#1eb857] rounded-lg shadow-md transition-colors cursor-pointer"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Confirmar también por WhatsApp</span>
@@ -233,7 +233,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
           <button
             type="button"
             onClick={handleReset}
-            className="w-full sm:w-auto px-4 py-3 text-xs font-semibold text-[#a5abbd] hover:text-white bg-[#1a1d27] hover:bg-[#232734] border border-[#2a3040] rounded-lg transition-colors"
+            className="w-full sm:w-auto px-4 py-3 text-xs font-semibold text-slate-700 dark:text-[#a5abbd] hover:text-slate-950 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-[#1a1d27] dark:hover:bg-[#232734] border border-slate-200 dark:border-[#2a3040] rounded-lg transition-colors cursor-pointer"
           >
             Agendar otra llamada
           </button>
@@ -245,26 +245,26 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`bg-[#151821] border border-[#262b3b] rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.6)] ${
+      className={`bg-white dark:bg-[#151821] border border-slate-200 dark:border-[#262b3b] rounded-xl shadow-lg dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] transition-colors ${
         compact ? 'p-5 sm:p-6' : 'p-6 sm:p-8 lg:p-10'
       }`}
     >
       <div className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4500]/10 border border-[#FF4500]/30 text-[#FF8C00] text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4500]/10 border border-[#FF4500]/30 text-[#FF4500] dark:text-[#FF8C00] text-xs font-semibold mb-2">
           <Clock className="w-3.5 h-3.5" />
           <span>Atención personalizada sin cargo</span>
         </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
           Agendá cuándo querés que te llamemos
         </h3>
-        <p className="text-xs sm:text-sm text-[#9da3b4] mt-1">
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-[#9da3b4] mt-1">
           Elegí el día y la franja horaria que más te convenga. Un especialista de OndiGu se comunicará puntualmente para asesorarte.
         </p>
       </div>
 
       {error && (
-        <div className="mb-5 p-3.5 bg-red-950/40 border border-red-800/60 rounded-lg flex items-center gap-3 text-xs text-red-300 animate-fade-in">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+        <div className="mb-5 p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-lg flex items-center gap-3 text-xs text-red-700 dark:text-red-300 animate-fade-in">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-500 dark:text-red-400" />
           <span>{error}</span>
         </div>
       )}
@@ -273,8 +273,8 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
         {/* Nombre, Teléfono, Email */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-[#c0c5d4] mb-1.5 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-[#FF8C00]" />
+            <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-1.5 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-[#FF4500] dark:text-[#FF8C00]" />
               <span>Tu Nombre *</span>
             </label>
             <input
@@ -283,13 +283,13 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
               onChange={(e) => setNombre(e.target.value)}
               placeholder="Ej: Marcelo Rossi"
               required
-              className="w-full bg-[#1b1f2b] border border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-[#6b7280]"
+              className="w-full bg-slate-50 dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-slate-900 dark:text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-slate-400 dark:placeholder-[#6b7280]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#c0c5d4] mb-1.5 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-[#FF8C00]" />
+            <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-1.5 flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-[#FF4500] dark:text-[#FF8C00]" />
               <span>Teléfono / WhatsApp *</span>
             </label>
             <input
@@ -298,13 +298,13 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
               onChange={(e) => setTelefono(e.target.value)}
               placeholder="Ej: +54 9 11 1234-5678"
               required
-              className="w-full bg-[#1b1f2b] border border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-[#6b7280]"
+              className="w-full bg-slate-50 dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-slate-900 dark:text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-slate-400 dark:placeholder-[#6b7280]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#c0c5d4] mb-1.5 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-[#FF8C00]" />
+            <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-1.5 flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-[#FF4500] dark:text-[#FF8C00]" />
               <span>Correo Electrónico *</span>
             </label>
             <input
@@ -313,15 +313,15 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Ej: contacto@tunegocio.com"
               required
-              className="w-full bg-[#1b1f2b] border border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-[#6b7280]"
+              className="w-full bg-slate-50 dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-slate-900 dark:text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-slate-400 dark:placeholder-[#6b7280]"
             />
           </div>
         </div>
 
         {/* Día preferido - Cómodo en mobile con pills + date input fallback */}
         <div>
-          <label className="block text-xs font-semibold text-[#c0c5d4] mb-2 flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-[#FF8C00]" />
+          <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-2 flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-[#FF4500] dark:text-[#FF8C00]" />
             <span>Día preferido (Lunes a Viernes) *</span>
           </label>
 
@@ -335,7 +335,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
                 className={`py-2 px-2.5 rounded-lg text-xs font-medium border text-center transition-all cursor-pointer ${
                   fecha === d.dateStr
                     ? 'bg-[#FF4500] text-white border-[#FF4500] shadow-[0_0_12px_rgba(255,69,0,0.35)]'
-                    : 'bg-[#1a1e29] text-[#9ca3af] border-[#292f3f] hover:border-[#3d455c] hover:text-white'
+                    : 'bg-slate-50 dark:bg-[#1a1e29] text-slate-600 dark:text-[#9ca3af] border-slate-200 dark:border-[#292f3f] hover:border-slate-300 dark:hover:border-[#3d455c] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <span className="block font-bold">{d.weekday.toUpperCase()}</span>
@@ -345,22 +345,22 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
           </div>
 
           {/* Alternative custom date picker */}
-          <div className="flex items-center gap-2 text-xs text-[#8f96a8]">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#8f96a8]">
             <span>O seleccioná otra fecha:</span>
             <input
               type="date"
               min={businessDays[0]?.dateStr}
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
-              className="bg-[#1b1f2b] border border-[#2d3345] text-white text-xs px-2.5 py-1.5 rounded-md focus:border-[#FF4500] outline-none"
+              className="bg-slate-50 dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2d3345] text-slate-900 dark:text-white text-xs px-2.5 py-1.5 rounded-md focus:border-[#FF4500] outline-none"
             />
           </div>
         </div>
 
         {/* Franja horaria preferida */}
         <div>
-          <label className="block text-xs font-semibold text-[#c0c5d4] mb-2 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-[#FF8C00]" />
+          <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-2 flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-[#FF4500] dark:text-[#FF8C00]" />
             <span>Franja horaria preferida *</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -371,14 +371,14 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
                 onClick={() => setFranja(f.id)}
                 className={`p-3 rounded-lg text-left border transition-all cursor-pointer flex items-center gap-3 ${
                   franja === f.id
-                    ? 'bg-[#1e2330] border-[#FF4500] text-white ring-1 ring-[#FF4500] shadow-[0_0_15px_rgba(255,69,0,0.2)]'
-                    : 'bg-[#181b24] border-[#272c3b] text-[#9ca3af] hover:border-[#384055] hover:text-white'
+                    ? 'bg-orange-50 dark:bg-[#1e2330] border-[#FF4500] text-slate-900 dark:text-white ring-1 ring-[#FF4500] shadow-[0_0_15px_rgba(255,69,0,0.2)]'
+                    : 'bg-slate-50 dark:bg-[#181b24] border-slate-200 dark:border-[#272c3b] text-slate-600 dark:text-[#9ca3af] hover:border-slate-300 dark:hover:border-[#384055] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <span className="text-xl">{f.icon}</span>
                 <div>
-                  <div className="text-xs font-bold text-white">{f.label}</div>
-                  <div className="text-[11px] text-[#FF8C00]">{f.hours}</div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">{f.label}</div>
+                  <div className="text-[11px] text-[#FF4500] dark:text-[#FF8C00] font-medium">{f.hours}</div>
                 </div>
               </button>
             ))}
@@ -387,8 +387,8 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
 
         {/* Motivo breve de la consulta */}
         <div>
-          <label className="block text-xs font-semibold text-[#c0c5d4] mb-2 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#FF8C00]" />
+          <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-2 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#FF4500] dark:text-[#FF8C00]" />
             <span>Motivo principal de la consulta *</span>
           </label>
           <div className="flex flex-wrap gap-2 mb-3">
@@ -399,8 +399,8 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
                 onClick={() => setMotivo(m)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                   motivo === m
-                    ? 'bg-[#FF4500]/15 text-[#FF8C00] border-[#FF4500] font-semibold'
-                    : 'bg-[#191c25] text-[#8e95a8] border-[#262b3b] hover:border-[#384055] hover:text-white'
+                    ? 'bg-[#FF4500]/15 text-[#FF4500] dark:text-[#FF8C00] border-[#FF4500] font-semibold'
+                    : 'bg-slate-100 dark:bg-[#191c25] text-slate-600 dark:text-[#8e95a8] border-slate-200 dark:border-[#262b3b] hover:border-slate-300 dark:hover:border-[#384055] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {m}
@@ -411,7 +411,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
 
         {/* Notas adicionales opcionales */}
         <div>
-          <label className="block text-xs font-semibold text-[#c0c5d4] mb-1.5">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-1.5">
             Detalle o comentario adicional (opcional)
           </label>
           <textarea
@@ -419,7 +419,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
             onChange={(e) => setNotas(e.target.value)}
             rows={2}
             placeholder="¿De qué trata tu negocio o qué funcionalidad te interesa en particular?"
-            className="w-full bg-[#1b1f2b] border border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-[#6b7280]"
+            className="w-full bg-slate-50 dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-slate-900 dark:text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-slate-400 dark:placeholder-[#6b7280]"
           />
         </div>
 
