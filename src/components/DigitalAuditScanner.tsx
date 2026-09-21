@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { Search, ShieldAlert, CheckCircle2, AlertTriangle, ArrowRight, RefreshCw, BarChart3, Smartphone, Zap, MapPin } from 'lucide-react';
+import { Search, ShieldAlert, CheckCircle2, AlertTriangle, ArrowRight, RefreshCw, BarChart3, Smartphone, Zap, MapPin, Share2, Sparkles, TrendingDown } from 'lucide-react';
 import { soundFx } from '../utils/soundEffects';
 
 interface DigitalAuditScannerProps {
   onScheduleCall?: (businessName: string) => void;
 }
+
+const SAMPLE_BUSINESSES = [
+  'Parrilla o Pizzería en Lanús',
+  'Barbería / Estética en el barrio',
+  'Estudio Contable o Jurídico',
+  'Taller Automotor GBA Sur',
+  'Comercio / Indumentaria Online',
+];
 
 export const DigitalAuditScanner: React.FC<DigitalAuditScannerProps> = ({ onScheduleCall }) => {
   const [businessInput, setBusinessInput] = useState<string>('');
@@ -17,48 +25,55 @@ export const DigitalAuditScanner: React.FC<DigitalAuditScannerProps> = ({ onSche
     conversionEase: number;
     localSeo: number;
     automation: number;
+    estimatedLeadsLost: number;
   } | null>(null);
 
-  const handleStartScan = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!businessInput.trim()) return;
+  const performScan = (targetName: string) => {
+    if (!targetName.trim()) return;
 
     soundFx.playClick();
     setIsScanning(true);
     setScanResult(null);
 
     // Sequence of scan steps
-    setScanStep('Analizando velocidad de carga en smartphones...');
+    setScanStep('Analizando velocidad de carga en smartphones 4G/5G...');
 
     setTimeout(() => {
       soundFx.playTick();
       setScanStep('Evaluando facilidad de contacto y botones de compra directa...');
-    }, 900);
+    }, 800);
 
     setTimeout(() => {
       soundFx.playTick();
       setScanStep('Verificando posicionamiento en Google Maps en Lanús y GBA...');
-    }, 1800);
+    }, 1600);
 
     setTimeout(() => {
       soundFx.playTick();
       setScanStep('Comprobando automatización de respuestas fuera de horario...');
-    }, 2600);
+    }, 2400);
 
     setTimeout(() => {
       soundFx.playSuccess();
       setIsScanning(false);
       // Generate realistic score between 54 and 72
       const randomBase = 58 + Math.floor(Math.random() * 12);
+      const lostLeads = 15 + Math.floor(Math.random() * 20);
       setScanResult({
         score: randomBase,
-        businessName: businessInput.trim(),
+        businessName: targetName.trim(),
         mobileSpeed: 62,
         conversionEase: 55,
         localSeo: 68,
         automation: 25,
+        estimatedLeadsLost: lostLeads,
       });
-    }, 3400);
+    }, 3100);
+  };
+
+  const handleStartScan = (e: React.FormEvent) => {
+    e.preventDefault();
+    performScan(businessInput);
   };
 
   const handleAction = () => {
@@ -66,6 +81,25 @@ export const DigitalAuditScanner: React.FC<DigitalAuditScannerProps> = ({ onSche
     if (onScheduleCall && scanResult) {
       onScheduleCall(`Auditoría digital para: ${scanResult.businessName}`);
     }
+  };
+
+  const handleSendWhatsAppReport = () => {
+    if (!scanResult) return;
+    soundFx.playSuccess();
+    const msg = `*DIAGNÓSTICO DIGITAL ONDIGU*
+*Negocio:* ${scanResult.businessName}
+*Puntaje actual:* ${scanResult.score}/100
+- Velocidad móvil: ${scanResult.mobileSpeed}%
+- Facilidad de compra: ${scanResult.conversionEase}%
+- Google Maps Lanús / GBA: ${scanResult.localSeo}%
+- Automatización 24/7: ${scanResult.automation}%
+
+*Oportunidad:* Se calcula una pérdida de ~${scanResult.estimatedLeadsLost} clientes potenciales por mes por falta de respuesta fuera de hora.
+
+Hola Pedro, quiero una asesoría de 15 minutos para optimizar mi presencia digital.`;
+
+    const url = `https://wa.me/5491100000000?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -116,6 +150,24 @@ export const DigitalAuditScanner: React.FC<DigitalAuditScannerProps> = ({ onSche
               )}
             </button>
           </form>
+
+          {/* Quick-Pick sample tags */}
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+            <span className="font-mono text-[11px] text-slate-400">O probá con un ejemplo:</span>
+            {SAMPLE_BUSINESSES.map((sample) => (
+              <button
+                key={sample}
+                type="button"
+                onClick={() => {
+                  setBusinessInput(sample);
+                  performScan(sample);
+                }}
+                className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#191e2b] hover:bg-orange-50 dark:hover:bg-[#201815] border border-slate-200 dark:border-slate-700 hover:border-[#FF4500] text-slate-700 dark:text-slate-300 text-[11px] transition-colors cursor-pointer"
+              >
+                {sample}
+              </button>
+            ))}
+          </div>
 
           {/* Scanning animation status */}
           {isScanning && (
@@ -217,25 +269,52 @@ export const DigitalAuditScanner: React.FC<DigitalAuditScannerProps> = ({ onSche
                 </div>
               </div>
 
+              {/* Business Impact Metric */}
+              <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 rounded-xl flex items-center justify-between gap-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                    <TrendingDown className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-red-900 dark:text-red-200">
+                      Fuga estimada de consultas: ~{scanResult.estimatedLeadsLost} clientes potenciales por mes
+                    </h5>
+                    <p className="text-[11px] text-red-700 dark:text-red-300 mt-0.5">
+                      Personas que buscan tu servicio en Google o WhatsApp fuera de horario comercial y se van con la competencia.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Actionable recommendations */}
               <div className="bg-orange-50/50 dark:bg-[#181a24] p-4 rounded-xl border border-orange-200/70 dark:border-[#2b2520] mb-6 text-xs text-slate-700 dark:text-slate-300 space-y-2">
                 <span className="font-bold text-[#FF4500] block mb-1">
-                  💡 3 Oportunidades críticas de mejora detectadas:
+                  💡 3 Oportunidades críticas de mejora inmediata detectadas:
                 </span>
                 <p>• <strong>Respuesta fuera de hora:</strong> Si un cliente escribe pasadas las 20hs, se pierde la venta. Integrar un bot inteligente solucionaría esto de inmediato.</p>
-                <p>• <strong>Carga en celulares:</strong> Optimizar imágenes y código para abrir en menos de 1 segundo en conexiones 4G/5G.</p>
+                <p>• <strong>Carga en celulares:</strong> Optimizar imágenes y código para abrir en menos de 1 segundo en conexiones 4G/5G de Lanús.</p>
                 <p>• <strong>Ficha de Google:</strong> Optimizar reseñas y categorías locales para salir en el top 3 de búsquedas en Lanús.</p>
               </div>
 
-              {/* Call to action */}
-              <button
-                type="button"
-                onClick={handleAction}
-                className="w-full py-3.5 px-5 bg-gradient-to-r from-[#FF4500] to-[#FF8C00] hover:brightness-110 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
-              >
-                <span>Pedir asesoramiento gratuito de 15 min con Pedro Gudiño</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {/* Call to action buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleAction}
+                  className="w-full sm:flex-1 py-3.5 px-5 bg-gradient-to-r from-[#FF4500] to-[#FF8C00] hover:brightness-110 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 text-sm transition-all cursor-pointer"
+                >
+                  <span>Pedir asesoramiento gratuito de 15 min con Pedro</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendWhatsAppReport}
+                  className="w-full sm:w-auto py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Enviar diagnóstico a WhatsApp</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

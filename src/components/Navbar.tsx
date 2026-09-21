@@ -34,12 +34,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   const navLinks = [
-    { label: 'Propuesta', href: '#propuesta' },
     { label: 'Servicios', href: '#servicios' },
     { label: 'Configurador', href: '#configurador-solucion' },
+    { label: 'Mockup 10s', href: '#mockup-instantaneo' },
     { label: 'Simulador IA', href: '#simulador-ia' },
-    { label: 'Calculadora', href: '#calculadora-roi' },
-    { label: 'Auditoría', href: '#auditoria-express' },
+    { label: 'Máquina del Tiempo', href: '#maquina-del-tiempo' },
+    { label: 'Radar Barrial', href: '#radar-barrial' },
     { label: 'Portfolio', href: '#portfolio' },
     { label: 'Contacto', href: '#contacto' },
   ];

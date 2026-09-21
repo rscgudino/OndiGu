@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Sparkles, Utensils, Wrench, Shirt, Scissors, Building2, CheckCheck, PhoneCall, Zap, ArrowRight, Clock, MessageSquare, Flame } from 'lucide-react';
+import { Bot, Send, Sparkles, Utensils, Wrench, Shirt, Scissors, Building2, CheckCheck, PhoneCall, Zap, ArrowRight, Clock, MessageSquare, Flame, Volume2, VolumeX, Mic } from 'lucide-react';
 import { soundFx } from '../utils/soundEffects';
 
 interface IndustryData {
@@ -265,6 +265,7 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [interactionCount, setInteractionCount] = useState<number>(0);
   const [funnelTriggered, setFunnelTriggered] = useState<boolean>(false);
+  const [playingVoiceMsgId, setPlayingVoiceMsgId] = useState<string | null>(null);
 
   const activeIndustry = INDUSTRIES.find((i) => i.id === activeIndustryId) || INDUSTRIES[0];
 
@@ -280,6 +281,66 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const hasUserInteractedRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const handleToggleVoice = (msgId: string, rawText: string) => {
+    if (typeof window === 'undefined') return;
+
+    if (playingVoiceMsgId === msgId) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setPlayingVoiceMsgId(null);
+      return;
+    }
+
+    soundFx.playClick();
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+
+      // Clean text for natural speech
+      const cleanText = rawText
+        .replace(/[*_~`]/g, '')
+        .replace(/[🍕🥩🍷💇‍♂️✂️🔧👕⚖️💡⚡•]/g, ' ')
+        .trim();
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const esVoice =
+        voices.find((v) => v.lang.startsWith('es-AR')) ||
+        voices.find((v) => v.lang.startsWith('es-419')) ||
+        voices.find((v) => v.lang.startsWith('es-')) ||
+        voices.find((v) => v.lang.includes('es'));
+
+      if (esVoice) {
+        utterance.voice = esVoice;
+      }
+
+      utterance.onend = () => {
+        setPlayingVoiceMsgId(null);
+      };
+
+      utterance.onerror = () => {
+        setPlayingVoiceMsgId(null);
+      };
+
+      window.speechSynthesis.speak(utterance);
+      setPlayingVoiceMsgId(msgId);
+    } else {
+      soundFx.playSuccess();
+    }
+  };
 
   useEffect(() => {
     // Reset conversation when switching industry
@@ -533,7 +594,40 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
                       </div>
                     </div>
                   ) : (
-                    <p className="whitespace-pre-line">{msg.text}</p>
+                    <div>
+                      <p className="whitespace-pre-line">{msg.text}</p>
+                      {msg.sender === 'bot' && (
+                        <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleVoice(msg.id, msg.text)}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                              playingVoiceMsgId === msg.id
+                                ? 'bg-[#FF4500] text-white shadow-xs'
+                                : 'bg-orange-50 dark:bg-[#1e1716] hover:bg-orange-100 dark:hover:bg-[#2b1c18] text-[#FF4500] dark:text-[#FF8C00] border border-orange-200/80 dark:border-[#3a201b]'
+                            }`}
+                            title="Escuchar respuesta con voz IA en vivo"
+                          >
+                            {playingVoiceMsgId === msg.id ? (
+                              <>
+                                <VolumeX className="w-3.5 h-3.5" />
+                                <span>Detener audio</span>
+                                <div className="flex items-center gap-0.5 ml-1">
+                                  <span className="w-1 h-2 bg-white animate-pulse" />
+                                  <span className="w-1 h-3.5 bg-white animate-pulse [animation-delay:-0.2s]" />
+                                  <span className="w-1 h-2 bg-white animate-pulse [animation-delay:-0.4s]" />
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <Volume2 className="w-3.5 h-3.5" />
+                                <span>Escuchar en voz IA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <span className="text-[10px] font-mono text-slate-400 mt-1 px-1 flex items-center gap-1">

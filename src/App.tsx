@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ValueProposition } from './components/ValueProposition';
@@ -20,6 +21,11 @@ import { ProjectConfigurator } from './components/ProjectConfigurator';
 import { AiSimulatorPlayground } from './components/AiSimulatorPlayground';
 import { RoiCalculator } from './components/RoiCalculator';
 import { DigitalAuditScanner } from './components/DigitalAuditScanner';
+import { LiveSocialProofToast } from './components/LiveSocialProofToast';
+import { InstantMockupGenerator } from './components/InstantMockupGenerator';
+import { NeighborhoodOpportunityRadar } from './components/NeighborhoodOpportunityRadar';
+import { CommercialTimeMachine } from './components/CommercialTimeMachine';
+import { XRayTechMode } from './components/XRayTechMode';
 
 // Lazy load secondary modals for maximum initial load performance
 const AuthModal = React.lazy(() =>
@@ -42,6 +48,7 @@ function MainApp() {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [clientPortalOpen, setClientPortalOpen] = useState(false);
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const [xrayModalOpen, setXrayModalOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState<string | undefined>(undefined);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -109,7 +116,7 @@ function MainApp() {
         />
 
         {/* Live Radar Infrastructure & Uptime Metrics */}
-        <LiveRadarMetrics />
+        <LiveRadarMetrics onOpenXRay={() => setXrayModalOpen(true)} />
 
         {/* 2. Value Proposition (4 Differentiators) */}
         <ValueProposition />
@@ -136,6 +143,14 @@ function MainApp() {
           }}
         />
 
+        {/* 6B. Generador de Mockup Instantáneo (Tu web en 10 segundos) */}
+        <InstantMockupGenerator
+          onQuoteRequested={(summary) => {
+            setPreselectedService(summary);
+            scrollToSection('contacto');
+          }}
+        />
+
         {/* 7. ROI & Lost Sales Calculator */}
         <RoiCalculator
           onQuoteClick={(calcSummary) => {
@@ -144,7 +159,23 @@ function MainApp() {
           }}
         />
 
-        {/* 8. Digital Presence Audit Scanner */}
+        {/* 7B. La Máquina del Tiempo Comercial (Fuga histórica de ventas) */}
+        <CommercialTimeMachine
+          onQuoteRequested={(summary) => {
+            setPreselectedService(summary);
+            scrollToSection('contacto');
+          }}
+        />
+
+        {/* 8A. Radar de Oportunidad de tu Barrio (Inteligencia comercial local en Lanús / GBA Sur) */}
+        <NeighborhoodOpportunityRadar
+          onSelectStrategy={(note) => {
+            setPreselectedService(note);
+            scrollToSection('contacto');
+          }}
+        />
+
+        {/* 8B. Digital Presence Audit Scanner */}
         <DigitalAuditScanner
           onScheduleCall={(auditNote) => {
             setPreselectedService(auditNote);
@@ -216,6 +247,13 @@ function MainApp() {
           />
         )}
 
+        {xrayModalOpen && (
+          <XRayTechMode
+            isOpen={xrayModalOpen}
+            onClose={() => setXrayModalOpen(false)}
+          />
+        )}
+
         {/* Floating Transparent Back-to-Top Arrow */}
         {showScrollTop && (
           <button
@@ -230,6 +268,9 @@ function MainApp() {
           </button>
         )}
       </Suspense>
+
+      {/* Real-time Local Social Proof Activity Toast */}
+      <LiveSocialProofToast />
     </div>
   );
 }
@@ -238,7 +279,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <MainApp />
+        <CurrencyProvider>
+          <MainApp />
+        </CurrencyProvider>
       </AuthProvider>
     </ThemeProvider>
   );

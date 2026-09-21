@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Activity, ShieldCheck, Zap, Server, MapPin, Sparkles } from 'lucide-react';
 
-export const LiveRadarMetrics: React.FC = () => {
+interface LiveRadarMetricsProps {
+  onOpenXRay?: () => void;
+}
+
+export const LiveRadarMetrics: React.FC<LiveRadarMetricsProps> = ({ onOpenXRay }) => {
   const [latency, setLatency] = useState(38);
   const [activeUsers, setActiveUsers] = useState(14);
 
@@ -58,6 +62,18 @@ export const LiveRadarMetrics: React.FC = () => {
             <ShieldCheck className="w-3.5 h-3.5 text-[#FF4500]" />
             <span className="text-[11px] font-bold">Entrega 24-72hs Garantizada</span>
           </div>
+
+          {onOpenXRay && (
+            <button
+              type="button"
+              onClick={onOpenXRay}
+              className="flex items-center gap-1.5 px-3 py-1 bg-cyan-950/80 hover:bg-cyan-900/90 border border-cyan-400/50 hover:border-cyan-300 rounded-full text-cyan-300 hover:text-white font-bold transition-all cursor-pointer shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+              title="Inspeccionar telemetría y arquitectura limpia"
+            >
+              <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              <span className="text-[11px]">⚡ Modo Rayos X</span>
+            </button>
+          )}
         </div>
       </div>
     </section>

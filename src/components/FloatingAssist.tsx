@@ -123,7 +123,10 @@ const PinballRobotBall: React.FC<PinballRobotProps> = ({
       }}
       className="fixed top-0 left-0 z-[9999] pointer-events-auto cursor-pointer group"
       style={{ willChange: 'transform' }}
-      onClick={onClick}
+      onClick={(e) => {
+        soundFx.playCartoonBoing();
+        if (onClick) onClick(e);
+      }}
       title={`Mini-Robot ${name} en cámara lenta (Tocá para interactuar)`}
     >
       <div className="relative w-14 h-14 rounded-full flex items-center justify-center">
@@ -187,9 +190,9 @@ export const FloatingAssist: React.FC = () => {
     let timeoutId: NodeJS.Timeout;
 
     const startExplosionCycle = () => {
-      // 1. Initial explosion inside dock chambers
+      // 1. Initial cartoon launch "BOING-POP" inside dock chambers
       setIsExploding(true);
-      soundFx.playSuccess();
+      soundFx.playCartoonBoing();
 
       // 2. Launch floating mini-robots into graceful cinematic slow-motion
       setTimeout(() => {
@@ -202,9 +205,9 @@ export const FloatingAssist: React.FC = () => {
       // 3. Complete 8.5s slow-motion flight and return to dock
       setTimeout(() => {
         setIsPinballActive(false);
-        // Landing explosion at dock
+        // Landing cartoon squish-pop at dock
         setIsExploding(true);
-        soundFx.playSuccess();
+        soundFx.playCartoonLand();
         // Morph back into official logos!
         setIsRobotMode(false);
 
