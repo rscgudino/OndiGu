@@ -1454,7 +1454,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
               ZONA PEDRO — FOTO EN LA PC
           =================================================== */}
           <div
-            id="imagen2.png"
+            id="pedro-en-ondi-gu"
             className="
               col-span-12
               relative
@@ -1756,14 +1756,18 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
                 />
 
 
-                {/* FOTO
-                    Coloca tu imagen en:
-                    public/assets/pedro-sentado-pc.webp
-                */}
+                {/* FOTO */}
                 <img
                   src="/imagen2.png"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (!img.dataset.hasFallback) {
+                      img.dataset.hasFallback = 'true';
+                      img.src = '/assets/imagen2.png';
+                    }
+                  }}
                   alt="Pedro trabajando frente a su PC"
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className="
                     absolute
