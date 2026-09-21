@@ -107,12 +107,13 @@ export function FloatingExpressAd({
           fixed z-[9999]
           w-10 h-14 sm:w-11 sm:h-16
           rounded-[12px]
-          bg-[#131620]
+          bg-slate-950/40 backdrop-blur-md
           border-2 border-[#FF8C00]/60
-          shadow-[0_0_20px_rgba(255,140,0,0.35)]
+          shadow-[0_0_15px_rgba(255,140,0,0.3)]
           flex flex-col items-center justify-between py-1.5 px-1
           cursor-pointer
-          transition-transform active:scale-95
+          transition-all active:scale-95
+          opacity-80 hover:opacity-100 hover:bg-slate-900/70
           group
         "
         style={{
@@ -122,7 +123,7 @@ export function FloatingExpressAd({
         aria-label="Abrir promo Landing Express en celular"
       >
         {/* Dynamic Island mini */}
-        <div className="w-3.5 h-[2px] bg-black rounded-full" />
+        <div className="w-3.5 h-[2px] bg-black/60 rounded-full" />
 
         {/* Rayo y texto 24h */}
         <div className="flex flex-col items-center leading-none my-auto">
@@ -154,6 +155,8 @@ export function FloatingExpressAd({
         sm:w-[112px] sm:h-[206px]
         cursor-pointer
         select-none
+        opacity-80 hover:opacity-100
+        transition-opacity duration-200
       "
       style={{
         left: position.x,
@@ -181,26 +184,26 @@ export function FloatingExpressAd({
           className="
             absolute -inset-2
             rounded-[30px]
-            bg-[#FF4500]/20
+            bg-[#FF4500]/15
             blur-xl
             pointer-events-none
           "
         />
 
         {/* ====================================================
-            CHASIS EXTERIOR DEL TELÉFONO CELULAR
+            CHASIS EXTERIOR DEL TELÉFONO CELULAR (TRANSPARENTE)
             ==================================================== */}
         <div
           className="
             relative w-full h-full
             rounded-[24px] sm:rounded-[28px]
-            bg-[#141722]
-            border-[2.5px] border-[#343b50]
-            shadow-[0_14px_35px_-8px_rgba(255,69,0,0.45),0_0_18px_rgba(255,140,0,0.25)]
+            bg-slate-950/35 backdrop-blur-md
+            border-[2px] border-[#FF8C00]/50
+            shadow-[0_8px_32px_rgba(0,0,0,0.35),0_0_15px_rgba(255,140,0,0.2)]
             p-[3px] sm:p-[4px]
             flex flex-col
-            transition-transform duration-200
-            hover:scale-[1.03]
+            transition-all duration-200
+            hover:scale-[1.03] hover:bg-slate-950/65
           "
         >
           {/* Botones laterales físicos simulados */}
@@ -211,15 +214,16 @@ export function FloatingExpressAd({
           <div className="absolute -left-[3px] top-15 w-[2.5px] h-4 bg-[#434b63] rounded-l-sm pointer-events-none" />
 
           {/* ==================================================
-              PANTALLA OLED DEL TELÉFONO
+              PANTALLA OLED DEL TELÉFONO (TRANSPARENTE)
               ================================================== */}
           <div
             className="
               relative w-full h-full
               rounded-[20px] sm:rounded-[23px]
               overflow-hidden
-              bg-gradient-to-b from-[#090b12] via-[#0f1422] to-[#07090f]
-              border border-white/10
+              bg-gradient-to-b from-slate-950/45 via-slate-900/30 to-slate-950/50
+              backdrop-blur-sm
+              border border-white/15
               flex flex-col justify-between
               p-2 sm:p-2.5
               text-center

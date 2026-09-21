@@ -128,8 +128,11 @@ export const ProjectConfigurator: React.FC<ProjectConfiguratorProps> = ({ onQuot
 
   const handleSendToWhatsApp = () => {
     soundFx.playSuccess();
-    const addonsNames = calculation.selectedAddonsList.map((a) => `• ${a.name}`).join('\n');
-    const msg = `Hola Pedro! Armé la configuración de mi proyecto en la web de OndiGu:\n\n*Base:* ${selectedBase.name} (${selectedBase.deliveryDays})\n*Módulos sumados:*\n${addonsNames || '• Sin adicionales'}\n\n*Inversión estimada orientativa:* $${calculation.totalEstimate.toLocaleString('es-AR')} ARS\n\n¿Podemos coordinar para ponerlo en marcha?`;
+    const addonsNames = calculation.selectedAddonsList.length > 0
+      ? calculation.selectedAddonsList.map((a) => `• ${a.name} (+$${a.price.toLocaleString('es-AR')})`).join('\n')
+      : '• Sin módulos adicionales';
+      
+    const msg = `Configuración a medida armada en la web OndiGu:\n\n*Base:* ${selectedBase.name} (Plazo estimado: ${selectedBase.deliveryDays})\n*Módulos adicionales seleccionados:*\n${addonsNames}\n\n*Presupuesto orientativo total:* $${calculation.totalEstimate.toLocaleString('es-AR')} ARS\n*Garantía:* Soporte post-entrega y código limpio con Pedro Gudiño.`;
 
     if (onQuoteSubmit) {
       onQuoteSubmit(msg);

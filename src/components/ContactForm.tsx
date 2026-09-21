@@ -32,11 +32,13 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
     }
   }, [user]);
 
-  // Sync when initialService changes dynamically (e.g. clicking the floating 24hs ad)
+  // Sync when initialService changes dynamically (e.g. clicking configurator or ads)
   useEffect(() => {
     if (initialService) {
+      setActiveTab('agendar');
       setFormData((prev) => ({
         ...prev,
+        details: initialService,
         needs: prev.needs.includes(initialService) ? prev.needs : [initialService, ...prev.needs],
       }));
     }
@@ -198,7 +200,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
         </div>
 
         {activeTab === 'agendar' ? (
-          <CallScheduleForm />
+          <CallScheduleForm defaultNotas={initialService} />
         ) : submitted ? (
           /* Confirmation card with clear next steps */
           <div className="bg-white dark:bg-[#151821] border border-slate-200 dark:border-[#282d3d] p-8 sm:p-10 text-center rounded-xl shadow-lg animate-fade-in">

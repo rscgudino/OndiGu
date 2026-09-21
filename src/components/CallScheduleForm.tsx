@@ -19,12 +19,14 @@ interface CallScheduleFormProps {
   onSuccess?: () => void;
   defaultMotivo?: string;
   compact?: boolean;
+  defaultNotas?: string;
 }
 
 export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({ 
   onSuccess,
   defaultMotivo,
-  compact = false 
+  compact = false,
+  defaultNotas,
 }) => {
   const { user } = useAuth();
 
@@ -63,7 +65,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
   const [fecha, setFecha] = useState(businessDays[0]?.dateStr || '');
   const [franja, setFranja] = useState('Tarde (13:00 - 18:00)');
   const [motivo, setMotivo] = useState(defaultMotivo || 'Sitio Web Nuevo');
-  const [notas, setNotas] = useState('');
+  const [notas, setNotas] = useState(defaultNotas || '');
   
   const [loading, setLoading] = useState(false);
   const [submittedTurno, setSubmittedTurno] = useState<any | null>(null);
@@ -83,6 +85,12 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
       setMotivo(defaultMotivo);
     }
   }, [defaultMotivo]);
+
+  useEffect(() => {
+    if (defaultNotas) {
+      setNotas(defaultNotas);
+    }
+  }, [defaultNotas]);
 
   const franjasDisponibles = [
     { id: 'Mañana (09:00 - 13:00)', label: 'Mañana', hours: '09:00 a 13:00', icon: '🌅' },
@@ -411,15 +419,28 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
 
         {/* Notas adicionales opcionales */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4] mb-1.5">
-            Detalle o comentario adicional (opcional)
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-[#c0c5d4]">
+              Detalle o comentario adicional (opcional)
+            </label>
+            {notas && (notas.includes('Base:') || notas.includes('Configuración')) && (
+              <span className="text-[11px] font-mono text-emerald-500 dark:text-emerald-400 flex items-center gap-1 font-semibold">
+                <CheckCircle2 className="w-3 h-3" />
+                Configuración copiada de tu solución
+              </span>
+            )}
+          </div>
           <textarea
+            id="agenda-notas-detalle"
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
-            rows={2}
+            rows={notas.length > 80 ? 5 : 3}
             placeholder="¿De qué trata tu negocio o qué funcionalidad te interesa en particular?"
-            className="w-full bg-slate-50 dark:bg-[#1b1f2b] border border-slate-200 dark:border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500] text-slate-900 dark:text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-colors outline-none placeholder-slate-400 dark:placeholder-[#6b7280]"
+            className={`w-full bg-slate-50 dark:bg-[#1b1f2b] border text-slate-900 dark:text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-lg transition-all outline-none placeholder-slate-400 dark:placeholder-[#6b7280] ${
+              notas && (notas.includes('Base:') || notas.includes('Configuración'))
+                ? 'border-emerald-500/80 ring-2 ring-emerald-500/20 bg-emerald-50/10'
+                : 'border-slate-200 dark:border-[#2d3345] focus:border-[#FF4500] focus:ring-1 focus:ring-[#FF4500]'
+            }`}
           />
         </div>
 

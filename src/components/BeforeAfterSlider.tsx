@@ -1,5 +1,20 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Sparkles, XCircle, CheckCircle2, ArrowRight, ArrowLeftRight, MoveHorizontal } from 'lucide-react';
+import { 
+  Sparkles, 
+  XCircle, 
+  CheckCircle2, 
+  ArrowRight, 
+  ArrowLeftRight, 
+  MoveHorizontal, 
+  AlertTriangle, 
+  Zap, 
+  Clock, 
+  WifiOff, 
+  Bot, 
+  TrendingUp, 
+  ShieldCheck, 
+  SmartphoneNfc
+} from 'lucide-react';
 import { soundFx } from '../utils/soundEffects';
 
 interface BeforeAfterSliderProps {
@@ -15,7 +30,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({ onQuoteCli
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
-    const percentage = Math.max(10, Math.min(90, (x / rect.width) * 100));
+    const percentage = Math.max(8, Math.min(92, (x / rect.width) * 100));
     setSliderPos(percentage);
     soundFx.playTick();
   }, []);
@@ -41,19 +56,23 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({ onQuoteCli
   };
 
   return (
-    <section id="comparador-evolucion" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-100/60 dark:bg-[#0d1017] border-t border-slate-200 dark:border-[#1e2332] transition-colors duration-300">
-      <div className="max-w-6xl mx-auto">
+    <section id="comparador-evolucion" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 dark:bg-[#07090e] border-t border-slate-800 dark:border-[#191e2b] transition-colors duration-300 relative overflow-hidden">
+      {/* Subtle background ambient cyber glows */}
+      <div className="absolute top-1/4 left-10 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-[#FF4500]/15 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white dark:bg-[#161a25] border border-slate-200 dark:border-[#272d3e] rounded-full text-xs font-mono text-[#FF4500] dark:text-[#FF8C00] mb-3 shadow-xs">
-            <ArrowLeftRight className="w-3.5 h-3.5 text-[#FF4500]" />
-            <span>Comparador Interactivo de Transformación</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-slate-800/90 border border-slate-700 rounded-full text-xs font-mono text-[#FF8C00] mb-3 shadow-[0_0_15px_rgba(255,140,0,0.2)]">
+            <Zap className="w-3.5 h-3.5 text-[#FF4500] animate-pulse" />
+            <span>SALTO CUÁNTICO // DE LO OBSOLETO AL FUTURO</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
             Deslizá y mirá la diferencia real en tu día a día
           </h2>
-          <p className="mt-3 text-base text-slate-600 dark:text-[#9da4b6] leading-relaxed">
-            Mové la barra central para comparar el método tradicional manual contra un negocio impulsado con la tecnología de OndiGu.
+          <p className="mt-3 text-base text-slate-400 leading-relaxed">
+            Mové el láser holográfico central para contrastar el método manual obsoleto contra la infraestructura hiper-moderna de OndiGu:
           </p>
         </div>
 
@@ -64,109 +83,201 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({ onQuoteCli
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onTouchMove={handleTouchMove}
-          className="relative select-none overflow-hidden rounded-2xl border-2 border-slate-300 dark:border-[#293043] shadow-xl bg-white dark:bg-[#141722] min-h-[520px] sm:min-h-[460px] cursor-ew-resize"
+          className="relative select-none overflow-hidden rounded-3xl border-2 border-slate-700/80 shadow-[0_20px_60px_rgba(0,0,0,0.9)] bg-slate-950 min-h-[580px] sm:min-h-[500px] cursor-ew-resize"
         >
-          {/* LADO DERECHO: CON ONDIGU (Fondo Completo) */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/20 via-slate-900 to-[#121622] p-6 sm:p-10 flex flex-col justify-between text-white">
-            <div className="max-w-md ml-auto text-right">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Con OndiGu (Automatizado & Pro)</span>
+          {/* =========================================================================
+              LADO DERECHO: EL FUTURO CON ONDIGU (CYBERNETIC, NEON, ULTRA-VELOZ)
+              ========================================================================= */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0c1626] via-[#09101d] to-[#040810] p-6 sm:p-10 flex flex-col justify-between text-white overflow-hidden">
+            {/* Cyber Grid Pattern Background */}
+            <div 
+              className="absolute inset-0 opacity-20 pointer-events-none"
+              style={{
+                backgroundImage: 'linear-gradient(to right, rgba(0, 255, 200, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 255, 200, 0.1) 1px, transparent 1px)',
+                backgroundSize: '32px 32px'
+              }}
+            />
+
+            {/* Glowing Accent Orbs */}
+            <div className="absolute -top-20 -right-20 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#FF4500]/15 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Content Top Right */}
+            <div className="relative z-10 max-w-lg ml-auto text-right">
+              {/* Badge Futurista */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider mb-4 shadow-[0_0_20px_rgba(16,185,129,0.35)] backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                <span>ONDIGU // ERA DIGITAL 2026</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mb-4">
-                Tu negocio vendiendo 24/7 sin estrés
+
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-4 tracking-tight leading-tight">
+                Ventas 24/7 y automatización <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-[#FF8C00]">en piloto automático</span>
               </h3>
 
-              <ul className="space-y-3.5 text-xs sm:text-sm text-slate-200 inline-block text-left">
+              {/* Holographic Metric Cards */}
+              <div className="grid grid-cols-2 gap-2.5 mb-5 text-left">
+                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-emerald-500/30 backdrop-blur-md shadow-xs">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 font-bold">
+                    <Zap className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+                    <span>VELOCIDAD</span>
+                  </div>
+                  <div className="text-lg sm:text-xl font-extrabold text-white mt-0.5">0.24s</div>
+                  <div className="text-[10px] text-slate-400 font-mono">Carga ultrarrápida</div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-cyan-500/30 backdrop-blur-md shadow-xs">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-cyan-400 font-bold">
+                    <Bot className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>BOT IA LANÚS</span>
+                  </div>
+                  <div className="text-lg sm:text-xl font-extrabold text-white mt-0.5">24/7/365</div>
+                  <div className="text-[10px] text-slate-400 font-mono">Cierra de madrugada</div>
+                </div>
+              </div>
+
+              {/* Feature Points */}
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-200 inline-block text-left">
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Respuestas en 5 segundos:</strong> IA entrenada con tus precios y horarios responde de noche y feriados.</span>
+                  <div className="p-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0 mt-0.5 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  </div>
+                  <span><strong>Respuestas en 3 segundos:</strong> El cliente consulta a la medianoche y recibe precios, fotos y reservas sin demora.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Web en 0.4s en celulares:</strong> Carga al instante, con catálogo autogestionable y carrito directo a WhatsApp.</span>
+                  <div className="p-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0 mt-0.5 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                    <SmartphoneNfc className="w-3.5 h-3.5" />
+                  </div>
+                  <span><strong>Web en tu celular al instante:</strong> Experiencia fluida con catálogo visual, botón de llamada directa y checkout fácil.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Agenda sin superposiciones:</strong> Turnos sincronizados automáticamente con Google Calendar.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Líder en Lanús:</strong> Ficha de Google Maps optimizada que te atrae vecinos listos para comprar.</span>
+                  <div className="p-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0 mt-0.5 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                  </div>
+                  <span><strong>Google Maps Líder:</strong> Tu local aparece primero cuando vecinos de Lanús buscan tus productos o servicios.</span>
                 </li>
               </ul>
             </div>
 
-            <div className="text-right pt-4 border-t border-slate-700/50">
-              <span className="text-xs font-mono text-emerald-400">
-                ✓ Ahorro promedio: 18 horas semanales de trabajo manual
+            {/* Bottom Status Bar */}
+            <div className="relative z-10 flex items-center justify-between pt-4 border-t border-slate-800/80 text-xs font-mono">
+              <span className="text-emerald-400 flex items-center gap-1.5 font-semibold">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>INFRAESTRUCTURA CLOUD ONDIGU // 99.98% UPTIME</span>
+              </span>
+              <span className="text-cyan-400 hidden sm:inline">
+                Ahorro: 20hs/semana de tipeo manual
               </span>
             </div>
           </div>
 
-          {/* LADO IZQUIERDO: EL MÉTODO TRADICIONAL (Recortado por sliderPos) */}
+          {/* =========================================================================
+              LADO IZQUIERDO: EL MÉTODO TRADICIONAL (OBSOLETO, CRT GLITCH, CAOS)
+              ========================================================================= */}
           <div
             style={{ width: `${sliderPos}%` }}
-            className="absolute inset-y-0 left-0 overflow-hidden bg-gradient-to-br from-red-950/30 via-slate-900 to-[#14161f] border-r-2 border-[#FF4500] p-6 sm:p-10 flex flex-col justify-between text-white transition-[width] duration-75 ease-out"
+            className="absolute inset-y-0 left-0 overflow-hidden bg-gradient-to-br from-[#1b0d0d] via-[#140b0b] to-[#0a0505] p-6 sm:p-10 flex flex-col justify-between text-white transition-[width] duration-75 ease-out shadow-[10px_0_30px_rgba(0,0,0,0.8)]"
           >
-            <div className="w-[300px] sm:w-[420px] max-w-[calc(100vw-80px)]">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 border border-red-400/40 text-red-300 text-xs font-bold uppercase tracking-wider mb-4">
-                <XCircle className="w-3.5 h-3.5 text-red-400" />
-                <span>Método Tradicional (Manual & Agotador)</span>
+            {/* CRT TV Scanline & Noise Simulation */}
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-40"
+              style={{
+                backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px, rgba(0,0,0,0.35) 1px, transparent 1px, transparent 3px)',
+              }}
+            />
+
+            {/* Old Glitch Amber Ambient */}
+            <div className="absolute -top-10 -left-10 w-60 h-60 bg-red-700/20 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Content Top Left */}
+            <div className="relative z-10 w-[310px] sm:w-[420px] max-w-[calc(100vw-80px)]">
+              {/* Retro Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-red-950/80 border border-red-500/60 text-red-300 text-xs font-mono uppercase tracking-wider mb-4 shadow-[0_0_15px_rgba(239,68,68,0.25)]">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400 animate-pulse" />
+                <span>MÉTODO MANUAL // OBSOLETO (1998)</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-100 mb-4">
-                Ventas perdidas por no poder responder a tiempo
+
+              <h3 className="text-2xl sm:text-3xl font-black text-red-100 mb-4 tracking-tight leading-tight">
+                Ventas perdidas por no responder a tiempo
               </h3>
 
-              <ul className="space-y-3.5 text-xs sm:text-sm text-slate-300">
+              {/* Retro Error Windows */}
+              <div className="space-y-2 mb-5 font-mono text-[11px]">
+                <div className="p-2.5 rounded-lg bg-red-950/40 border border-red-800/60 text-red-200 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>Esperando respuesta: <strong>hace 8 horas 40 min</strong></span>
+                </div>
+                <div className="p-2.5 rounded-lg bg-black/60 border border-amber-800/40 text-amber-300/90 flex items-center gap-2">
+                  <WifiOff className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>Planilla_final_v3_copia(2).xlsx - DAÑADA</span>
+                </div>
+              </div>
+
+              {/* Obsolete Pain Points */}
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
                 <li className="flex items-start gap-2.5">
-                  <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                  <span><strong>Consultas que se enfrían:</strong> El cliente pregunta a las 22hs y compra en otro comercio que sí respondió.</span>
+                  <div className="p-1 rounded-full bg-red-950/80 text-red-400 border border-red-600/40 shrink-0 mt-0.5">
+                    <XCircle className="w-3.5 h-3.5" />
+                  </div>
+                  <span><strong>El cliente se va a la competencia:</strong> Preguntó a las 22:00hs, nadie atendió y compró en otro local.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                  <span><strong>Cuadernos y Excel caótico:</strong> Horas pasando turnos y precios a mano mientras descuidás el mostrador.</span>
+                  <div className="p-1 rounded-full bg-red-950/80 text-red-400 border border-red-600/40 shrink-0 mt-0.5">
+                    <XCircle className="w-3.5 h-3.5" />
+                  </div>
+                  <span><strong>Cuadernos y turnos superpuestos:</strong> Horas anotando precios a mano mientras el mostrador se llena de quejas.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                  <span><strong>Web vieja o inexistente:</strong> En celular se ve diminuta o no abre, generando desconfianza en el cliente.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                  <span><strong>Invisibilidad en el mapa:</strong> Nadie en tu barrio te encuentra cuando busca tus productos.</span>
+                  <div className="p-1 rounded-full bg-red-950/80 text-red-400 border border-red-600/40 shrink-0 mt-0.5">
+                    <XCircle className="w-3.5 h-3.5" />
+                  </div>
+                  <span><strong>Web rota o invisible:</strong> Tarda 12 segundos en abrir, no entra en la pantalla del celular y nadie confía.</span>
                 </li>
               </ul>
             </div>
 
-            <div className="pt-4 border-t border-red-900/30">
-              <span className="text-xs font-mono text-red-400">
-                ✕ Pérdida estimada: hasta 35% de potenciales clientes diarios
-              </span>
+            {/* Bottom Status Bar */}
+            <div className="relative z-10 pt-4 border-t border-red-900/40 font-mono text-xs text-red-400 flex items-center gap-1.5">
+              <span>✕ Pérdida estimada: hasta 35% de potenciales clientes diarios</span>
             </div>
           </div>
 
-          {/* DIVIDER HANDLE BAR */}
+          {/* =========================================================================
+              LASER BEAM SLIDER DIVIDER (NEON VERTICAL GLOW & CYBER-DIAL)
+              ========================================================================= */}
           <div
             style={{ left: `${sliderPos}%` }}
             onMouseDown={handleMouseDown}
             onTouchStart={handleMouseDown}
-            className="absolute top-0 bottom-0 -ml-5 w-10 flex items-center justify-center cursor-ew-resize z-20"
+            className="absolute top-0 bottom-0 -ml-6 w-12 flex items-center justify-center cursor-ew-resize z-30"
           >
-            <div className="w-10 h-10 rounded-full bg-[#FF4500] text-white shadow-[0_0_20px_rgba(255,69,0,0.8)] border-2 border-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95">
-              <MoveHorizontal className="w-5 h-5" />
+            {/* Vertical Laser Beam Light */}
+            <div className="absolute top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#FF4500] via-white to-[#00f7ff] shadow-[0_0_15px_#FF4500,0_0_25px_#00f7ff]" />
+
+            {/* Electric Spark Ring Handle */}
+            <div className="relative w-12 h-12 rounded-full bg-slate-900 border-2 border-white shadow-[0_0_25px_rgba(255,69,0,0.9),0_0_35px_rgba(0,247,255,0.7)] flex items-center justify-center transition-transform hover:scale-115 active:scale-95 group">
+              <MoveHorizontal className="w-5 h-5 text-white animate-pulse" />
+              {/* Outer pulsing ring */}
+              <div className="absolute inset-0 rounded-full border border-cyan-400 animate-ping opacity-30" />
+            </div>
+
+            {/* Floating indicator tags */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-black/90 border border-white/20 text-[9px] font-mono text-white whitespace-nowrap shadow-md pointer-events-none">
+              ◀ OBSOLETO | FUTURO ▶
             </div>
           </div>
         </div>
 
-        {/* Action button bottom */}
-        <div className="mt-8 text-center">
+        {/* Bottom Call to Action */}
+        <div className="mt-10 text-center">
           <button
             type="button"
             onClick={onQuoteClick}
-            className="inline-flex items-center gap-2 px-8 py-4 text-sm sm:text-base font-bold text-white bg-gradient-to-r from-[#FF4500] to-[#FF8C00] hover:brightness-110 rounded-xl shadow-lg transition-all cursor-pointer"
+            className="inline-flex items-center gap-2.5 px-8 py-4 text-sm sm:text-base font-extrabold text-white bg-gradient-to-r from-[#FF4500] via-[#FF8C00] to-[#FFA500] hover:brightness-110 rounded-2xl shadow-[0_0_30px_rgba(255,69,0,0.4)] transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
           >
-            <span>Quiero modernizar mi negocio con OndiGu</span>
-            <ArrowRight className="w-4 h-4" />
+            <Sparkles className="w-5 h-5 fill-white" />
+            <span>Quiero dar el salto al futuro con OndiGu</span>
+            <ArrowRight className="w-5 h-5" />
           </button>
         </div>
       </div>
