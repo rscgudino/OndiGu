@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Zap, ArrowRight, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { Zap, ArrowRight, X, Clock } from "lucide-react";
+import { motion } from "motion/react";
 
 interface FloatingExpressAdProps {
   onSelectExpress: () => void;
@@ -92,11 +92,12 @@ export function FloatingExpressAd({
   }, [isHovered]);
 
   // ============================================================
-  // ESTADO MINIMIZADO: BOTÓN FLOTANTE COMPACTO Y ELEGANTE
+  // ESTADO MINIMIZADO: MINI SMARTPHONE FLOTANTE
   // ============================================================
   if (isMinimized) {
     return (
       <motion.button
+        id="minimized-express-phone-button"
         type="button"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -104,56 +105,53 @@ export function FloatingExpressAd({
         onClick={() => setIsMinimized(false)}
         className="
           fixed z-[9999]
-          w-9 h-9 sm:w-11 sm:h-11
-          rounded-full
-          overflow-hidden
-          bg-white/[0.04]
-          backdrop-blur-[3px]
-          border border-orange-400/40
-          shadow-[0_0_15px_rgba(249,115,22,0.25)]
-          flex items-center justify-center
+          w-10 h-14 sm:w-11 sm:h-16
+          rounded-[12px]
+          bg-[#131620]
+          border-2 border-[#FF8C00]/60
+          shadow-[0_0_20px_rgba(255,140,0,0.35)]
+          flex flex-col items-center justify-between py-1.5 px-1
           cursor-pointer
           transition-transform active:scale-95
+          group
         "
         style={{
           left: position.x,
           top: position.y,
         }}
-        aria-label="Abrir promo Landing Express"
+        aria-label="Abrir promo Landing Express en celular"
       >
-        <div
-          className="
-            absolute inset-0
-            rounded-full
-            bg-[radial-gradient(circle_at_50%_35%,rgba(249,115,22,0.25),transparent_60%)]
-            pointer-events-none
-          "
-        />
+        {/* Dynamic Island mini */}
+        <div className="w-3.5 h-[2px] bg-black rounded-full" />
 
-        <Zap
-          size={16}
-          className="
-            relative z-10
-            text-orange-300
-            fill-orange-300
-            drop-shadow-[0_0_5px_rgba(249,115,22,0.6)]
-          "
-        />
+        {/* Rayo y texto 24h */}
+        <div className="flex flex-col items-center leading-none my-auto">
+          <Zap
+            size={13}
+            className="text-[#FFA500] fill-[#FFA500] drop-shadow-[0_0_6px_rgba(255,140,0,0.8)] animate-pulse mb-0.5"
+          />
+          <span className="text-[7.5px] font-black text-white tracking-tighter">
+            24<span className="text-[#FF8C00]">HS</span>
+          </span>
+        </div>
+
+        {/* Barra inferior */}
+        <div className="w-3 h-[1.5px] bg-white/40 rounded-full" />
       </motion.button>
     );
   }
 
   // ============================================================
-  // BURBUJA PRINCIPAL (COMPACTA, CRISTAL TRANSLÚCIDO)
+  // SMARTPHONE FLOTANTE PRINCIPAL
   // ============================================================
   return (
     <div
       ref={bubbleRef}
+      id="floating-express-phone"
       className="
         fixed z-[9999]
-        w-[86px] h-[86px]
-        sm:w-[108px] sm:h-[108px]
-        rounded-full
+        w-[94px] h-[174px]
+        sm:w-[112px] sm:h-[206px]
         cursor-pointer
         select-none
       "
@@ -165,248 +163,229 @@ export function FloatingExpressAd({
       onMouseLeave={() => setIsHovered(false)}
       onClick={onSelectExpress}
     >
-      {/* CAPA DE LATIDO / PULSO DISCRETO */}
+      {/* ANIMACIÓN DE VIBRACIÓN / FLOTACIÓN SUTIL */}
       <motion.div
-        className="absolute inset-0 rounded-full"
+        className="relative w-full h-full"
         animate={{
-          scale: [1, 1.025, 1.05, 1.015, 1],
+          y: [0, -3, 0, 3, 0],
+          rotate: [-0.6, 0.8, -0.6],
         }}
         transition={{
-          duration: 1.5,
+          duration: 3.5,
           repeat: Infinity,
           ease: "easeInOut",
-          times: [0, 0.22, 0.38, 0.55, 1],
         }}
       >
-        {/* Halo exterior suave */}
+        {/* Resplandor exterior neón suave */}
         <div
           className="
-            absolute
-            -inset-2
-            rounded-full
-            bg-orange-500/[0.06]
-            blur-lg
+            absolute -inset-2
+            rounded-[30px]
+            bg-[#FF4500]/20
+            blur-xl
             pointer-events-none
           "
         />
-
-        {/* Halo pulsante fino */}
-        <motion.div
-          className="
-            absolute
-            -inset-0.5
-            rounded-full
-            border border-orange-400/25
-            pointer-events-none
-          "
-          animate={{
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-
-        {/* Cristal transparente */}
-        <div
-          className="
-            absolute inset-0
-            rounded-full
-            overflow-hidden
-            bg-black/40 sm:bg-white/[0.025]
-            backdrop-blur-[2px]
-            border border-orange-400/40
-            shadow-[0_0_18px_rgba(249,115,22,0.18)]
-          "
-        >
-          {/* Luz radial interior */}
-          <div
-            className="
-              absolute inset-0
-              rounded-full
-              bg-[radial-gradient(circle_at_50%_30%,rgba(249,115,22,0.12),transparent_55%)]
-              pointer-events-none
-            "
-          />
-
-          {/* Reflejo superior */}
-          <div
-            className="
-              absolute
-              top-[-15%]
-              left-[20%]
-              w-[60%]
-              h-[35%]
-              rounded-full
-              bg-white/[0.06]
-              blur-md
-              pointer-events-none
-            "
-          />
-        </div>
 
         {/* ====================================================
-            CONTENIDO CENTRAL (PROPORCIÓN REFINADA)
+            CHASIS EXTERIOR DEL TELÉFONO CELULAR
             ==================================================== */}
         <div
           className="
-            relative z-20
-            w-full h-full
-            rounded-full
-            flex flex-col items-center justify-center
-            text-center
-            px-2
+            relative w-full h-full
+            rounded-[24px] sm:rounded-[28px]
+            bg-[#141722]
+            border-[2.5px] border-[#343b50]
+            shadow-[0_14px_35px_-8px_rgba(255,69,0,0.45),0_0_18px_rgba(255,140,0,0.25)]
+            p-[3px] sm:p-[4px]
+            flex flex-col
+            transition-transform duration-200
+            hover:scale-[1.03]
           "
         >
-          {/* Rayo con animación de pulso */}
-          <motion.div
-            className="mb-0.5"
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.8, 1, 0.8],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <Zap
-              size={13}
-              className="
-                text-orange-300
-                fill-orange-300
-                drop-shadow-[0_0_5px_rgba(249,115,22,0.6)]
-              "
-            />
-          </motion.div>
+          {/* Botones laterales físicos simulados */}
+          {/* Botón de bloqueo (derecha) */}
+          <div className="absolute -right-[3px] top-11 w-[2.5px] h-6 bg-[#434b63] rounded-r-sm pointer-events-none" />
+          {/* Botones de volumen (izquierda) */}
+          <div className="absolute -left-[3px] top-9 w-[2.5px] h-4 bg-[#434b63] rounded-l-sm pointer-events-none" />
+          <div className="absolute -left-[3px] top-15 w-[2.5px] h-4 bg-[#434b63] rounded-l-sm pointer-events-none" />
 
-          {/* EXPRESS */}
-          <span
+          {/* ==================================================
+              PANTALLA OLED DEL TELÉFONO
+              ================================================== */}
+          <div
             className="
-              text-[6.5px]
-              sm:text-[7.5px]
-              uppercase
-              tracking-[0.18em]
-              text-orange-300/90
-              font-bold
-              leading-none
+              relative w-full h-full
+              rounded-[20px] sm:rounded-[23px]
+              overflow-hidden
+              bg-gradient-to-b from-[#090b12] via-[#0f1422] to-[#07090f]
+              border border-white/10
+              flex flex-col justify-between
+              p-2 sm:p-2.5
+              text-center
             "
           >
-            EXPRESS
-          </span>
-
-          {/* Texto Landing 24hs */}
-          <div className="mt-0.5 leading-none">
+            {/* Reflejo / Glare diagonal sobre el cristal */}
             <div
               className="
-                text-[9px]
-                sm:text-[11px]
-                font-semibold
-                text-white/90
-                leading-tight
+                absolute -top-10 -left-10 w-40 h-60
+                bg-gradient-to-br from-white/[0.12] via-transparent to-transparent
+                rotate-20 pointer-events-none
               "
-            >
-              Tu Landing
+            />
+
+            {/* Micro-malla radial de fondo */}
+            <div
+              className="
+                absolute inset-0
+                bg-[radial-gradient(ellipse_at_50%_40%,rgba(255,69,0,0.18),transparent_70%)]
+                pointer-events-none
+              "
+            />
+
+            {/* --- PARTE SUPERIOR DE LA PANTALLA --- */}
+            <div className="relative z-10 flex flex-col items-center">
+              {/* Barra de estado: Hora y Batería */}
+              <div className="w-full flex items-center justify-between px-1 text-[7px] sm:text-[8px] font-mono text-zinc-400/90 leading-none">
+                <span>9:41</span>
+                <span className="flex items-center gap-0.5">
+                  <span className="w-1.5 h-1 bg-[#FF8C00] rounded-xs inline-block" />
+                  <span className="text-[6.5px]">5G</span>
+                </span>
+              </div>
+
+              {/* Dynamic Island / Isla Dinámica */}
+              <div className="w-8 sm:w-10 h-2.5 sm:h-3 bg-black rounded-full mx-auto mt-0.5 flex items-center justify-between px-1.5 border border-white/15 shadow-inner">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#1e2538] border border-white/20" />
+                <div className="w-1 h-1 rounded-full bg-[#FF4500] animate-pulse" />
+              </div>
             </div>
 
-            <div
-              className="
-                text-[13px]
-                sm:text-[15px]
-                font-black
-                text-orange-300
-                leading-tight
-                drop-shadow-[0_0_6px_rgba(249,115,22,0.45)]
-              "
-            >
-              24hs
+            {/* --- CONTENIDO CENTRAL: PUBLICIDAD EXPRESS 24HS --- */}
+            <div className="relative z-10 flex flex-col items-center justify-center my-auto">
+              {/* Badge EXPRESS con rayo */}
+              <div
+                className="
+                  inline-flex items-center gap-0.5
+                  px-1.5 py-0.5
+                  rounded-full
+                  bg-[#FF4500]/25
+                  border border-[#FF4500]/50
+                  shadow-[0_0_8px_rgba(255,69,0,0.3)]
+                  mb-1
+                "
+              >
+                <Zap
+                  size={9}
+                  className="text-[#FFA500] fill-[#FFA500] animate-pulse"
+                />
+                <span className="text-[6.5px] sm:text-[7.5px] font-extrabold tracking-wider uppercase text-[#FF8C00]">
+                  EXPRESS
+                </span>
+              </div>
+
+              {/* Título: Tu Landing */}
+              <span className="text-[9px] sm:text-[11px] font-semibold text-white/95 leading-tight tracking-tight">
+                Tu Landing
+              </span>
+
+              {/* Impacto: 24hs */}
+              <div
+                className="
+                  text-[17px] sm:text-[21px]
+                  font-black
+                  leading-none
+                  text-transparent bg-clip-text
+                  bg-gradient-to-r from-[#FF8C00] via-[#FFA500] to-[#FF4500]
+                  drop-shadow-[0_0_10px_rgba(255,140,0,0.55)]
+                  my-0.5
+                "
+              >
+                24hs
+              </div>
+
+              {/* Tagline de entrega rápida */}
+              <div className="flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[7.5px] text-zinc-300 font-mono">
+                <Clock size={7} className="text-[#FF8C00]" />
+                <span>Lista y online</span>
+              </div>
+
+              {/* Micro Botón de Acción en la pantalla */}
+              <div
+                className="
+                  mt-1.5
+                  w-full
+                  py-1 px-1.5
+                  rounded-full
+                  bg-gradient-to-r from-[#FF4500] to-[#FF8C00]
+                  text-white
+                  text-[7.5px] sm:text-[8.5px]
+                  font-bold
+                  flex items-center justify-center gap-0.5
+                  shadow-[0_2px_8px_rgba(255,69,0,0.4)]
+                  transition-all duration-150
+                  hover:brightness-110
+                "
+              >
+                <span>Pedir ya</span>
+                <ArrowRight size={8} />
+              </div>
+            </div>
+
+            {/* --- PARTE INFERIOR: HOME BAR DE SMARTPHONE --- */}
+            <div className="relative z-10 w-full flex justify-center pb-0.5">
+              <div className="w-8 sm:w-10 h-1 bg-white/40 rounded-full shadow-xs" />
             </div>
           </div>
         </div>
 
-        {/* Botón flecha pequeño */}
+        {/* Botón Minimizar / Cerrar en la esquina superior del celular */}
         <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelectExpress();
-          }}
-          className="
-            absolute
-            z-30
-            bottom-[6px]
-            right-[6px]
-            w-5 h-5
-            sm:w-6 sm:h-6
-            rounded-full
-            bg-orange-500/35
-            backdrop-blur-md
-            border border-orange-200/35
-            hover:bg-orange-400/60
-            flex items-center justify-center
-            transition-all duration-200
-            shadow-[0_0_8px_rgba(249,115,22,0.25)]
-          "
-          aria-label="Ver Express"
-        >
-          <ArrowRight size={10} className="text-white" />
-        </button>
-
-        {/* Botón Cerrar / Minimizar */}
-        <button
+          id="close-floating-express-phone"
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setIsMinimized(true);
           }}
           className="
-            absolute
-            z-30
-            top-[5px]
-            right-[5px]
-            w-4 h-4
-            sm:w-5 sm:h-5
+            absolute -top-2 -right-2
+            w-5 h-5
             rounded-full
-            bg-black/30
-            backdrop-blur-md
-            hover:bg-black/60
-            border border-white/20
+            bg-[#121520]
+            border border-white/25
+            hover:border-[#FF4500]
+            text-zinc-400 hover:text-white
             flex items-center justify-center
-            transition-all
+            transition-all duration-150
+            shadow-md z-40
           "
-          aria-label="Minimizar burbuja"
+          aria-label="Minimizar teléfono express"
         >
-          <X size={8} className="text-white/70" />
+          <X size={10} />
         </button>
       </motion.div>
 
-      {/* Tooltip al pasar el mouse en desktop */}
+      {/* Tooltip flotante al pasar el cursor en desktop */}
       {isHovered && (
         <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           className="
             hidden sm:block
-            absolute
-            z-[100]
-            -bottom-7
-            left-1/2
-            -translate-x-1/2
+            absolute z-[100]
+            -bottom-7 left-1/2 -translate-x-1/2
             whitespace-nowrap
             px-2.5 py-0.5
             rounded-full
-            bg-black/80
+            bg-black/90
             backdrop-blur-md
             border border-orange-400/30
-            text-[9px]
-            text-white/90
+            text-[9px] text-white/90
             pointer-events-none
+            shadow-lg
           "
         >
-          Landing lista en 24hs
+          ⚡ Tu Landing Page en 24hs — Clic para cotizar
         </motion.div>
       )}
     </div>
@@ -414,3 +393,4 @@ export function FloatingExpressAd({
 }
 
 export default FloatingExpressAd;
+
