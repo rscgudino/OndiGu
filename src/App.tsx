@@ -13,6 +13,12 @@ import { ContactForm } from './components/ContactForm';
 import { Footer } from './components/Footer';
 import { FloatingAssist } from './components/FloatingAssist';
 import { FloatingExpressAd } from './components/FloatingExpressAd';
+import { LiveRadarMetrics } from './components/LiveRadarMetrics';
+import { BeforeAfterSlider } from './components/BeforeAfterSlider';
+import { ProjectConfigurator } from './components/ProjectConfigurator';
+import { AiSimulatorPlayground } from './components/AiSimulatorPlayground';
+import { RoiCalculator } from './components/RoiCalculator';
+import { DigitalAuditScanner } from './components/DigitalAuditScanner';
 
 // Lazy load secondary modals for maximum initial load performance
 const AuthModal = React.lazy(() =>
@@ -81,16 +87,54 @@ function MainApp() {
           onPortfolioClick={() => scrollToSection('portfolio')}
         />
 
+        {/* Live Radar Infrastructure & Uptime Metrics */}
+        <LiveRadarMetrics />
+
         {/* 2. Value Proposition (4 Differentiators) */}
         <ValueProposition />
 
-        {/* 3. Services (6 Core Services with clear business resolutions) */}
+        {/* 3. Interactive Before/After Split Slider */}
+        <BeforeAfterSlider onQuoteClick={() => scrollToSection('contacto')} />
+
+        {/* 4. Services (6 Core Services with clear business resolutions) */}
         <Services onServiceSelect={handleSelectServiceFromList} />
 
-        {/* 4. Methodology (3 Stages) */}
+        {/* 5. Visual Project Configurator ("Armá tu Solución") */}
+        <ProjectConfigurator
+          onQuoteSubmit={(summary) => {
+            setPreselectedService(summary);
+            scrollToSection('contacto');
+          }}
+        />
+
+        {/* 6. Live AI Assistant Simulator by Industry */}
+        <AiSimulatorPlayground
+          onSelectService={(serviceName) => {
+            setPreselectedService(serviceName);
+            scrollToSection('contacto');
+          }}
+        />
+
+        {/* 7. ROI & Lost Sales Calculator */}
+        <RoiCalculator
+          onQuoteClick={(calcSummary) => {
+            setPreselectedService(calcSummary);
+            scrollToSection('contacto');
+          }}
+        />
+
+        {/* 8. Digital Presence Audit Scanner */}
+        <DigitalAuditScanner
+          onScheduleCall={(auditNote) => {
+            setPreselectedService(auditNote);
+            scrollToSection('contacto');
+          }}
+        />
+
+        {/* 9. Methodology (3 Stages) */}
         <Methodology />
 
-        {/* 5. Portfolio (4 Business Cases with Results) */}
+        {/* 10. Portfolio (4 Business Cases with Results) */}
         <Portfolio />
 
         {/* 6. Auto-playing Testimonials / Reference Cards Carousel */}

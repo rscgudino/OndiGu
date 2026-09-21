@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { isUserAdmin } from '../lib/agendaService';
 import { User, Menu, X, ShieldCheck, Sparkles } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { SoundToggle } from './SoundToggle';
 
 interface NavbarProps {
   onOpenPortal: () => void;
@@ -35,10 +36,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navLinks = [
     { label: 'Propuesta', href: '#propuesta' },
     { label: 'Servicios', href: '#servicios' },
-    { label: 'Metodología', href: '#metodologia' },
-    { label: 'Referencias', href: '#referencias' },
+    { label: 'Configurador', href: '#configurador-solucion' },
+    { label: 'Simulador IA', href: '#simulador-ia' },
+    { label: 'Calculadora', href: '#calculadora-roi' },
+    { label: 'Auditoría', href: '#auditoria-express' },
     { label: 'Portfolio', href: '#portfolio' },
-    { label: 'Lanús & Redes', href: '#comunidad-redes' },
     { label: 'Contacto', href: '#contacto' },
   ];
 
@@ -70,10 +72,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           ))}
         </nav>
 
-        {/* Actions (Login / Client Special Menu / Admin / Theme / CTA) */}
+        {/* Actions (Login / Client Special Menu / Admin / Theme / Sound / CTA) */}
         <div className="hidden md:flex items-center gap-2.5">
           {/* Theme Selector Button */}
           <ThemeToggle />
+
+          {/* Sound FX Toggle Button */}
+          <SoundToggle />
 
           {user ? (
             <>
@@ -143,6 +148,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex md:hidden items-center gap-2">
           {/* Quick theme toggle on mobile */}
           <ThemeToggle />
+
+          {/* Quick sound toggle on mobile */}
+          <SoundToggle />
 
           {user && (
             <button
