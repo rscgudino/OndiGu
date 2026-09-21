@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { BRAND_INFO, QUICK_QUESTIONS } from '../data/content';
 import { ChatMessage } from '../types';
 import { 
@@ -53,13 +54,13 @@ const MiniRobotHead: React.FC<{ color: 'green' | 'blue' | 'orange' }> = ({ color
 // Explosion particles bursting outwards
 const ExplosionSparks: React.FC = () => (
   <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
-    <div className="absolute -inset-3 rounded-full border-2 border-white animate-ping opacity-90" />
-    <div className="absolute -inset-1 rounded-full bg-white/50 blur-xs animate-pulse" />
+    <div className="absolute -inset-4 rounded-full border-2 border-white animate-ping opacity-90" />
+    <div className="absolute -inset-2 rounded-full bg-white/60 blur-xs animate-pulse" />
     {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => (
       <span
         key={i}
         style={{
-          transform: `rotate(${deg}deg) translate(20px)`,
+          transform: `rotate(${deg}deg) translate(22px)`,
         }}
         className="absolute w-2 h-2 rounded-full bg-amber-200 shadow-[0_0_10px_#FFF] animate-ping"
       />
@@ -67,27 +68,140 @@ const ExplosionSparks: React.FC = () => (
   </div>
 );
 
+// Pinball Robot Ball flying and ricocheting across the website
+interface PinballRobotProps {
+  id: string;
+  name: string;
+  color: 'green' | 'blue' | 'orange';
+  href?: string;
+  onClick?: () => void;
+  startX: number;
+  startY: number;
+  pathX: number[];
+  pathY: number[];
+}
+
+const PinballRobotBall: React.FC<PinballRobotProps> = ({
+  id,
+  name,
+  color,
+  href,
+  onClick,
+  startX,
+  startY,
+  pathX,
+  pathY,
+}) => {
+  const gradient =
+    color === 'green'
+      ? 'from-[#128C7E] to-[#25D366] border-emerald-300 shadow-[0_0_26px_rgba(37,211,102,0.85)]'
+      : color === 'blue'
+      ? 'from-[#1B87BC] to-[#2AABEE] border-sky-300 shadow-[0_0_26px_rgba(42,171,238,0.85)]'
+      : 'from-[#FF4500] to-[#FF8C00] border-amber-300 shadow-[0_0_26px_rgba(255,69,0,0.85)]';
+
+  const content = (
+    <motion.div
+      id={id}
+      initial={{ x: startX, y: startY, scale: 0.8, rotate: 0 }}
+      animate={{
+        x: pathX,
+        y: pathY,
+        rotate: [0, 360, 720, 1080, 1440, 1800, 2160, 2520],
+        scale: [1, 1.35, 0.9, 1.25, 0.9, 1.25, 1.1, 1],
+      }}
+      transition={{
+        duration: 4.4,
+        ease: 'easeInOut',
+        times: [0, 0.15, 0.32, 0.48, 0.65, 0.8, 0.92, 1],
+      }}
+      className="fixed top-0 left-0 z-[9999] pointer-events-auto cursor-pointer group"
+      style={{ willChange: 'transform' }}
+      onClick={onClick}
+      title={`Robot Pinball: ${name} (Tocá para abrir)`}
+    >
+      <div className="relative w-12 h-12 rounded-full flex items-center justify-center">
+        {/* Dynamic Shockwave halo */}
+        <div className="absolute -inset-2 rounded-full bg-white/30 blur-xs animate-ping" />
+        <div
+          className={`w-11 h-11 rounded-full bg-gradient-to-tr ${gradient} border-2 text-white flex items-center justify-center transition-transform group-hover:scale-115`}
+        >
+          <MiniRobotHead color={color} />
+        </div>
+        {/* Arcade Pinball Badge */}
+        <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-white text-[9px] font-black tracking-wider rounded border border-white/30 shadow-lg pointer-events-none whitespace-nowrap opacity-90 group-hover:opacity-100 transition-opacity">
+          ⚡ PINBALL {name}
+        </span>
+      </div>
+    </motion.div>
+  );
+
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer">
+        {content}
+      </a>
+    );
+  }
+
+  return content;
+};
+
 export const FloatingAssist: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'faq'>('chat');
   const [isRobotMode, setIsRobotMode] = useState<boolean>(false);
   const [isExploding, setIsExploding] = useState<boolean>(false);
+  const [isPinballActive, setIsPinballActive] = useState<boolean>(false);
+  const [pinballCycle, setPinballCycle] = useState<number>(0);
+  const [windowSize, setWindowSize] = useState<{ w: number; h: number }>({
+    w: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    h: typeof window !== 'undefined' ? window.innerHeight : 800,
+  });
 
-  // Periodic explosion & transformation to mini-robot
+  // Track viewport dimensions for pinball bouncing boundaries
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ w: window.innerWidth, h: window.innerHeight });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // 10-Second interval: Explode -> Pinball bounce all over site -> Fly back -> Explode & Morph into logos
   useEffect(() => {
     const interval = setInterval(() => {
+      // Don't trigger if user is actively chatting in the open window
+      if (isOpen) return;
+
+      // 1. Initial explosion inside dock chambers
       setIsExploding(true);
       soundFx.playSuccess();
 
-      // Trigger explosion burst
+      // 2. Launch bouncing pinballs as mini-robots across the screen
       setTimeout(() => {
-        setIsRobotMode((prev) => !prev);
         setIsExploding(false);
-      }, 450);
-    }, 5500);
+        setIsRobotMode(true);
+        setIsPinballActive(true);
+        setPinballCycle((c) => c + 1);
+      }, 400);
+
+      // 3. Complete pinball ricochet flight and land back in dock
+      setTimeout(() => {
+        setIsPinballActive(false);
+        // Landing explosion at dock
+        setIsExploding(true);
+        soundFx.playSuccess();
+        // Morph back into official logos!
+        setIsRobotMode(false);
+
+        setTimeout(() => {
+          setIsExploding(false);
+        }, 500);
+      }, 4800);
+    }, 10000); // Exact 10 seconds between explosions!
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isOpen]);
   const [messages, setMessages] = useState<ExtendedChatMessage[]>([
     {
       id: 'init-1',
@@ -227,8 +341,126 @@ export const FloatingAssist: React.FC = () => {
     }
   };
 
+  const W = windowSize.w || 1200;
+  const H = windowSize.h || 800;
+  const startX = Math.max(30, W - 90);
+  const startY = Math.max(30, H - 90);
+
+  // WhatsApp Pinball Path (Green)
+  const waPathX = [
+    startX,
+    Math.min(W - 60, Math.max(30, W * 0.12)),
+    Math.min(W - 60, Math.max(30, W * 0.88)),
+    Math.min(W - 60, Math.max(30, W * 0.08)),
+    Math.min(W - 60, Math.max(30, W * 0.60)),
+    Math.min(W - 60, Math.max(30, W * 0.35)),
+    Math.min(W - 60, Math.max(30, W * 0.82)),
+    startX,
+  ];
+  const waPathY = [
+    startY,
+    Math.min(H - 60, Math.max(30, H * 0.15)),
+    Math.min(H - 60, Math.max(30, H * 0.28)),
+    Math.min(H - 60, Math.max(30, H * 0.62)),
+    Math.min(H - 60, Math.max(30, H * 0.18)),
+    Math.min(H - 60, Math.max(30, H * 0.82)),
+    Math.min(H - 60, Math.max(30, H * 0.40)),
+    startY,
+  ];
+
+  // Telegram Pinball Path (Blue)
+  const tgPathX = [
+    startX - 20,
+    Math.min(W - 60, Math.max(30, W * 0.48)),
+    Math.min(W - 60, Math.max(30, W * 0.06)),
+    Math.min(W - 60, Math.max(30, W * 0.72)),
+    Math.min(W - 60, Math.max(30, W * 0.20)),
+    Math.min(W - 60, Math.max(30, W * 0.92)),
+    Math.min(W - 60, Math.max(30, W * 0.28)),
+    startX - 20,
+  ];
+  const tgPathY = [
+    startY + 15,
+    Math.min(H - 60, Math.max(30, H * 0.08)),
+    Math.min(H - 60, Math.max(30, H * 0.45)),
+    Math.min(H - 60, Math.max(30, H * 0.85)),
+    Math.min(H - 60, Math.max(30, H * 0.22)),
+    Math.min(H - 60, Math.max(30, H * 0.52)),
+    Math.min(H - 60, Math.max(30, H * 0.75)),
+    startY + 15,
+  ];
+
+  // Assistant Pinball Path (Orange)
+  const botPathX = [
+    startX - 15,
+    Math.min(W - 60, Math.max(30, W * 0.08)),
+    Math.min(W - 60, Math.max(30, W * 0.78)),
+    Math.min(W - 60, Math.max(30, W * 0.18)),
+    Math.min(W - 60, Math.max(30, W * 0.52)),
+    Math.min(W - 60, Math.max(30, W * 0.12)),
+    Math.min(W - 60, Math.max(30, W * 0.85)),
+    startX - 15,
+  ];
+  const botPathY = [
+    startY - 25,
+    Math.min(H - 60, Math.max(30, H * 0.75)),
+    Math.min(H - 60, Math.max(30, H * 0.12)),
+    Math.min(H - 60, Math.max(30, H * 0.88)),
+    Math.min(H - 60, Math.max(30, H * 0.35)),
+    Math.min(H - 60, Math.max(30, H * 0.15)),
+    Math.min(H - 60, Math.max(30, H * 0.65)),
+    startY - 25,
+  ];
+
   return (
     <>
+      {/* Active Pinball Overlay: Mini-Robots bouncing freely across the entire website */}
+      <AnimatePresence>
+        {isPinballActive && (
+          <div key={`pinball-group-${pinballCycle}`} className="fixed inset-0 pointer-events-none z-[9990]">
+            {/* 1. WhatsApp Pinball Robot */}
+            <PinballRobotBall
+              id="pinball-robot-wa"
+              name="WhatsApp"
+              color="green"
+              href={BRAND_INFO.whatsappUrl}
+              startX={startX}
+              startY={startY}
+              pathX={waPathX}
+              pathY={waPathY}
+            />
+
+            {/* 2. Telegram Pinball Robot */}
+            <PinballRobotBall
+              id="pinball-robot-tg"
+              name="Telegram"
+              color="blue"
+              href={BRAND_INFO.telegramUrl}
+              startX={startX - 20}
+              startY={startY + 15}
+              pathX={tgPathX}
+              pathY={tgPathY}
+            />
+
+            {/* 3. Assistant Pinball Robot */}
+            <PinballRobotBall
+              id="pinball-robot-assist"
+              name="Asistente"
+              color="orange"
+              onClick={() => {
+                setIsPinballActive(false);
+                setIsRobotMode(false);
+                setIsOpen(true);
+              }}
+              startX={startX - 15}
+              startY={startY - 25}
+              pathX={botPathX}
+              pathY={botPathY}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Revolver Floating Dock: 3 orbiting channels rotating automatically */}
       <aside
         id="revolver-dock-container"
@@ -263,26 +495,32 @@ export const FloatingAssist: React.FC = () => {
               title="Abrir WhatsApp OndiGu"
             >
               <div className="animate-revolver-counter">
-                <a
-                  id="revolver-whatsapp-btn"
-                  href={BRAND_INFO.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Contactar por WhatsApp"
-                  className={`group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#128C7E] to-[#25D366] text-white flex items-center justify-center shadow-[0_0_14px_rgba(37,211,102,0.55)] border-2 border-emerald-300/40 hover:scale-115 hover:border-white transition-all cursor-pointer ${
-                    isExploding ? 'scale-125 brightness-150 animate-ping' : ''
-                  }`}
-                >
-                  {isExploding && <ExplosionSparks />}
-                  {isRobotMode ? (
-                    <MiniRobotHead color="green" />
-                  ) : (
-                    <MessageCircle className="w-5 h-5 fill-white text-white drop-shadow" />
-                  )}
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-[#25D366] text-[10px] font-bold tracking-wider rounded border border-[#25D366]/40 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {isRobotMode ? '🤖 WhatsApp Bot' : 'WhatsApp'}
-                  </span>
-                </a>
+                {isPinballActive ? (
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-dashed border-emerald-400/60 bg-emerald-950/40 flex items-center justify-center animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  </div>
+                ) : (
+                  <a
+                    id="revolver-whatsapp-btn"
+                    href={BRAND_INFO.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Contactar por WhatsApp"
+                    className={`group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#128C7E] to-[#25D366] text-white flex items-center justify-center shadow-[0_0_14px_rgba(37,211,102,0.55)] border-2 border-emerald-300/40 hover:scale-115 hover:border-white transition-all cursor-pointer ${
+                      isExploding ? 'scale-125 brightness-150 animate-ping' : ''
+                    }`}
+                  >
+                    {isExploding && <ExplosionSparks />}
+                    {isRobotMode ? (
+                      <MiniRobotHead color="green" />
+                    ) : (
+                      <MessageCircle className="w-5 h-5 fill-white text-white drop-shadow" />
+                    )}
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-[#25D366] text-[10px] font-bold tracking-wider rounded border border-[#25D366]/40 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {isRobotMode ? '🤖 WhatsApp Bot' : 'WhatsApp'}
+                    </span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -292,28 +530,34 @@ export const FloatingAssist: React.FC = () => {
               title="Abrir canal o chat de Telegram"
             >
               <div className="animate-revolver-counter">
-                <a
-                  id="revolver-telegram-btn"
-                  href={BRAND_INFO.telegramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Abrir canal de Telegram"
-                  className={`group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#1B87BC] to-[#2AABEE] text-white flex items-center justify-center shadow-[0_0_14px_rgba(42,171,238,0.55)] border-2 border-sky-300/40 hover:scale-115 hover:border-white transition-all cursor-pointer ${
-                    isExploding ? 'scale-125 brightness-150 animate-ping' : ''
-                  }`}
-                >
-                  {isExploding && <ExplosionSparks />}
-                  {isRobotMode ? (
-                    <MiniRobotHead color="blue" />
-                  ) : (
-                    <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.63 3.73-.53.36-1.02.54-1.45.53-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.88.03-.24.38-.49 1.04-.75 4.09-1.78 6.82-2.96 8.19-3.54 3.9-1.63 4.72-1.91 5.25-1.92.12 0 .37.03.54.17.14.12.18.28.2.45-.01.07.01.21 0 .26z" />
-                    </svg>
-                  )}
-                  <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-[#2AABEE] text-[10px] font-bold tracking-wider rounded border border-[#2AABEE]/40 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {isRobotMode ? '🤖 Telegram Bot' : 'Telegram'}
-                  </span>
-                </a>
+                {isPinballActive ? (
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-dashed border-sky-400/60 bg-sky-950/40 flex items-center justify-center animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+                  </div>
+                ) : (
+                  <a
+                    id="revolver-telegram-btn"
+                    href={BRAND_INFO.telegramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Abrir canal de Telegram"
+                    className={`group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#1B87BC] to-[#2AABEE] text-white flex items-center justify-center shadow-[0_0_14px_rgba(42,171,238,0.55)] border-2 border-sky-300/40 hover:scale-115 hover:border-white transition-all cursor-pointer ${
+                      isExploding ? 'scale-125 brightness-150 animate-ping' : ''
+                    }`}
+                  >
+                    {isExploding && <ExplosionSparks />}
+                    {isRobotMode ? (
+                      <MiniRobotHead color="blue" />
+                    ) : (
+                      <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.99 1.27-5.63 3.73-.53.36-1.02.54-1.45.53-.48-.01-1.4-.27-2.09-.49-.84-.27-1.51-.42-1.45-.88.03-.24.38-.49 1.04-.75 4.09-1.78 6.82-2.96 8.19-3.54 3.9-1.63 4.72-1.91 5.25-1.92.12 0 .37.03.54.17.14.12.18.28.2.45-.01.07.01.21 0 .26z" />
+                      </svg>
+                    )}
+                    <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-[#2AABEE] text-[10px] font-bold tracking-wider rounded border border-[#2AABEE]/40 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {isRobotMode ? '🤖 Telegram Bot' : 'Telegram'}
+                    </span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -323,28 +567,34 @@ export const FloatingAssist: React.FC = () => {
               title="Preguntas frecuentes & Asistente IA"
             >
               <div className="animate-revolver-counter">
-                <button
-                  id="revolver-assist-btn"
-                  type="button"
-                  onClick={() => setIsOpen(!isOpen)}
-                  aria-label="Abrir asistente de preguntas frecuentes"
-                  className={`group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#FF4500] to-[#FF8C00] text-white flex items-center justify-center shadow-[0_0_16px_rgba(255,69,0,0.65)] border-2 border-amber-300/50 hover:scale-115 hover:border-white transition-all cursor-pointer ${
-                    isExploding ? 'scale-125 brightness-150 animate-ping' : ''
-                  }`}
-                >
-                  {isExploding && <ExplosionSparks />}
-                  {isRobotMode ? (
-                    <MiniRobotHead color="orange" />
-                  ) : (
-                    <>
-                      <Bot className="w-5 h-5 text-white drop-shadow" />
-                      <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-white border border-[#FF4500] animate-ping" />
-                    </>
-                  )}
-                  <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-[#FF8C00] text-[10px] font-bold tracking-wider rounded border border-[#FF8C00]/40 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {isOpen ? 'Cerrar Bot' : isRobotMode ? '🤖 Cyber Asistente' : 'Asistente & FAQ'}
-                  </span>
-                </button>
+                {isPinballActive ? (
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-dashed border-amber-400/60 bg-amber-950/40 flex items-center justify-center animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                  </div>
+                ) : (
+                  <button
+                    id="revolver-assist-btn"
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    aria-label="Abrir asistente de preguntas frecuentes"
+                    className={`group relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#FF4500] to-[#FF8C00] text-white flex items-center justify-center shadow-[0_0_16px_rgba(255,69,0,0.65)] border-2 border-amber-300/50 hover:scale-115 hover:border-white transition-all cursor-pointer ${
+                      isExploding ? 'scale-125 brightness-150 animate-ping' : ''
+                    }`}
+                  >
+                    {isExploding && <ExplosionSparks />}
+                    {isRobotMode ? (
+                      <MiniRobotHead color="orange" />
+                    ) : (
+                      <>
+                        <Bot className="w-5 h-5 text-white drop-shadow" />
+                        <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-white border border-[#FF4500] animate-ping" />
+                      </>
+                    )}
+                    <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-[#FF8C00] text-[10px] font-bold tracking-wider rounded border border-[#FF8C00]/40 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {isOpen ? 'Cerrar Bot' : isRobotMode ? '🤖 Cyber Asistente' : 'Asistente & FAQ'}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

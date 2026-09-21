@@ -70,7 +70,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0c0e12] dark:text-[#F3F4F6] flex flex-col selection:bg-[#FF4500] selection:text-white relative transition-colors duration-300">
+    <div className="min-h-screen bg-[#F1EFEA] text-[#181B22] dark:bg-[#0c0e12] dark:text-[#F3F4F6] flex flex-col selection:bg-[#FF4500] selection:text-white relative transition-colors duration-300">
       {/* Top Navigation */}
       <Navbar
         onOpenPortal={() => handleOpenAccountOrAuth('login')}
