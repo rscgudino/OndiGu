@@ -99,6 +99,13 @@ const PinballRobotBall: React.FC<PinballRobotProps> = ({
       ? 'from-[#1B87BC] to-[#2AABEE] border-sky-300 shadow-[0_0_26px_rgba(42,171,238,0.85)]'
       : 'from-[#FF4500] to-[#FF8C00] border-amber-300 shadow-[0_0_26px_rgba(255,69,0,0.85)]';
 
+  const glowAura =
+    color === 'green'
+      ? 'bg-emerald-400/20 shadow-[0_0_35px_rgba(37,211,102,0.5)]'
+      : color === 'blue'
+      ? 'bg-sky-400/20 shadow-[0_0_35px_rgba(42,171,238,0.5)]'
+      : 'bg-amber-400/20 shadow-[0_0_35px_rgba(255,69,0,0.5)]';
+
   const content = (
     <motion.div
       id={id}
@@ -106,31 +113,36 @@ const PinballRobotBall: React.FC<PinballRobotProps> = ({
       animate={{
         x: pathX,
         y: pathY,
-        rotate: [0, 360, 720, 1080, 1440, 1800, 2160, 2520],
-        scale: [1, 1.35, 0.9, 1.25, 0.9, 1.25, 1.1, 1],
+        rotate: [0, 14, -10, 16, -12, 8, 0],
+        scale: [1, 1.08, 0.96, 1.06, 0.97, 1.04, 1],
       }}
       transition={{
-        duration: 4.4,
+        duration: 8.5,
         ease: 'easeInOut',
-        times: [0, 0.15, 0.32, 0.48, 0.65, 0.8, 0.92, 1],
+        times: [0, 0.18, 0.36, 0.54, 0.72, 0.88, 1],
       }}
       className="fixed top-0 left-0 z-[9999] pointer-events-auto cursor-pointer group"
       style={{ willChange: 'transform' }}
       onClick={onClick}
-      title={`Robot Pinball: ${name} (Tocá para abrir)`}
+      title={`Mini-Robot ${name} en cámara lenta (Tocá para interactuar)`}
     >
-      <div className="relative w-12 h-12 rounded-full flex items-center justify-center">
-        {/* Dynamic Shockwave halo */}
-        <div className="absolute -inset-2 rounded-full bg-white/30 blur-xs animate-ping" />
+      <div className="relative w-14 h-14 rounded-full flex items-center justify-center">
+        {/* Cinematic Slow-Motion Glowing Aura Trail */}
+        <div className={`absolute -inset-3 rounded-full ${glowAura} blur-sm animate-pulse`} />
+        <div className="absolute -inset-1 rounded-full bg-white/40 blur-xs" />
+        
+        {/* Mini Robot Sphere */}
         <div
-          className={`w-11 h-11 rounded-full bg-gradient-to-tr ${gradient} border-2 text-white flex items-center justify-center transition-transform group-hover:scale-115`}
+          className={`relative z-10 w-12 h-12 rounded-full bg-gradient-to-tr ${gradient} border-2 text-white flex items-center justify-center transition-transform group-hover:scale-115 shadow-xl`}
         >
           <MiniRobotHead color={color} />
         </div>
-        {/* Arcade Pinball Badge */}
-        <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#0a0c10] text-white text-[9px] font-black tracking-wider rounded border border-white/30 shadow-lg pointer-events-none whitespace-nowrap opacity-90 group-hover:opacity-100 transition-opacity">
-          ⚡ PINBALL {name}
-        </span>
+
+        {/* Slow-Motion Sci-Fi Badge */}
+        <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-[#0a0c10]/95 backdrop-blur-md text-white text-[9px] font-bold tracking-wider rounded-full border border-white/25 shadow-lg pointer-events-none whitespace-nowrap opacity-85 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+          <span>CÁMARA LENTA // {name}</span>
+        </div>
       </div>
     </motion.div>
   );
@@ -167,25 +179,27 @@ export const FloatingAssist: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 10-Second interval: Explode -> Pinball bounce all over site -> Fly back -> Explode & Morph into logos
+  // 10-Second interval between explosions:
+  // Explode -> 8.5s slow-motion orbit -> Fly back -> Explode & Morph into logos -> Rest in dock for 10s -> Repeat
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Don't trigger if user is actively chatting in the open window
-      if (isOpen) return;
+    if (isOpen) return;
 
+    let timeoutId: NodeJS.Timeout;
+
+    const startExplosionCycle = () => {
       // 1. Initial explosion inside dock chambers
       setIsExploding(true);
       soundFx.playSuccess();
 
-      // 2. Launch bouncing pinballs as mini-robots across the screen
+      // 2. Launch floating mini-robots into graceful cinematic slow-motion
       setTimeout(() => {
         setIsExploding(false);
         setIsRobotMode(true);
         setIsPinballActive(true);
         setPinballCycle((c) => c + 1);
-      }, 400);
+      }, 450);
 
-      // 3. Complete pinball ricochet flight and land back in dock
+      // 3. Complete 8.5s slow-motion flight and return to dock
       setTimeout(() => {
         setIsPinballActive(false);
         // Landing explosion at dock
@@ -196,11 +210,16 @@ export const FloatingAssist: React.FC = () => {
 
         setTimeout(() => {
           setIsExploding(false);
+          // Wait 10 full seconds in logo mode before the next explosion cycle!
+          timeoutId = setTimeout(startExplosionCycle, 10000);
         }, 500);
-      }, 4800);
-    }, 10000); // Exact 10 seconds between explosions!
+      }, 450 + 8500);
+    };
 
-    return () => clearInterval(interval);
+    // Initial cycle begins after 10 seconds of page load
+    timeoutId = setTimeout(startExplosionCycle, 10000);
+
+    return () => clearTimeout(timeoutId);
   }, [isOpen]);
   const [messages, setMessages] = useState<ExtendedChatMessage[]>([
     {
@@ -346,69 +365,63 @@ export const FloatingAssist: React.FC = () => {
   const startX = Math.max(30, W - 90);
   const startY = Math.max(30, H - 90);
 
-  // WhatsApp Pinball Path (Green)
+  // WhatsApp Slow-Motion Orbit Path (Green)
   const waPathX = [
     startX,
-    Math.min(W - 60, Math.max(30, W * 0.12)),
-    Math.min(W - 60, Math.max(30, W * 0.88)),
-    Math.min(W - 60, Math.max(30, W * 0.08)),
-    Math.min(W - 60, Math.max(30, W * 0.60)),
-    Math.min(W - 60, Math.max(30, W * 0.35)),
-    Math.min(W - 60, Math.max(30, W * 0.82)),
+    Math.min(W - 80, Math.max(60, W * 0.72)),
+    Math.min(W - 80, Math.max(60, W * 0.22)),
+    Math.min(W - 80, Math.max(60, W * 0.15)),
+    Math.min(W - 80, Math.max(60, W * 0.45)),
+    Math.min(W - 80, Math.max(60, W * 0.80)),
     startX,
   ];
   const waPathY = [
     startY,
-    Math.min(H - 60, Math.max(30, H * 0.15)),
-    Math.min(H - 60, Math.max(30, H * 0.28)),
-    Math.min(H - 60, Math.max(30, H * 0.62)),
-    Math.min(H - 60, Math.max(30, H * 0.18)),
-    Math.min(H - 60, Math.max(30, H * 0.82)),
-    Math.min(H - 60, Math.max(30, H * 0.40)),
+    Math.min(H - 80, Math.max(60, H * 0.22)),
+    Math.min(H - 80, Math.max(60, H * 0.18)),
+    Math.min(H - 80, Math.max(60, H * 0.58)),
+    Math.min(H - 80, Math.max(60, H * 0.72)),
+    Math.min(H - 80, Math.max(60, H * 0.38)),
     startY,
   ];
 
-  // Telegram Pinball Path (Blue)
+  // Telegram Slow-Motion Orbit Path (Blue)
   const tgPathX = [
     startX - 20,
-    Math.min(W - 60, Math.max(30, W * 0.48)),
-    Math.min(W - 60, Math.max(30, W * 0.06)),
-    Math.min(W - 60, Math.max(30, W * 0.72)),
-    Math.min(W - 60, Math.max(30, W * 0.20)),
-    Math.min(W - 60, Math.max(30, W * 0.92)),
-    Math.min(W - 60, Math.max(30, W * 0.28)),
+    Math.min(W - 80, Math.max(60, W * 0.35)),
+    Math.min(W - 80, Math.max(60, W * 0.12)),
+    Math.min(W - 80, Math.max(60, W * 0.52)),
+    Math.min(W - 80, Math.max(60, W * 0.86)),
+    Math.min(W - 80, Math.max(60, W * 0.62)),
     startX - 20,
   ];
   const tgPathY = [
     startY + 15,
-    Math.min(H - 60, Math.max(30, H * 0.08)),
-    Math.min(H - 60, Math.max(30, H * 0.45)),
-    Math.min(H - 60, Math.max(30, H * 0.85)),
-    Math.min(H - 60, Math.max(30, H * 0.22)),
-    Math.min(H - 60, Math.max(30, H * 0.52)),
-    Math.min(H - 60, Math.max(30, H * 0.75)),
+    Math.min(H - 80, Math.max(60, H * 0.60)),
+    Math.min(H - 80, Math.max(60, H * 0.28)),
+    Math.min(H - 80, Math.max(60, H * 0.14)),
+    Math.min(H - 80, Math.max(60, H * 0.42)),
+    Math.min(H - 80, Math.max(60, H * 0.74)),
     startY + 15,
   ];
 
-  // Assistant Pinball Path (Orange)
+  // Assistant Slow-Motion Orbit Path (Orange)
   const botPathX = [
     startX - 15,
-    Math.min(W - 60, Math.max(30, W * 0.08)),
-    Math.min(W - 60, Math.max(30, W * 0.78)),
-    Math.min(W - 60, Math.max(30, W * 0.18)),
-    Math.min(W - 60, Math.max(30, W * 0.52)),
-    Math.min(W - 60, Math.max(30, W * 0.12)),
-    Math.min(W - 60, Math.max(30, W * 0.85)),
+    Math.min(W - 80, Math.max(60, W * 0.18)),
+    Math.min(W - 80, Math.max(60, W * 0.58)),
+    Math.min(W - 80, Math.max(60, W * 0.84)),
+    Math.min(W - 80, Math.max(60, W * 0.36)),
+    Math.min(W - 80, Math.max(60, W * 0.75)),
     startX - 15,
   ];
   const botPathY = [
     startY - 25,
-    Math.min(H - 60, Math.max(30, H * 0.75)),
-    Math.min(H - 60, Math.max(30, H * 0.12)),
-    Math.min(H - 60, Math.max(30, H * 0.88)),
-    Math.min(H - 60, Math.max(30, H * 0.35)),
-    Math.min(H - 60, Math.max(30, H * 0.15)),
-    Math.min(H - 60, Math.max(30, H * 0.65)),
+    Math.min(H - 80, Math.max(60, H * 0.38)),
+    Math.min(H - 80, Math.max(60, H * 0.74)),
+    Math.min(H - 80, Math.max(60, H * 0.48)),
+    Math.min(H - 80, Math.max(60, H * 0.24)),
+    Math.min(H - 80, Math.max(60, H * 0.16)),
     startY - 25,
   ];
 

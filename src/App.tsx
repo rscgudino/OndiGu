@@ -1,4 +1,5 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { ArrowUp } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
@@ -42,6 +43,26 @@ function MainApp() {
   const [clientPortalOpen, setClientPortalOpen] = useState(false);
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const [preselectedService, setPreselectedService] = useState<string | undefined>(undefined);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Always start at the very top of the landing page on refresh or initial mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
+  // Track scroll position to show floating back-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 350);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
@@ -193,6 +214,20 @@ function MainApp() {
             isOpen={adminPanelOpen}
             onClose={() => setAdminPanelOpen(false)}
           />
+        )}
+
+        {/* Floating Transparent Back-to-Top Arrow */}
+        {showScrollTop && (
+          <button
+            id="floating-back-to-top-arrow-btn"
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Ir al principio de la página"
+            className="fixed bottom-6 left-6 z-40 p-3 rounded-full border border-slate-300/80 dark:border-white/20 bg-white/30 dark:bg-black/40 hover:bg-white/60 dark:hover:bg-black/60 text-slate-800 dark:text-slate-100 hover:text-[#FF4500] dark:hover:text-[#FF8C00] backdrop-blur-md shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer group"
+            title="Ir al principio de la página"
+          >
+            <ArrowUp className="w-5 h-5 text-[#FF4500] dark:text-[#FF8C00] transition-transform duration-300 group-hover:-translate-y-1" />
+          </button>
         )}
       </Suspense>
     </div>

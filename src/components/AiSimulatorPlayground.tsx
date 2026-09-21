@@ -278,6 +278,8 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const hasUserInteractedRef = useRef<boolean>(false);
 
   useEffect(() => {
     // Reset conversation when switching industry
@@ -294,7 +296,15 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
   }, [activeIndustry]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // ONLY scroll inside the chat container itself, and ONLY if the user interacted with the chat!
+    // NEVER call window.scroll or scrollIntoView on mount, which would force the browser to scroll down to the chat.
+    if (!hasUserInteractedRef.current) return;
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTo({
+        top: chatScrollRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }, [messages, isTyping]);
 
   const triggerFunnelOffer = (nextCount: number) => {
@@ -321,6 +331,7 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
   const handleSendQuestion = (questionText: string, customAnswer?: string) => {
     if (!questionText.trim() || isTyping) return;
 
+    hasUserInteractedRef.current = true;
     soundFx.playClick();
 
     const userMsg: Message = {
@@ -477,7 +488,7 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
           </div>
 
           {/* Chat Messages Area */}
-          <div className="p-4 sm:p-6 space-y-4 h-[350px] overflow-y-auto bg-slate-50/50 dark:bg-[#0e1118]">
+          <div ref={chatScrollRef} className="p-4 sm:p-6 space-y-4 h-[350px] overflow-y-auto bg-slate-50/50 dark:bg-[#0e1118]">
             {messages.map((msg) => (
               <div
                 key={msg.id}

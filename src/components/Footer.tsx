@@ -7,7 +7,8 @@ import {
   Star, 
   Instagram, 
   Facebook, 
-  ExternalLink 
+  ExternalLink,
+  ArrowUp
 } from 'lucide-react';
 
 interface FooterProps {
@@ -165,8 +166,25 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPortal, onNavigateContact 
           </div>
         </div>
 
+        {/* Transparent Back to Top Arrow Button at the end of Landing Page */}
+        <div className="pt-8 pb-4 flex flex-col items-center justify-center">
+          <button
+            id="footer-back-to-top-arrow-btn"
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Volver al principio de la página"
+            className="group relative inline-flex items-center gap-3 px-6 py-3 rounded-full border border-slate-300/80 dark:border-white/20 bg-white/20 dark:bg-white/5 hover:bg-white/40 dark:hover:bg-white/15 text-slate-800 dark:text-slate-100 hover:text-[#FF4500] dark:hover:text-[#FF8C00] hover:border-[#FF4500]/50 backdrop-blur-md transition-all duration-300 shadow-xs hover:shadow-lg cursor-pointer"
+            title="Volver al principio de la página"
+          >
+            <div className="w-8 h-8 rounded-full bg-transparent border border-slate-400/50 dark:border-white/25 flex items-center justify-center group-hover:border-[#FF4500] group-hover:bg-[#FF4500]/10 transition-all">
+              <ArrowUp className="w-4 h-4 text-[#FF4500] dark:text-[#FF8C00] transition-transform duration-300 group-hover:-translate-y-1" />
+            </div>
+            <span className="text-xs font-bold tracking-wide">Volver al principio</span>
+          </button>
+        </div>
+
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-slate-200 dark:border-[#1a1d26] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-[#6e6e6e]">
+        <div className="pt-6 border-t border-slate-200 dark:border-[#1a1d26] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-[#6e6e6e]">
           <p>© {new Date().getFullYear()} OndiGu. Todos los derechos reservados.</p>
           <p className="font-mono text-slate-600 dark:text-[#8b91a2] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF4500]" />
