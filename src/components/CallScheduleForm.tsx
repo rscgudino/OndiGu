@@ -89,6 +89,9 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
   useEffect(() => {
     if (defaultNotas) {
       setNotas(defaultNotas);
+      if (defaultNotas === 'IoT Industrial & Cadena de Frío') {
+        setMotivo('IoT Industrial & Cadena de Frío');
+      }
     }
   }, [defaultNotas]);
 
@@ -101,6 +104,7 @@ export const CallScheduleForm: React.FC<CallScheduleFormProps> = ({
   const motivosDisponibles = [
     'Sitio Web Nuevo',
     'Automatización & IA',
+    'IoT Industrial & Cadena de Frío',
     'Consultoría Especial 1 a 1',
     'Modernización / Rediseño',
     'Tecnología e Infraestructura',

@@ -33,6 +33,7 @@ const RUBROS = [
   { id: 'taller', name: 'Mecánica & Repuestos', factor: 0.9 },
   { id: 'indumentaria', name: 'Ropa & Calzado', factor: 1.1 },
   { id: 'profesional', name: 'Servicios Profesionales', factor: 0.85 },
+  { id: 'frigorifico', name: 'Carnicerías, Pescaderías & Frigoríficos', factor: 1.15 },
 ];
 
 interface NeighborhoodOpportunityRadarProps {
@@ -264,7 +265,9 @@ Hola Pedro, quiero dominar las búsquedas locales y la atención por WhatsApp en
             </div>
 
             <p className="text-[11px] font-mono text-slate-400 mt-3 text-center">
-              💡 Diagnóstico: Si un vecino busca "{activeRubro.name} en {activeZone.name}" un sábado a las 22hs, el 84% de los locales no le responde. Con OndiGu cerrás la venta en 3 segundos.
+              {activeRubro.id === 'frigorifico'
+                ? `💡 Diagnóstico: En ${activeZone.name}, los cortes de tensión en verano y el control de cadena de frío 24/7 son críticos para ${activeRubro.name}. Con Gudix ColdControl + OndiGu protegés tu mercadería y atendés pedidos sin demoras.`
+                : `💡 Diagnóstico: Si un vecino busca "${activeRubro.name} en ${activeZone.name}" un sábado a las 22hs, el 84% de los locales no le responde. Con OndiGu cerrás la venta en 3 segundos.`}
             </p>
           </div>
 

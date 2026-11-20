@@ -20,6 +20,7 @@ export interface PortfolioProject {
   id: string;
   title: string;
   category: string;
+  client?: string;
   result: string;
   description: string;
   tags: string[];

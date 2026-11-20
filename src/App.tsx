@@ -31,6 +31,9 @@ import { XRayTechMode } from './components/XRayTechMode';
 const AuthModal = React.lazy(() =>
   import('./components/AuthModal').then((m) => ({ default: m.AuthModal }))
 );
+const PortalAccessModal = React.lazy(() =>
+  import('./components/PortalAccessModal').then((m) => ({ default: m.PortalAccessModal }))
+);
 const UserProfileModal = React.lazy(() =>
   import('./components/UserProfileModal').then((m) => ({ default: m.UserProfileModal }))
 );
@@ -44,6 +47,7 @@ const AdminPanelModal = React.lazy(() =>
 function MainApp() {
   const { user } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [portalAccessModalOpen, setPortalAccessModalOpen] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [clientPortalOpen, setClientPortalOpen] = useState(false);
@@ -83,7 +87,7 @@ function MainApp() {
       setClientPortalOpen(true);
     } else {
       setAuthView(view);
-      setAuthModalOpen(true);
+      setPortalAccessModalOpen(true);
     }
   };
 
@@ -213,6 +217,18 @@ function MainApp() {
 
       {/* Lazy Loaded On-Demand Modals */}
       <Suspense fallback={null}>
+        {portalAccessModalOpen && (
+          <PortalAccessModal
+            isOpen={portalAccessModalOpen}
+            onClose={() => setPortalAccessModalOpen(false)}
+            onSelectWebPortal={() => {
+              setPortalAccessModalOpen(false);
+              setAuthView('login');
+              setAuthModalOpen(true);
+            }}
+          />
+        )}
+
         {authModalOpen && (
           <AuthModal
             isOpen={authModalOpen}

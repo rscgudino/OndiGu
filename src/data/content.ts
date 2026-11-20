@@ -98,6 +98,14 @@ export const SERVICES_LIST: ServiceItem[] = [
     resolution: 'Nos encargamos de que tu página esté siempre activa, segura contra fallos y con tiempos de carga óptimos.',
     iconName: 'Server',
     realWorldExample: 'Servidores en la nube con copias de respaldo y certificado de seguridad SSL incluido.'
+  },
+  {
+    id: 'iot-cadena-frio',
+    title: 'IoT Industrial & Cadena de Frío',
+    shortDesc: 'Tableros inteligentes ESP32 con alertas críticas por Telegram y reportes HACCP.',
+    resolution: 'Tu mercadería deja de depender de la suerte: avisa al instante si se corta una fase, queda una puerta abierta o sube la temperatura.',
+    iconName: 'Snowflake',
+    realWorldExample: 'Controladores ESP32 con servidor local autónomo sin abono en la nube y PDF bromatológico HACCP.'
   }
 ];
 
@@ -179,6 +187,20 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       ratio: '16:10',
       dominantColor: '#0d0d0d',
       subtitle: 'Carta Interactiva & Pedidos Ágiles'
+    }
+  },
+  {
+    id: 'gudix-coldcontrol',
+    title: 'SCADA Frigorífico & Control Trifásico',
+    category: 'IoT Industrial + SCADA Local + Telegram',
+    client: 'Gudix ColdControl (Cámaras y Locales Comerciales)',
+    result: 'Cero pérdida de mercadería por cortes nocturnos y reportes bromatológicos HACCP automáticos en 1 clic.',
+    description: 'Se desarrolló e instaló un sistema completo de telemetría y automatización con controladores industriales, sensado de fases R-S-T, arranque seguro de grupo electrógeno y servidor local autónomo que funciona incluso sin internet. El dueño recibe alertas críticas y métricas de consumo eléctrico directo en Telegram.',
+    tags: ['Hardware IoT', 'SCADA Local', 'Bot Telegram'],
+    imagePlaceholder: {
+      ratio: '16:10',
+      dominantColor: '#0a0e14',
+      subtitle: 'Gudix ColdControl • Telemetría ESP32 & Trifásica R-S-T'
     }
   }
 ];

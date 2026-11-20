@@ -50,6 +50,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
 
   const businessTypes = [
     'Comercio o Local a la calle',
+    'Carnicería, Pescadería o Frigorífico',
     'Gastronomía / Bar / Restaurante',
     'Servicios profesionales o Consultoría',
     'Salud, Belleza o Turnos médicos',
@@ -63,6 +64,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialService }) => {
     'Desarrollo Web',
     'Asistente Inteligente con IA',
     'Automatización de Mensajes y Procesos',
+    'IoT Industrial & Cadena de Frío',
     'Modernización de web existente',
   ];
 

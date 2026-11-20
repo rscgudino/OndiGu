@@ -10,7 +10,11 @@ import {
   Smartphone,
   TrendingUp,
   Clock,
-  Monitor
+  Monitor,
+  Snowflake,
+  FileCheck2,
+  BellRing,
+  Cpu as CpuChip
 } from 'lucide-react';
 
 interface ServicesProps {
@@ -48,6 +52,13 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
       shortName: 'Infra',
       icon: Server,
       iconColor: 'text-[#FF8C00]',
+    },
+    {
+      id: 4,
+      title: 'IoT & Cadena de Frío',
+      shortName: 'Frío IoT',
+      icon: Snowflake,
+      iconColor: 'text-[#FF4500]',
     },
   ];
   return (
@@ -176,7 +187,7 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
             )}
           </div>
 
-          <div className="-mx-3 sm:mx-0 grid grid-cols-4 gap-1.5 p-2 bg-[#10131d] border-y border-[#23283a] sm:border sm:rounded-2xl sm:p-1.5">
+          <div className="-mx-3 sm:mx-0 grid grid-cols-5 gap-1 sm:gap-1.5 p-2 bg-[#10131d] border-y border-[#23283a] sm:border sm:rounded-2xl sm:p-1.5">
             {mobileServiceTabs.map((tab) => {
               const isSelected = selectedMobileService === tab.id;
               const Icon = tab.icon;
@@ -1438,6 +1449,356 @@ export const Services: React.FC<ServicesProps> = ({ onServiceSelect }) => {
                     rounded-xl
                     transition-all
                     active:scale-[0.98]
+                    touch-manipulation
+                  "
+                >
+                  Pedir presupuesto
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              )}
+
+            </div>
+
+          </div>
+
+
+          {/* ===================================================
+              5. IOT INDUSTRIAL & CADENA DE FRÍO
+          =================================================== */}
+          <div
+            id="servicio-iot-frio"
+            className={`
+              ${selectedMobileService === 4 ? 'flex' : 'hidden'}
+              md:flex
+              md:col-span-12
+              lg:col-span-12
+
+              -mx-3 sm:mx-0
+              w-auto sm:w-full
+              rounded-none sm:rounded-2xl
+              border-x-0 sm:border-x
+              border-y sm:border
+              border-[#232738]
+
+              bg-[#141722]
+              hover:border-[#FF8C00]/50
+
+              p-4
+              sm:p-6
+              lg:p-8
+
+              flex-col
+              justify-between
+              h-full
+
+              relative
+              overflow-hidden
+
+              transition-all
+              duration-300
+
+              group
+            `}
+          >
+
+            <div
+              className="
+                absolute
+                top-0 left-0 right-0
+                h-[2px]
+                bg-gradient-to-r
+                from-[#FF4500]
+                via-[#FF8C00]/70
+                to-transparent
+              "
+            />
+
+            <div
+              className="
+                absolute
+                -top-20
+                -right-20
+                w-44 h-44
+                bg-[#FF4500]/10
+                rounded-full
+                blur-3xl
+                pointer-events-none
+              "
+            />
+
+            <div>
+
+              {/* Meta */}
+              <div
+                className="
+                  flex
+                  flex-col
+                  xs:flex-row
+                  sm:flex-row
+                  sm:items-center
+                  justify-between
+                  gap-3
+                  mb-4
+                "
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+
+                  <div
+                    className="
+                      w-10 h-10
+                      sm:w-11 sm:h-11
+                      rounded-xl
+                      bg-[#1c202e]
+                      border border-[#2b3145]
+                      flex items-center justify-center
+                      text-[#FF4500]
+                      group-hover:text-white
+                      group-hover:bg-[#FF4500]
+                      transition-colors
+                      shrink-0
+                    "
+                  >
+                    <Snowflake className="w-5 h-5" />
+                  </div>
+
+                  <span
+                    className="
+                      text-[10px]
+                      sm:text-xs
+                      font-mono
+                      uppercase
+                      tracking-wider
+                      text-[#FF8C00]
+                      font-semibold
+                    "
+                  >
+                    Control Crítico 24/7
+                  </span>
+                </div>
+
+                <span
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-1.5
+
+                    w-fit
+
+                    px-2.5 py-1
+
+                    text-[10px]
+                    sm:text-[11px]
+
+                    font-mono
+                    text-emerald-400
+
+                    bg-emerald-950/40
+                    border border-emerald-800/40
+
+                    rounded-md
+                    whitespace-nowrap
+                  "
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Costo Nube $0
+                </span>
+              </div>
+
+
+              <h3
+                className="
+                  text-xl
+                  sm:text-2xl
+                  lg:text-3xl
+                  font-bold
+                  text-white
+                  tracking-tight
+                  mb-3
+                "
+              >
+                IoT Industrial &amp; Cadena de Frío
+              </h3>
+
+
+              <div className="space-y-2 mb-5">
+
+                <p
+                  className="
+                    text-sm
+                    sm:text-base
+                    text-[#e2e6f0]
+                    font-medium
+                    leading-relaxed
+                  "
+                >
+                  Tu mercadería deja de depender de la suerte o de planillas hechas
+                  a mano. Instalamos tableros inteligentes en cámaras frigoríficas,
+                  freezers y grupos electrógenos que avisan al instante por Telegram
+                  si se corta una fase, queda una puerta abierta o sube la temperatura.
+                </p>
+
+                <p
+                  className="
+                    text-xs
+                    sm:text-sm
+                    text-[#949aa8]
+                    leading-relaxed
+                  "
+                >
+                  Diseñado con controladores industriales ESP32, servidor local
+                  autónomo sin abonos en la nube y generación automática de reportes
+                  bromatológicos HACCP en PDF.
+                </p>
+              </div>
+
+
+              {/* Technical highlights */}
+              <div
+                className="
+                  bg-[#0e1017]
+                  border border-[#1f2331]
+                  rounded-xl
+                  p-3
+                  mb-5
+                "
+              >
+                <div className="flex flex-wrap gap-2">
+
+                  <span
+                    className="
+                      inline-flex items-center gap-1.5
+                      text-[10px] sm:text-xs
+                      font-mono
+                      px-2.5 py-1
+                      rounded-lg
+                      bg-[#181b26]
+                      text-[#c7cbd6]
+                      border border-[#252a3a]
+                    "
+                  >
+                    <CpuChip className="w-3.5 h-3.5 text-[#FF4500]" />
+                    Monitoreo ESP32
+                  </span>
+
+                  <span
+                    className="
+                      inline-flex items-center gap-1.5
+                      text-[10px] sm:text-xs
+                      font-mono
+                      px-2.5 py-1
+                      rounded-lg
+                      bg-[#181b26]
+                      text-[#c7cbd6]
+                      border border-[#252a3a]
+                    "
+                  >
+                    <BellRing className="w-3.5 h-3.5 text-[#FF8C00]" />
+                    Alertas Telegram
+                  </span>
+
+                  <span
+                    className="
+                      inline-flex items-center gap-1.5
+                      text-[10px] sm:text-xs
+                      font-mono
+                      px-2.5 py-1
+                      rounded-lg
+                      bg-[#181b26]
+                      text-[#c7cbd6]
+                      border border-[#252a3a]
+                    "
+                  >
+                    <FileCheck2 className="w-3.5 h-3.5 text-[#FF4500]" />
+                    Auditoría HACCP PDF
+                  </span>
+
+                  <span
+                    className="
+                      inline-flex
+                      items-center
+                      gap-1
+                      text-[10px] sm:text-xs
+                      font-mono
+                      px-2.5 py-1
+                      rounded-lg
+                      bg-emerald-950/40
+                      text-emerald-400
+                      border border-emerald-800/40
+                      font-semibold
+                    "
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Sin abono cloud
+                  </span>
+
+                </div>
+              </div>
+
+            </div>
+
+            {/* Action */}
+            <div
+              className="
+                pt-4
+                border-t border-[#1e2332]
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-3
+              "
+            >
+
+              <span
+                className="
+                  text-[11px]
+                  sm:text-xs
+                  text-[#757b8d]
+                "
+              >
+                Ideal para carnicerías, pescaderías, heladerías y depósitos
+              </span>
+
+              {onServiceSelect && (
+                <button
+                  type="button"
+                  onClick={() => onServiceSelect('IoT Industrial & Cadena de Frío')}
+                  className="
+                    w-full
+                    sm:w-auto
+
+                    min-h-[46px]
+
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-1.5
+
+                    px-5 py-2.5
+
+                    text-xs
+                    sm:text-sm
+
+                    font-bold
+                    text-white
+
+                    bg-[#FF4500]
+                    hover:bg-[#e03d00]
+
+                    sm:bg-[#1a1d28]
+                    sm:hover:bg-[#FF4500]
+
+                    sm:border
+                    sm:border-[#2b3145]
+
+                    rounded-xl
+
+                    transition-all
+
+                    active:scale-[0.98]
+
                     touch-manipulation
                   "
                 >

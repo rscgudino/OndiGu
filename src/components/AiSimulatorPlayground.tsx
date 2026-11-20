@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Sparkles, Utensils, Wrench, Shirt, Scissors, Building2, CheckCheck, PhoneCall, Zap, ArrowRight, Clock, MessageSquare, Flame, Volume2, VolumeX, Mic } from 'lucide-react';
+import { Bot, Send, Sparkles, Utensils, Wrench, Shirt, Scissors, Building2, Snowflake, CheckCheck, PhoneCall, Zap, ArrowRight, Clock, MessageSquare, Flame, Volume2, VolumeX, Mic } from 'lucide-react';
 import { soundFx } from '../utils/soundEffects';
 
 interface IndustryData {
@@ -244,6 +244,46 @@ const INDUSTRIES: IndustryData[] = [
       },
     ],
     fallback: 'Excelente consulta. Te conecto con uno de nuestros asesores para enviarte el dossier completo del inmueble en PDF por WhatsApp. ¿Preferís que te llamemos o te escribamos?',
+  },
+  {
+    id: 'frigorifico',
+    name: 'Frigorífico & Cadena de Frío',
+    icon: Snowflake,
+    storeName: 'Frigorífico & Pescadería Gudix (Lanús)',
+    avatarText: 'GC',
+    welcomeMessage: '¡Hola! ❄️ Soy el asistente de monitoreo Gudix ColdControl. Todas las cámaras están operando en rango normal. Consultame temperaturas, estado de fases o pedime el reporte bromatológico.',
+    presets: [
+      {
+        label: '¿Cómo están las cámaras hoy?',
+        question: '¿Cómo están las cámaras hoy?',
+        answer: 'Todo operando normal ❄️. Freezer Principal en -18,4 °C, Cámara de Frescos en +1,8 °C y puertas cerradas. Consumo activo: 3,4 kW.',
+      },
+      {
+        label: '¿Hubo algún corte de luz anoche?',
+        question: '¿Hubo algún corte de luz anoche?',
+        answer: 'Sin cortes registrados ⚡. Las tres fases (R, S y T) se mantuvieron estables entre 218 V y 222 V durante toda la madrugada. Grupo electrógeno en Standby.',
+      },
+      {
+        label: 'Necesito la planilla para bromatología',
+        question: 'Necesito la planilla para bromatología',
+        answer: '¡Listo! 📄 Ya generé el reporte oficial HACCP de los últimos 30 días con firma digital y registro térmico cada 5 minutos. Podés descargarlo directo desde tu tablero web.',
+      },
+    ],
+    intelligentKeywords: [
+      {
+        keywords: ['temperatura', 'camara', 'freezer', 'frio', 'puerta'],
+        answer: 'Todo operando normal ❄️. Freezer Principal en -18,4 °C, Cámara de Frescos en +1,8 °C y puertas cerradas. Consumo activo: 3,4 kW.',
+      },
+      {
+        keywords: ['corte', 'luz', 'fase', 'tension', 'grupo', 'electrogeno'],
+        answer: 'Sin cortes registrados ⚡. Las tres fases (R, S y T) se mantuvieron estables entre 218 V y 222 V durante toda la madrugada. Grupo electrógeno en Standby.',
+      },
+      {
+        keywords: ['planilla', 'bromatologia', 'haccp', 'pdf', 'reporte'],
+        answer: '¡Listo! 📄 Ya generé el reporte oficial HACCP de los últimos 30 días con firma digital y registro térmico cada 5 minutos. Podés descargarlo directo desde tu tablero web.',
+      },
+    ],
+    fallback: 'Todas las cámaras y sensores ESP32 de Gudix ColdControl están transmitiendo en vivo. Podés consultarme por temperaturas, estado de fases R-S-T o pedirme la planilla HACCP para bromatología.',
   },
 ];
 
@@ -530,7 +570,7 @@ export const AiSimulatorPlayground: React.FC<AiSimulatorPlaygroundProps> = ({ on
                 Preguntas reales frecuentes (hacé clic para probar la respuesta):
               </span>
               <span className="text-[10px] font-mono text-[#FF4500] dark:text-[#FF8C00]">
-                5 opciones reales
+                {activeIndustry.presets.length} opciones reales
               </span>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
